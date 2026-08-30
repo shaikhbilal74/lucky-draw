@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Lucky Draw Registration</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ================================= -->
+    <!-- NAVBAR -->
+    <!-- ================================= -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+
+            🎉 <span>Lucky</span>Draw
+
+        </div>
+
+
+        <div class="participant-label">
+
+            Participant Registration
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ================================= -->
+    <!-- REGISTRATION PAGE -->
+    <!-- ================================= -->
+
+    <section
+        id="registerPage"
+        class="page active-page"
+    >
+
+        <div class="form-card">
+
+
+            <!-- ================================= -->
+            <!-- TITLE -->
+            <!-- ================================= -->
+
+            <h1>
+
+                🎉 Lucky Draw
+
+            </h1>
+
+
+            <p class="subtitle">
+
+                Enter your details for a chance to win exciting prizes!
+
+            </p>
+
+
+
+            <!-- ================================= -->
+            <!-- REGISTRATION FORM -->
+            <!-- ================================= -->
+
+            <form id="registrationForm">
+
+
+                <!-- ================================= -->
+                <!-- AUTOMATIC REGISTRATION FORM READER -->
+                <!-- ================================= -->
+
+                <div class="ocr-section">
+
+
+                    <!-- OCR HEADER -->
+
+                    <div class="ocr-heading">
+
+                        <div class="ocr-icon">
+
+                            📄
+
+                        </div>
+
+
+                        <div class="ocr-heading-text">
+
+                            <h2>
+
+                                Upload Registration Form
+
+                            </h2>
+
+
+                            <p>
+
+                                Already have a filled registration form?
+                                Upload its photo and we'll automatically
+                                read the details for you.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================================= -->
+                    <!-- PHOTO UPLOAD -->
+                    <!-- ================================= -->
+
+                    <label
+                        for="registrationImage"
+                        class="compact-upload"
+                    >
+
+                        <div class="compact-upload-icon">
+
+                            ☁️
+
+                        </div>
+
+
+                        <div class="compact-upload-main">
+
+                            <strong>
+
+                                Choose Photo
+
+                            </strong>
+
+
+                            <span>
+
+                                JPG, PNG or other image
+
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            id="selectedFileName"
+                            class="selected-file-name"
+                        >
+
+                            No file selected
+
+                        </div>
+
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="registrationImage"
+                        accept="image/*"
+                        capture="environment"
+                        hidden
+                    >
+
+
+
+                    <!-- ================================= -->
+                    <!-- OCR STATUS -->
+                    <!-- ================================= -->
+
+                    <div
+                        id="ocrStatus"
+                        class="ocr-status"
+                        style="display: none;"
+                    >
+
+                        <div
+                            id="ocrStatusIcon"
+                            class="status-icon"
+                        >
+
+                            ⏳
+
+                        </div>
+
+
+                        <div class="ocr-status-content">
+
+                            <strong
+                                id="ocrStatusTitle"
+                            >
+
+                                Reading your form...
+
+                            </strong>
+
+
+                            <p
+                                id="ocrStatusText"
+                            >
+
+                                Please wait while we read the details
+                                from your photo.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ================================= -->
+                <!-- FULL NAME -->
+                <!-- ================================= -->
+
+                <label
+                    for="name"
+                >
+
+                    👤 Full Name
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="e.g. Rahul"
+                    autocomplete="name"
+                    required
+                >
+
+
+
+                <!-- ================================= -->
+                <!-- PHONE -->
+                <!-- ================================= -->
+
+                <label
+                    for="phone"
+                >
+
+                    📞 Phone Number
+
+                </label>
+
+
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="98765 43210"
+                    maxlength="10"
+                    pattern="[6-9][0-9]{9}"
+                    inputmode="numeric"
+                    autocomplete="tel"
+                    required
+                >
+
+
+
+                <!-- ================================= -->
+                <!-- AREA -->
+                <!-- ================================= -->
+
+                <label
+                    for="area"
+                >
+
+                    📍 Area
+
+                </label>
+
+
+                <textarea
+                    id="area"
+                    placeholder="House No., Street, Area"
+                    autocomplete="street-address"
+                    required
+                ></textarea>
+
+
+
+                <!-- ================================= -->
+                <!-- CITY -->
+                <!-- ================================= -->
+
+                <label
+                    for="city"
+                >
+
+                    🏙️ City
+
+                </label>
+
+
+                <select
+                    id="city"
+                    required
+                >
+
+                    <option value="">
+
+                        Select City
+
+                    </option>
+
+
+                    <!-- MAHARASHTRA MUNICIPAL CORPORATION CITIES -->
+
+                    <option value="Ahilyanagar">
+
+                        Ahilyanagar
+
+                    </option>
+
+
+                    <option value="Akola">
+
+                        Akola
+
+                    </option>
+
+
+                    <option value="Amravati">
+
+                        Amravati
+
+                    </option>
+
+
+                    <option value="Bhiwandi">
+
+                        Bhiwandi
+
+                    </option>
+
+
+                    <option value="Mumbai">
+
+                        Mumbai
+
+                    </option>
+
+
+                    <option value="Chandrapur">
+
+                        Chandrapur
+
+                    </option>
+
+
+                    <option value="Chhatrapati Sambhajinagar">
+
+                        Chhatrapati Sambhajinagar
+
+                    </option>
+
+
+                    <option value="Dhule">
+
+                        Dhule
+
+                    </option>
+
+
+                    <option value="Ichalkaranji">
+
+                        Ichalkaranji
+
+                    </option>
+
+
+                    <option value="Jalgaon">
+
+                        Jalgaon
+
+                    </option>
+
+
+                    <option value="Jalna">
+
+                        Jalna
+
+                    </option>
+
+
+                    <option value="Kalyan-Dombivli">
+
+                        Kalyan-Dombivli
+
+                    </option>
+
+
+                    <option value="Kolhapur">
+
+                        Kolhapur
+
+                    </option>
+
+
+                    <option value="Latur">
+
+                        Latur
+
+                    </option>
+
+
+                    <option value="Malegaon">
+
+                        Malegaon
+
+                    </option>
+
+
+                    <option value="Mira-Bhayandar">
+
+                        Mira-Bhayandar
+
+                    </option>
+
+
+                    <option value="Nagpur">
+
+                        Nagpur
+
+                    </option>
+
+
+                    <option value="Nanded">
+
+                        Nanded
+
+                    </option>
+
+
+                    <option value="Nashik">
+
+                        Nashik
+
+                    </option>
+
+
+                    <option value="Navi Mumbai">
+
+                        Navi Mumbai
+
+                    </option>
+
+
+                    <option value="Panvel">
+
+                        Panvel
+
+                    </option>
+
+
+                    <option value="Parbhani">
+
+                        Parbhani
+
+                    </option>
+
+
+                    <option value="Pimpri-Chinchwad">
+
+                        Pimpri-Chinchwad
+
+                    </option>
+
+
+                    <option value="Pune">
+
+                        Pune
+
+                    </option>
+
+
+                    <option value="Sangli-Miraj-Kupwad">
+
+                        Sangli-Miraj-Kupwad
+
+                    </option>
+
+
+                    <option value="Solapur">
+
+                        Solapur
+
+                    </option>
+
+
+                    <option value="Thane">
+
+                        Thane
+
+                    </option>
+
+
+                    <option value="Ulhasnagar">
+
+                        Ulhasnagar
+
+                    </option>
+
+
+                    <option value="Vasai-Virar">
+
+                        Vasai-Virar
+
+                    </option>
+
+                </select>
+
+
+
+                <!-- ================================= -->
+                <!-- REGISTER BUTTON -->
+                <!-- ================================= -->
+
+                <button
+                    type="submit"
+                    class="register-btn"
+                >
+
+                    Register Now
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- ================================= -->
+            <!-- PRIVACY -->
+            <!-- ================================= -->
+
+            <p class="privacy-text">
+
+                🔒 We'll only use your details to run the draw.
+
+            </p>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================================= -->
+    <!-- SUCCESS PAGE -->
+    <!-- ================================= -->
+
+    <section
+        id="successPage"
+        class="page"
+    >
+
+        <div class="success-card">
+
+
+            <!-- CHECKMARK -->
+
+            <div class="checkmark">
+
+                ✓
+
+            </div>
+
+
+            <!-- SUCCESS TITLE -->
+
+            <h1>
+
+                Registration Successful!
+
+            </h1>
+
+
+            <p>
+
+                You have successfully entered the Lucky Draw.
+
+            </p>
+
+
+
+            <!-- ================================= -->
+            <!-- REGISTRATION ID -->
+            <!-- ================================= -->
+
+            <div class="registration-id-box">
+
+                <p class="registration-id-label">
+
+                    Your Registration ID
+
+                </p>
+
+
+                <h2
+                    id="successRegistrationId"
+                >
+
+                    LD-0000
+
+                </h2>
+
+
+                <p class="registration-id-note">
+
+                    Please keep this ID safe for future reference.
+
+                </p>
+
+            </div>
+
+
+
+            <h2>
+
+                Good Luck! 🍀
+
+            </h2>
+
+
+
+            <!-- REGISTER ANOTHER -->
+
+            <button
+                type="button"
+                onclick="registerAnother()"
+                class="back-btn"
+            >
+
+                Register Another Person
+
+            </button>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================================= -->
+    <!-- FOOTER -->
+    <!-- ================================= -->
+
+    <footer>
+
+        Lucky Draw System • Participant Registration
+
+    </footer>
+
+
+
+    <!-- ================================= -->
+    <!-- SUPABASE -->
+    <!-- ================================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+
+    <!-- ================================= -->
+    <!-- YOUR JAVASCRIPT -->
+    <!-- ================================= -->
+
+    <script
+        src="participants.js"
+    ></script>
+
+
+</body>
+
+</html>

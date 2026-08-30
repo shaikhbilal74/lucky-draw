@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="robots"
+        content="noindex, nofollow"
+    >
+
+    <title>Lucky Draw Admin Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ========================= -->
+    <!-- NAVBAR -->
+    <!-- ========================= -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            🎉 <span>Lucky</span>Draw
+        </div>
+
+        <div class="participant-label">
+            Admin Dashboard
+        </div>
+
+    </nav>
+
+
+    <!-- ========================= -->
+    <!-- LOGIN PAGE -->
+    <!-- ========================= -->
+
+    <section
+        id="loginPage"
+        class="page active-page"
+    >
+
+        <div class="login-card">
+
+            <div class="login-icon">
+                🔐
+            </div>
+
+
+            <h1>
+                Admin Login
+            </h1>
+
+
+            <p class="login-subtitle">
+                Secure access to the Lucky Draw dashboard
+            </p>
+
+
+            <form
+                id="loginForm"
+                autocomplete="on"
+                novalidate
+            >
+
+
+                <label for="adminEmail">
+                    📧 Admin Email
+                </label>
+
+
+                <input
+                    type="email"
+                    id="adminEmail"
+                    name="email"
+                    placeholder="Enter admin email"
+                    autocomplete="username"
+                    inputmode="email"
+                    required
+                >
+
+
+                <label for="adminPassword">
+                    🔑 Password
+                </label>
+
+
+                <input
+                    type="password"
+                    id="adminPassword"
+                    name="password"
+                    placeholder="Enter password"
+                    autocomplete="current-password"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    class="login-btn"
+                    id="loginButton"
+                >
+                    Login
+                </button>
+
+
+            </form>
+
+
+            <p
+                id="loginError"
+                class="login-error"
+                role="alert"
+                aria-live="polite"
+            ></p>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- ADMIN DASHBOARD -->
+    <!-- ========================= -->
+
+    <section
+        id="adminPage"
+        class="page"
+    >
+
+        <div class="admin-container">
+
+
+            <!-- ========================= -->
+            <!-- ADMIN HEADER -->
+            <!-- ========================= -->
+
+            <div class="admin-header">
+
+                <div>
+
+                    <h1>
+                        Lucky Draw Admin Dashboard
+                    </h1>
+
+
+                    <p>
+                        Manage participants and conduct the lucky draw.
+                    </p>
+
+
+                    <p
+                        id="loggedInAdmin"
+                        class="logged-in-admin"
+                        aria-live="polite"
+                    ></p>
+
+                </div>
+
+
+                <button
+                    class="logout-btn"
+                    id="logoutButton"
+                    type="button"
+                >
+                    🚪 Logout
+                </button>
+
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- DASHBOARD NAVIGATION -->
+            <!-- ========================= -->
+
+            <div class="admin-menu">
+
+                <button
+                    class="menu-btn active-menu"
+                    type="button"
+                    onclick="showAdminSection('dashboardSection', this)"
+                >
+                    📊 Dashboard
+                </button>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- DASHBOARD SECTION -->
+            <!-- ========================= -->
+
+            <div
+                id="dashboardSection"
+                class="admin-section active-admin-section"
+            >
+
+
+                <!-- ========================= -->
+                <!-- DASHBOARD SUMMARY -->
+                <!-- ========================= -->
+
+                <div class="dashboard-summary">
+
+
+                    <div class="stat-card">
+
+                        <h3>
+                            Total Participants
+                        </h3>
+
+
+                        <p id="participantCount">
+                            0
+                        </p>
+
+
+                    </div>
+
+
+                    <div class="winner-card top-winner-card">
+
+                        <h2>
+                            🏆 Lucky Draw Winner
+                        </h2>
+
+
+                        <div id="winnerResult">
+
+                            <p>
+                                No winner selected yet.
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- ADMIN BUTTONS -->
+                <!-- ========================= -->
+
+                <div class="admin-buttons">
+
+
+                    <button
+                        class="view-btn"
+                        id="viewParticipantsButton"
+                        type="button"
+                    >
+                        👥 View Participants
+                    </button>
+
+
+                    <button
+                        class="draw-btn"
+                        id="drawWinnerButton"
+                        type="button"
+                    >
+                        🎲 Draw Winner
+                    </button>
+
+
+                    <button
+                        class="reset-draw-btn"
+                        id="resetDrawButton"
+                        type="button"
+                    >
+                        🔄 Reset Draw
+                    </button>
+
+
+                    <button
+                        class="download-btn"
+                        id="downloadButton"
+                        type="button"
+                    >
+                        ⬇ Download Excel
+                    </button>
+
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- SEARCH -->
+                <!-- ========================= -->
+
+                <div class="search-box">
+
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        name="participant-search"
+                        placeholder="Search by Name, Phone or Registration ID"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+
+
+                    <button
+                        class="search-btn"
+                        id="searchButton"
+                        type="button"
+                    >
+                        🔍 Search
+                    </button>
+
+
+                    <button
+                        class="clear-btn"
+                        id="clearSearchButton"
+                        type="button"
+                    >
+                        Clear
+                    </button>
+
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- PARTICIPANT TABLE -->
+                <!-- ========================= -->
+
+                <div class="table-container">
+
+
+                    <table id="participantTable">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    No.
+                                </th>
+
+
+                                <th>
+                                    Registration ID
+                                </th>
+
+
+                                <th>
+                                    Name
+                                </th>
+
+
+                                <th>
+                                    Phone
+                                </th>
+
+
+                                <th>
+                                    Area
+                                </th>
+
+
+                                <th>
+                                    City
+                                </th>
+
+
+                                <th>
+                                    Source
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="participantList">
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================= -->
+    <!-- FOOTER -->
+    <!-- ========================= -->
+
+    <footer>
+
+        Lucky Draw System • Admin Panel
+
+    </footer>
+
+
+    <!-- ========================= -->
+    <!-- EXCEL LIBRARY -->
+    <!-- ========================= -->
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    ></script>
+
+
+    <!-- ========================= -->
+    <!-- DRAW CONFIRMATION MODAL -->
+    <!-- ========================= -->
+
+    <div
+        id="drawModal"
+        class="draw-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="drawModalTitle"
+    >
+
+
+        <div class="draw-modal-content">
+
+
+            <div class="draw-modal-icon">
+                🎲
+            </div>
+
+
+            <h2 id="drawModalTitle">
+                Ready to Draw?
+            </h2>
+
+
+            <p id="drawModalMessage">
+                Are you sure you want to draw a winner?
+            </p>
+
+
+            <div class="draw-modal-buttons">
+
+
+                <button
+                    class="modal-cancel-btn"
+                    id="cancelDrawButton"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="modal-confirm-btn"
+                    id="confirmDrawButton"
+                    type="button"
+                >
+                    🎉 Draw Winner
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- RESET DRAW MODAL -->
+    <!-- ========================= -->
+
+    <div
+        id="resetModal"
+        class="draw-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="resetModalTitle"
+    >
+
+
+        <div class="draw-modal-content">
+
+
+            <div class="draw-modal-icon">
+                🔄
+            </div>
+
+
+            <h2 id="resetModalTitle">
+                Reset Lucky Draw?
+            </h2>
+
+
+            <p>
+                This will remove the current winner
+                and reset the draw.
+            </p>
+
+
+            <p>
+                All participants will become eligible again.
+            </p>
+
+
+            <div class="draw-modal-buttons">
+
+
+                <button
+                    class="modal-cancel-btn"
+                    id="cancelResetButton"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="modal-confirm-btn reset-confirm-btn"
+                    id="confirmResetButton"
+                    type="button"
+                >
+                    🔄 Reset Draw
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- SUPABASE -->
+    <!-- ========================= -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- ========================= -->
+    <!-- ADMIN JAVASCRIPT -->
+    <!-- ========================= -->
+
+    <script src="admin.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,2251 @@
+/* =========================================================
+   LUCKY DRAW SYSTEM
+   COMPLETE RESPONSIVE STYLESHEET
+   ========================================================= */
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+
+    font-family: Arial, sans-serif;
+
+    background: #f7f2eb;
+    color: #222;
+
+    overflow-x: hidden;
+}
+
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.navbar {
+    width: 100%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 18px 6%;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 2px 15px rgba(0, 0, 0, 0.07);
+}
+
+.logo {
+    font-size: 26px;
+
+    font-weight: bold;
+
+    white-space: nowrap;
+}
+
+.logo span {
+    color: #f43f5e;
+}
+
+.participant-label {
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #444;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   OLD NAVIGATION
+   ========================================================= */
+
+.nav-links {
+    display: flex;
+
+    gap: 10px;
+}
+
+.nav-btn {
+    border: none;
+
+    background: transparent;
+
+    padding: 11px 22px;
+
+    border-radius: 25px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.nav-btn.active {
+    background:
+        linear-gradient(
+            90deg,
+            #f43f5e,
+            #f97316,
+            #facc15
+        );
+
+    color: white;
+
+    box-shadow:
+        0 5px 15px rgba(244, 63, 94, 0.25);
+}
+
+
+/* =========================================================
+   PAGES
+   ========================================================= */
+
+.page {
+    display: none;
+
+    width: 100%;
+
+    min-height: calc(100vh - 120px);
+
+    padding: 30px 15px;
+
+    justify-content: center;
+
+    align-items: flex-start;
+}
+
+.active-page {
+    display: flex;
+}
+
+
+/* =========================================================
+   PARTICIPANT FORM CARD
+   ========================================================= */
+
+.form-card {
+    width: 100%;
+
+    max-width: 450px;
+
+    background: #ffffff;
+
+    padding: 28px;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.09);
+}
+
+
+/* =========================================================
+   PARTICIPANT TITLE
+   ========================================================= */
+
+.form-card h1 {
+    text-align: center;
+
+    font-size: 30px;
+
+    line-height: 1.2;
+
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    text-align: center;
+
+    color: #666;
+
+    font-size: 14px;
+
+    line-height: 1.4;
+
+    margin-bottom: 23px;
+}
+
+
+/* =========================================================
+   FORM LABELS
+   ========================================================= */
+
+#registrationForm > label {
+    display: block;
+
+    margin-top: 17px;
+
+    margin-bottom: 6px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+input,
+textarea,
+select {
+    width: 100%;
+
+    max-width: 100%;
+
+    padding: 13px;
+
+    border-radius: 13px;
+
+    border: 1px solid #ddd;
+
+    background: #ffffff;
+
+    color: #222;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #f43f5e;
+
+    box-shadow:
+        0 0 0 3px rgba(244, 63, 94, 0.10);
+}
+
+textarea {
+    min-height: 85px;
+
+    resize: vertical;
+}
+
+select {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   OCR / UPLOAD SECTION
+   ========================================================= */
+
+.ocr-section {
+    width: 100%;
+
+    margin: 12px 0 22px;
+
+    padding: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff9fb,
+            #fffaf7
+        );
+
+    border: 1px solid #f0dfe5;
+
+    border-radius: 16px;
+}
+
+
+/* =========================================================
+   OCR HEADER
+   ========================================================= */
+
+.ocr-heading {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 12px;
+}
+
+.ocr-icon {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #fff0f5;
+
+    border-radius: 50%;
+
+    font-size: 20px;
+}
+
+.ocr-heading-text {
+    min-width: 0;
+}
+
+.ocr-heading-text h2 {
+    margin: 0 0 4px;
+
+    font-size: 18px;
+
+    line-height: 1.2;
+}
+
+.ocr-heading-text p {
+    margin: 0;
+
+    color: #666;
+
+    font-size: 12px;
+
+    line-height: 1.35;
+}
+
+
+/* =========================================================
+   COMPACT PHOTO UPLOAD
+   ========================================================= */
+
+.compact-upload {
+    width: 100%;
+
+    min-height: 58px;
+
+    padding: 8px 11px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    background: #ffffff;
+
+    border: 1px solid #dedede;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.compact-upload:hover {
+    border-color: #ff4776;
+
+    background: #fffafb;
+}
+
+
+/* =========================================================
+   UPLOAD ICON
+   ========================================================= */
+
+.compact-upload-icon {
+    width: 30px;
+
+    min-width: 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   UPLOAD TEXT
+   ========================================================= */
+
+.compact-upload-main {
+    flex: 1;
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    flex-wrap: wrap;
+}
+
+.compact-upload-main strong {
+    font-size: 14px;
+
+    color: #222;
+}
+
+.compact-upload-main span {
+    font-size: 12px;
+
+    color: #777;
+}
+
+
+/* =========================================================
+   SELECTED FILE NAME
+   ========================================================= */
+
+.selected-file-name {
+    max-width: 100px;
+
+    font-size: 11px;
+
+    color: #888;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   OCR STATUS
+   ========================================================= */
+
+.ocr-status {
+    display: none;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 8px;
+
+    padding: 8px 10px;
+
+    border-radius: 10px;
+
+    background: #f3f7ff;
+
+    border: 1px solid #dce7ff;
+}
+
+.status-icon {
+    width: 28px;
+    height: 28px;
+
+    min-width: 28px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    font-size: 14px;
+}
+
+.ocr-status-content {
+    min-width: 0;
+}
+
+.ocr-status-content strong {
+    display: block;
+
+    margin-bottom: 2px;
+
+    font-size: 12px;
+}
+
+.ocr-status-content p {
+    margin: 0;
+
+    color: #666;
+
+    font-size: 11px;
+
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   OCR SUCCESS
+   ========================================================= */
+
+.ocr-status.ocr-success {
+    background: #f1fff5;
+
+    border-color: #bce8ca;
+}
+
+.ocr-status.ocr-success .status-icon {
+    color: #16803c;
+}
+
+
+/* =========================================================
+   OCR WARNING
+   ========================================================= */
+
+.ocr-status.ocr-warning {
+    background: #fff9ed;
+
+    border-color: #efd9a6;
+}
+
+.ocr-status.ocr-warning .status-icon {
+    color: #a56b00;
+}
+
+
+/* =========================================================
+   REGISTER BUTTON
+   ========================================================= */
+
+.register-btn {
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 25px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    color: white;
+
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f43f5e,
+            #ec4899,
+            #f59e0b
+        );
+
+    transition: 0.25s ease;
+}
+
+.register-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(244, 63, 94, 0.25);
+}
+
+
+/* =========================================================
+   PRIVACY
+   ========================================================= */
+
+.privacy-text {
+    text-align: center;
+
+    margin-top: 14px;
+
+    color: #666;
+
+    font-size: 12px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   SUCCESS PAGE
+   ========================================================= */
+
+.success-card {
+    width: 100%;
+
+    max-width: 450px;
+
+    background: #ffffff;
+
+    padding: 38px 30px;
+
+    border-radius: 22px;
+
+    text-align: center;
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.09);
+}
+
+.checkmark {
+    width: 75px;
+    height: 75px;
+
+    margin: 0 auto 20px;
+
+    background: #22c55e;
+
+    color: white;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    font-size: 42px;
+}
+
+.success-card h1 {
+    margin-bottom: 12px;
+
+    font-size: 28px;
+}
+
+.success-card p {
+    color: #666;
+
+    margin-bottom: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   REGISTRATION ID
+   ========================================================= */
+
+.registration-id-box {
+    margin: 22px 0;
+
+    padding: 18px;
+
+    background: #f8fafc;
+
+    border: 2px dashed #f43f5e;
+
+    border-radius: 14px;
+
+    text-align: center;
+}
+
+.registration-id-label {
+    margin-bottom: 7px !important;
+
+    color: #555 !important;
+
+    font-size: 14px;
+}
+
+#successRegistrationId {
+    margin: 5px 0 7px;
+
+    color: #f43f5e;
+
+    font-size: 30px;
+
+    letter-spacing: 1px;
+}
+
+.registration-id-note {
+    margin: 0 !important;
+
+    color: #777 !important;
+
+    font-size: 12px;
+}
+
+.back-btn {
+    margin-top: 18px;
+
+    border: none;
+
+    padding: 13px 25px;
+
+    border-radius: 25px;
+
+    background: #f43f5e;
+
+    color: white;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.back-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(244, 63, 94, 0.25);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+    width: 100%;
+
+    text-align: center;
+
+    padding: 18px;
+
+    color: #666;
+
+    background: #ffffff;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   ADMIN CONTAINER
+   ========================================================= */
+
+.admin-container {
+    width: 100%;
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+}
+
+.admin-container h1 {
+    margin-bottom: 30px;
+
+    font-size: 32px;
+}
+
+
+/* =========================================================
+   ADMIN HEADER
+   ========================================================= */
+
+.admin-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    margin-bottom: 28px;
+}
+
+.admin-header h1 {
+    margin-bottom: 6px;
+}
+
+.admin-header p {
+    color: #666;
+
+    margin: 0;
+}
+
+.logout-btn {
+    border: none;
+
+    padding: 10px 17px;
+
+    border-radius: 9px;
+
+    background: #333;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
+
+.logout-btn:hover {
+    opacity: 0.85;
+}
+
+
+/* =========================================================
+   ADMIN MENU
+   ========================================================= */
+
+.admin-menu {
+    display: flex;
+
+    gap: 10px;
+
+    margin-bottom: 28px;
+
+    border-bottom:
+        1px solid #e5e7eb;
+
+    padding-bottom: 13px;
+}
+
+.menu-btn {
+    border: none;
+
+    background: #f3f4f6;
+
+    padding: 11px 19px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    color: #555;
+}
+
+.menu-btn:hover {
+    background: #e5e7eb;
+}
+
+.menu-btn.active-menu {
+    background: #f43f5e;
+
+    color: white;
+}
+
+
+/* =========================================================
+   ADMIN SECTIONS
+   ========================================================= */
+
+.admin-section {
+    display: none;
+}
+
+.active-admin-section {
+    display: block;
+}
+
+
+/* =========================================================
+   DASHBOARD SUMMARY
+   ========================================================= */
+
+.dashboard-summary {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: 1fr 2fr;
+
+    gap: 25px;
+
+    margin-bottom: 30px;
+
+    align-items: stretch;
+}
+
+.stat-card {
+    width: 100%;
+
+    background: #ffffff;
+
+    padding: 28px;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
+.dashboard-summary .stat-card {
+    min-height: 180px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+.stat-card h3 {
+    color: #666;
+
+    font-size: 18px;
+}
+
+.stat-card p {
+    font-size: 50px;
+
+    font-weight: bold;
+
+    margin-top: 10px;
+
+    color: #f43f5e;
+}
+
+
+/* =========================================================
+   WINNER CARD
+   ========================================================= */
+
+.winner-card {
+    width: 100%;
+
+    background: #ffffff;
+
+    padding: 32px;
+
+    border-radius: 23px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
+.top-winner-card {
+    min-height: 180px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+
+.winner-card h2 {
+    margin-bottom: 14px;
+}
+
+#winnerResult {
+    margin-top: 8px;
+}
+
+#winnerResult h3 {
+    color: #f43f5e;
+
+    font-size: 23px;
+
+    margin-bottom: 13px;
+}
+
+#winnerResult p {
+    margin-bottom: 7px;
+
+    font-size: 15px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   ADMIN BUTTONS
+   ========================================================= */
+
+.admin-buttons {
+    width: 100%;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 13px;
+
+    margin-bottom: 23px;
+}
+
+.admin-buttons button {
+    border: none;
+
+    padding: 14px 23px;
+
+    border-radius: 30px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.view-btn {
+    background: #2563eb;
+
+    color: white;
+
+    box-shadow:
+        0 5px 15px rgba(37, 99, 235, 0.20);
+}
+
+.draw-btn {
+    background:
+        linear-gradient(
+            90deg,
+            #f43f5e,
+            #f59e0b
+        );
+
+    color: white;
+
+    box-shadow:
+        0 5px 15px rgba(244, 63, 94, 0.20);
+}
+
+.reset-draw-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #6c757d,
+            #343a40
+        );
+
+    color: white;
+}
+
+.download-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #22c55e
+        );
+
+    color: white;
+}
+
+.view-btn:hover,
+.draw-btn:hover,
+.download-btn:hover,
+.reset-draw-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.search-box {
+    width: 100%;
+
+    display: flex;
+
+    gap: 12px;
+
+    margin-bottom: 23px;
+
+    align-items: center;
+}
+
+.search-box input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 15px 19px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 30px;
+
+    font-size: 16px;
+
+    outline: none;
+
+    background: white;
+}
+
+.search-btn,
+.clear-btn {
+    flex-shrink: 0;
+
+    border: none;
+
+    padding: 14px 24px;
+
+    border-radius: 30px;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.search-btn {
+    background: #2563eb;
+}
+
+.clear-btn {
+    background: #64748b;
+}
+
+.search-btn:hover,
+.clear-btn:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   PARTICIPANT TABLE
+   ========================================================= */
+
+.table-container {
+    width: 100%;
+
+    max-width: 100%;
+
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
+
+    background: white;
+
+    border-radius: 17px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.07);
+
+    margin-top: 18px;
+
+    margin-bottom: 30px;
+}
+
+#participantTable {
+    width: 100%;
+
+    min-width: 700px;
+
+    border-collapse: collapse;
+
+    font-size: 15px;
+}
+
+#participantTable thead {
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    color: white;
+}
+
+#participantTable th {
+    padding: 17px;
+
+    text-align: left;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+#participantTable td {
+    padding: 16px 17px;
+
+    color: #374151;
+
+    border-bottom:
+        1px solid #e5e7eb;
+
+    white-space: nowrap;
+}
+
+#participantTable tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+#participantTable tbody tr:hover {
+    background: #eff6ff;
+}
+
+#participantTable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.no-data {
+    text-align: center;
+
+    padding: 28px !important;
+
+    color: #6b7280;
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   LOGIN CARD
+   ========================================================= */
+
+.login-card {
+    width: min(420px, 90%);
+
+    margin: 70px auto;
+
+    padding: 38px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.09);
+
+    text-align: center;
+}
+
+.login-icon {
+    font-size: 48px;
+
+    margin-bottom: 10px;
+}
+
+.login-card h1 {
+    margin-bottom: 10px;
+}
+
+.login-subtitle {
+    color: #666;
+
+    margin-bottom: 28px;
+}
+
+.login-card form {
+    text-align: left;
+}
+
+.login-card label {
+    display: block;
+
+    margin-top: 15px;
+
+    margin-bottom: 7px;
+
+    font-weight: 600;
+}
+
+.login-card input {
+    width: 100%;
+
+    padding: 13px 15px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+}
+
+.login-btn {
+    width: 100%;
+
+    margin-top: 23px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #f43f5e;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    opacity: 0.9;
+}
+
+.login-error {
+    color: #dc2626;
+
+    margin-top: 14px;
+
+    min-height: 20px;
+}
+
+
+/* =========================================================
+   MANAGEMENT
+   ========================================================= */
+
+.management-header {
+    margin-bottom: 23px;
+}
+
+.management-header h2 {
+    margin-bottom: 6px;
+}
+
+.management-header p {
+    color: #666;
+}
+
+.add-admin-card {
+    background: white;
+
+    padding: 28px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.07);
+
+    margin-bottom: 28px;
+}
+
+.add-admin-card h3 {
+    margin-bottom: 23px;
+}
+
+.admin-form-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 18px;
+}
+
+.admin-form-grid label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-weight: 600;
+}
+
+.admin-form-grid input,
+.admin-form-grid select {
+    width: 100%;
+
+    padding: 13px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+}
+
+.add-admin-btn {
+    margin-top: 23px;
+
+    padding: 13px 22px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #f43f5e;
+
+    color: white;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.add-admin-btn:hover {
+    opacity: 0.9;
+}
+
+
+/* =========================================================
+   ADMIN TABLE
+   ========================================================= */
+
+.admin-table-container {
+    background: white;
+
+    border-radius: 18px;
+
+    overflow-x: auto;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.07);
+}
+
+.admin-table-container table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 650px;
+}
+
+.admin-table-container th {
+    background: #f43f5e;
+
+    color: white;
+
+    padding: 15px;
+
+    text-align: left;
+}
+
+.admin-table-container td {
+    padding: 14px 15px;
+
+    border-bottom:
+        1px solid #eee;
+}
+
+.admin-table-container tr:last-child td {
+    border-bottom: none;
+}
+
+.delete-admin-btn {
+    border: none;
+
+    background: #dc2626;
+
+    color: white;
+
+    padding: 8px 13px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+}
+
+.delete-admin-btn:hover {
+    background: #b91c1c;
+}
+
+.protected-admin {
+    color: #16a34a;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   ADMIN MESSAGES
+   ========================================================= */
+
+.admin-message {
+    margin-top: 14px;
+
+    min-height: 20px;
+
+    font-weight: 600;
+}
+
+.success-message {
+    color: #16a34a;
+}
+
+.error-message {
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   DRAW AGAIN
+   ========================================================= */
+
+.draw-again-btn {
+    margin-top: 14px;
+
+    padding: 10px 18px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #f59e0b;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.draw-again-btn:hover {
+    background: #d97706;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   DRAW MODAL
+   ========================================================= */
+
+.draw-modal {
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(20, 20, 40, 0.65);
+
+    backdrop-filter: blur(5px);
+
+    z-index: 9999;
+
+    padding: 20px;
+}
+
+.draw-modal.show {
+    display: flex;
+}
+
+.draw-modal-content {
+    width: 100%;
+
+    max-width: 460px;
+
+    background: white;
+
+    border-radius: 22px;
+
+    padding: 38px 32px;
+
+    text-align: center;
+
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.25);
+
+    border-top: 6px solid #ff3366;
+
+    animation: modalPop 0.25s ease;
+}
+
+@keyframes modalPop {
+
+    from {
+        opacity: 0;
+
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: scale(1);
+    }
+}
+
+.draw-modal-icon {
+    width: 72px;
+    height: 72px;
+
+    margin: 0 auto 17px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff3366,
+            #ff9900
+        );
+
+    font-size: 36px;
+}
+
+.draw-modal-content h2 {
+    margin: 0 0 11px;
+
+    font-size: 27px;
+
+    color: #111827;
+}
+
+.draw-modal-content p {
+    margin: 0 auto 26px;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    color: #4b5563;
+
+    max-width: 360px;
+}
+
+.draw-modal-buttons {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 13px;
+
+    flex-wrap: wrap;
+}
+
+.modal-cancel-btn {
+    padding: 12px 23px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #64748b;
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.modal-cancel-btn:hover {
+    background: #475569;
+
+    transform: translateY(-1px);
+}
+
+.modal-confirm-btn {
+    padding: 12px 23px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff3366,
+            #ff9900
+        );
+
+    color: white;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.modal-confirm-btn:hover {
+    transform: translateY(-2px);
+}
+
+.reset-confirm-btn {
+    background:
+        linear-gradient(
+            135deg,
+            #ff416c,
+            #ff4b2b
+        );
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .navbar {
+        padding: 17px 5%;
+    }
+
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+
+        gap: 18px;
+    }
+
+    .search-box {
+        flex-wrap: wrap;
+    }
+
+    .search-box input {
+        width: 100%;
+
+        flex-basis: 100%;
+    }
+
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .navbar {
+        padding: 14px 16px;
+
+        flex-direction: column;
+
+        gap: 7px;
+
+        text-align: center;
+    }
+
+    .logo {
+        font-size: 23px;
+    }
+
+    .participant-label {
+        font-size: 14px;
+    }
+
+
+    /* -----------------------------------------
+       PARTICIPANT PAGE
+       ----------------------------------------- */
+
+    .page {
+        min-height: auto;
+
+        padding: 20px 12px;
+
+        align-items: flex-start;
+    }
+
+    .form-card {
+        width: 100%;
+
+        max-width: 450px;
+
+        padding: 22px 16px;
+
+        border-radius: 19px;
+
+        margin: 0 auto;
+    }
+
+    .form-card h1 {
+        font-size: 27px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+
+        margin-bottom: 20px;
+    }
+
+
+    /* -----------------------------------------
+       OCR
+       ----------------------------------------- */
+
+    .ocr-section {
+        margin-top: 12px;
+
+        margin-bottom: 21px;
+
+        padding: 13px;
+
+        border-radius: 15px;
+    }
+
+    .ocr-heading {
+        gap: 9px;
+
+        margin-bottom: 10px;
+    }
+
+    .ocr-icon {
+        width: 38px;
+        height: 38px;
+
+        min-width: 38px;
+
+        font-size: 19px;
+    }
+
+    .ocr-heading-text h2 {
+        font-size: 17px;
+    }
+
+    .ocr-heading-text p {
+        font-size: 12px;
+
+        line-height: 1.3;
+    }
+
+    .compact-upload {
+        min-height: 56px;
+
+        padding: 8px 9px;
+
+        gap: 8px;
+    }
+
+    .compact-upload-icon {
+        width: 28px;
+
+        min-width: 28px;
+
+        font-size: 19px;
+    }
+
+    .compact-upload-main {
+        gap: 5px;
+    }
+
+    .compact-upload-main strong {
+        font-size: 13px;
+    }
+
+    .compact-upload-main span {
+        font-size: 11px;
+    }
+
+    .selected-file-name {
+        max-width: 85px;
+
+        font-size: 10px;
+    }
+
+    .ocr-status {
+        padding: 8px 9px;
+    }
+
+    .status-icon {
+        width: 27px;
+        height: 27px;
+
+        min-width: 27px;
+
+        font-size: 14px;
+    }
+
+
+    /* -----------------------------------------
+       FORM
+       ----------------------------------------- */
+
+    #registrationForm > label {
+        margin-top: 16px;
+
+        margin-bottom: 6px;
+
+        font-size: 14px;
+    }
+
+    input,
+    textarea,
+    select {
+        padding: 12px;
+
+        font-size: 15px;
+    }
+
+    textarea {
+        min-height: 85px;
+    }
+
+    .register-btn {
+        margin-top: 18px;
+
+        padding: 13px;
+
+        font-size: 16px;
+    }
+
+
+    /* -----------------------------------------
+       SUCCESS
+       ----------------------------------------- */
+
+    .success-card {
+        width: 100%;
+
+        padding: 30px 20px;
+
+        border-radius: 20px;
+    }
+
+    .success-card h1 {
+        font-size: 26px;
+    }
+
+    .checkmark {
+        width: 72px;
+        height: 72px;
+
+        font-size: 39px;
+    }
+
+    .back-btn {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------
+       ADMIN
+       ----------------------------------------- */
+
+    .admin-container {
+        width: 100%;
+
+        max-width: 100%;
+    }
+
+    .admin-container h1 {
+        font-size: 26px;
+
+        text-align: center;
+
+        margin-bottom: 23px;
+    }
+
+    .dashboard-summary {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 16px;
+    }
+
+    .stat-card {
+        width: 100%;
+
+        padding: 23px;
+
+        min-height: 145px;
+    }
+
+    .stat-card p {
+        font-size: 43px;
+    }
+
+    .top-winner-card {
+        width: 100%;
+
+        min-height: auto;
+
+        padding: 23px;
+    }
+
+    .top-winner-card h2 {
+        font-size: 20px;
+    }
+
+    #winnerResult h3 {
+        font-size: 20px;
+    }
+
+    #winnerResult p {
+        font-size: 14px;
+
+        overflow-wrap: anywhere;
+    }
+
+    .admin-buttons {
+        flex-direction: column;
+
+        gap: 10px;
+    }
+
+    .admin-buttons button {
+        width: 100%;
+
+        min-height: 50px;
+
+        padding: 13px 18px;
+    }
+
+    .search-box {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 9px;
+    }
+
+    .search-box input,
+    .search-btn,
+    .clear-btn {
+        width: 100%;
+
+        min-height: 49px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+
+        border-radius: 14px;
+    }
+
+    #participantTable {
+        min-width: 700px;
+
+        font-size: 13px;
+    }
+
+    #participantTable th,
+    #participantTable td {
+        padding: 12px 11px;
+
+        font-size: 13px;
+    }
+
+
+    /* -----------------------------------------
+       LOGIN
+       ----------------------------------------- */
+
+    .login-card {
+        width: calc(100% - 24px);
+
+        margin: 35px auto;
+
+        padding: 27px 20px;
+    }
+
+
+    /* -----------------------------------------
+       ADMIN HEADER
+       ----------------------------------------- */
+
+    .admin-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 13px;
+    }
+
+    .logout-btn {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------
+       ADMIN MENU
+       ----------------------------------------- */
+
+    .admin-menu {
+        flex-direction: column;
+
+        gap: 8px;
+    }
+
+    .menu-btn {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------
+       ADMIN FORM
+       ----------------------------------------- */
+
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+    }
+
+    .add-admin-card {
+        padding: 21px;
+    }
+
+    .add-admin-btn {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------
+       MODAL
+       ----------------------------------------- */
+
+    .draw-modal-content {
+        padding: 30px 20px;
+
+        border-radius: 19px;
+    }
+
+    .draw-modal-content h2 {
+        font-size: 23px;
+    }
+
+    .draw-modal-content p {
+        font-size: 14px;
+    }
+
+    .draw-modal-buttons {
+        flex-direction: column;
+    }
+
+    .modal-cancel-btn,
+    .modal-confirm-btn {
+        width: 100%;
+    }
+
+
+    /* -----------------------------------------
+       FOOTER
+       ----------------------------------------- */
+
+    footer {
+        font-size: 12px;
+
+        padding: 15px 10px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .navbar {
+        padding: 13px 10px;
+    }
+
+    .logo {
+        font-size: 21px;
+    }
+
+    .participant-label {
+        font-size: 13px;
+    }
+
+    .page {
+        padding: 18px 9px;
+    }
+
+    .form-card {
+        padding: 20px 14px;
+    }
+
+    .form-card h1 {
+        font-size: 25px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+    }
+
+    .ocr-section {
+        padding: 11px;
+    }
+
+    .ocr-heading-text h2 {
+        font-size: 16px;
+    }
+
+    .ocr-heading-text p {
+        font-size: 11px;
+    }
+
+    .compact-upload {
+        min-height: 53px;
+
+        padding: 7px 8px;
+    }
+
+    .compact-upload-icon {
+        width: 26px;
+
+        min-width: 26px;
+
+        font-size: 18px;
+    }
+
+    .compact-upload-main strong {
+        font-size: 12px;
+    }
+
+    .compact-upload-main span {
+        font-size: 10px;
+    }
+
+    .selected-file-name {
+        max-width: 70px;
+
+        font-size: 9px;
+    }
+
+    .admin-container h1 {
+        font-size: 23px;
+    }
+
+    .stat-card,
+    .top-winner-card {
+        padding: 19px;
+    }
+
+    .stat-card p {
+        font-size: 38px;
+    }
+
+    .login-card {
+        width: calc(100% - 18px);
+
+        padding: 21px 15px;
+    }
+}
