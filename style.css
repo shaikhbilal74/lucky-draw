@@ -355,6 +355,19 @@ select {
 
     cursor: pointer;
 
+    /* Mobile/touch support */
+    position: relative;
+
+    z-index: 10;
+
+    touch-action: manipulation;
+
+    -webkit-tap-highlight-color: transparent;
+
+    user-select: none;
+
+    -webkit-user-select: none;
+
     transition:
         border-color 0.2s ease,
         background 0.2s ease;
@@ -1839,6 +1852,18 @@ footer {
         padding: 8px 9px;
 
         gap: 8px;
+
+        position: relative;
+
+        z-index: 10;
+
+        touch-action: manipulation;
+
+        -webkit-tap-highlight-color: transparent;
+
+        user-select: none;
+
+        -webkit-user-select: none;
     }
 
     .compact-upload-icon {
@@ -2206,6 +2231,18 @@ footer {
         min-height: 53px;
 
         padding: 7px 8px;
+
+        position: relative;
+
+        z-index: 10;
+
+        touch-action: manipulation;
+
+        -webkit-tap-highlight-color: transparent;
+
+        user-select: none;
+
+        -webkit-user-select: none;
     }
 
     .compact-upload-icon {
