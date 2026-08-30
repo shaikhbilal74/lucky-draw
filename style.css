@@ -355,8 +355,9 @@ select {
 
     cursor: pointer;
 
-    /* Mobile/touch support */
     position: relative;
+
+    overflow: hidden;
 
     z-index: 10;
 
@@ -377,6 +378,30 @@ select {
     border-color: #ff4776;
 
     background: #fffafb;
+}
+
+
+/* =========================================================
+   REAL FILE INPUT
+   ========================================================= */
+
+.compact-upload input[type="file"] {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+
+    margin: 0;
+
+    opacity: 0;
+
+    cursor: pointer;
+
+    z-index: 20;
 }
 
 
@@ -1866,6 +1891,23 @@ footer {
         -webkit-user-select: none;
     }
 
+    .compact-upload input[type="file"] {
+        position: absolute;
+
+        inset: 0;
+
+        width: 100%;
+        height: 100%;
+
+        padding: 0;
+
+        margin: 0;
+
+        opacity: 0;
+
+        z-index: 20;
+    }
+
     .compact-upload-icon {
         width: 28px;
 
@@ -2243,6 +2285,23 @@ footer {
         user-select: none;
 
         -webkit-user-select: none;
+    }
+
+    .compact-upload input[type="file"] {
+        position: absolute;
+
+        inset: 0;
+
+        width: 100%;
+        height: 100%;
+
+        padding: 0;
+
+        margin: 0;
+
+        opacity: 0;
+
+        z-index: 20;
     }
 
     .compact-upload-icon {
