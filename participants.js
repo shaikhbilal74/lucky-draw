@@ -54,7 +54,9 @@ const ocrStatusText =
 // ============================================================
 
 function showError(message) {
+
     alert(message);
+
 }
 
 
@@ -68,26 +70,48 @@ function showOCRStatus(
     message,
     statusClass = ""
 ) {
+
     if (!ocrStatus) return;
 
+
     ocrStatus.style.display = "flex";
-    ocrStatus.className = "ocr-status";
+
+    ocrStatus.className =
+        "ocr-status";
+
 
     if (statusClass) {
-        ocrStatus.classList.add(statusClass);
+
+        ocrStatus.classList.add(
+            statusClass
+        );
+
     }
+
 
     if (ocrStatusIcon) {
-        ocrStatusIcon.innerText = icon;
+
+        ocrStatusIcon.innerText =
+            icon;
+
     }
+
 
     if (ocrStatusTitle) {
-        ocrStatusTitle.innerText = title;
+
+        ocrStatusTitle.innerText =
+            title;
+
     }
 
+
     if (ocrStatusText) {
-        ocrStatusText.innerText = message;
+
+        ocrStatusText.innerText =
+            message;
+
     }
+
 }
 
 
@@ -96,24 +120,39 @@ function showOCRStatus(
 // ============================================================
 
 function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
 
-        const reader = new FileReader();
+    return new Promise(
+        (resolve, reject) => {
 
-        reader.onload = () => {
-            resolve(reader.result);
-        };
+            const reader =
+                new FileReader();
 
-        reader.onerror = () => {
-            reject(
-                new Error(
-                    "Unable to read image file."
-                )
-            );
-        };
 
-        reader.readAsDataURL(file);
-    });
+            reader.onload = () => {
+
+                resolve(
+                    reader.result
+                );
+
+            };
+
+
+            reader.onerror = () => {
+
+                reject(
+                    new Error(
+                        "Unable to read image file."
+                    )
+                );
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
 }
 
 
@@ -134,15 +173,20 @@ function fillForm(data) {
         data.name &&
         typeof data.name === "string"
     ) {
+
         const nameElement =
             document.getElementById("name");
 
+
         if (nameElement) {
+
             nameElement.value =
                 data.name.trim();
 
             fieldsFound++;
+
         }
+
     }
 
 
@@ -154,8 +198,10 @@ function fillForm(data) {
         data.phone &&
         typeof data.phone === "string"
     ) {
+
         const phoneElement =
             document.getElementById("phone");
+
 
         if (phoneElement) {
 
@@ -165,11 +211,14 @@ function fillForm(data) {
                     ""
                 );
 
+
             phoneElement.value =
                 cleanPhone;
 
             fieldsFound++;
+
         }
+
     }
 
 
@@ -181,8 +230,10 @@ function fillForm(data) {
         data.area &&
         typeof data.area === "string"
     ) {
+
         const areaElement =
             document.getElementById("area");
+
 
         if (areaElement) {
 
@@ -190,7 +241,9 @@ function fillForm(data) {
                 data.area.trim();
 
             fieldsFound++;
+
         }
+
     }
 
 
@@ -206,10 +259,14 @@ function fillForm(data) {
         const citySelect =
             document.getElementById("city");
 
+
         if (citySelect) {
 
             const city =
-                data.city.trim().toLowerCase();
+                data.city
+                    .trim()
+                    .toLowerCase();
+
 
             const matchingOption =
                 Array.from(
@@ -221,18 +278,23 @@ function fillForm(data) {
                             .toLowerCase() === city
                 );
 
+
             if (matchingOption) {
 
                 citySelect.value =
                     matchingOption.value;
 
                 fieldsFound++;
+
             }
+
         }
+
     }
 
 
     return fieldsFound;
+
 }
 
 
@@ -261,23 +323,35 @@ async function readRegistrationForm(file) {
             "image/webp"
         ];
 
-        if (!allowedTypes.includes(file.type)) {
+
+        if (
+            !allowedTypes.includes(
+                file.type
+            )
+        ) {
 
             throw new Error(
                 "Please upload a JPG, PNG, or WebP image."
             );
+
         }
 
 
         // 10 MB maximum
+
         const MAX_FILE_SIZE =
             10 * 1024 * 1024;
 
-        if (file.size > MAX_FILE_SIZE) {
+
+        if (
+            file.size >
+            MAX_FILE_SIZE
+        ) {
 
             throw new Error(
                 "Image is too large. Maximum size is 10 MB."
             );
+
         }
 
 
@@ -302,9 +376,11 @@ async function readRegistrationForm(file) {
             await fetch(
                 OCR_FUNCTION_URL,
                 {
+
                     method: "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json",
 
@@ -313,15 +389,19 @@ async function readRegistrationForm(file) {
 
                         "Authorization":
                             `Bearer ${SUPABASE_KEY}`
+
                     },
 
                     body: JSON.stringify({
+
                         image:
                             imageBase64,
 
                         mimeType:
                             file.type
+
                     })
+
                 }
             );
 
@@ -355,6 +435,7 @@ async function readRegistrationForm(file) {
             throw new Error(
                 "The OCR service returned an invalid response."
             );
+
         }
 
 
@@ -369,10 +450,12 @@ async function readRegistrationForm(file) {
                 result
             );
 
+
             throw new Error(
                 result.message ||
                 "Unable to read the registration photo."
             );
+
         }
 
 
@@ -391,6 +474,7 @@ async function readRegistrationForm(file) {
             );
 
             return;
+
         }
 
 
@@ -420,7 +504,9 @@ async function readRegistrationForm(file) {
         // SUCCESS MESSAGE
         // --------------------------------------------
 
-        if (fieldsFound >= 2) {
+        if (
+            fieldsFound >= 2
+        ) {
 
             showOCRStatus(
                 "✓",
@@ -437,6 +523,7 @@ async function readRegistrationForm(file) {
                 "We've filled in what we could. Please check the form and complete any missing information.",
                 "ocr-warning"
             );
+
         }
 
 
@@ -455,7 +542,9 @@ async function readRegistrationForm(file) {
             "Please use a clear photo and enter the information manually.",
             "ocr-warning"
         );
+
     }
+
 }
 
 
@@ -479,15 +568,19 @@ if (registrationImage) {
 
                     selectedFileName.innerText =
                         "No file selected";
+
                 }
+
 
                 if (ocrStatus) {
 
                     ocrStatus.style.display =
                         "none";
+
                 }
 
                 return;
+
             }
 
 
@@ -512,9 +605,13 @@ if (registrationImage) {
                     "Please upload a JPG, PNG, or WebP image."
                 );
 
-                this.value = "";
+
+                this.value =
+                    "";
+
 
                 return;
+
             }
 
 
@@ -527,16 +624,21 @@ if (registrationImage) {
 
 
             if (
-                file.size > MAX_FILE_SIZE
+                file.size >
+                MAX_FILE_SIZE
             ) {
 
                 showError(
                     "Image is too large. Maximum size is 10 MB."
                 );
 
-                this.value = "";
+
+                this.value =
+                    "";
+
 
                 return;
+
             }
 
 
@@ -548,6 +650,7 @@ if (registrationImage) {
 
                 selectedFileName.innerText =
                     file.name;
+
             }
 
 
@@ -558,8 +661,10 @@ if (registrationImage) {
             await readRegistrationForm(
                 file
             );
+
         }
     );
+
 }
 
 
@@ -597,7 +702,9 @@ async function generateRegistrationId() {
             error
         );
 
+
         throw error;
+
     }
 
 
@@ -614,6 +721,7 @@ async function generateRegistrationId() {
             "0"
         )
     );
+
 }
 
 
@@ -645,17 +753,23 @@ if (registrationForm) {
                 if (
                     submitButton.disabled
                 ) {
+
                     return;
+
                 }
+
 
                 submitButton.disabled =
                     true;
 
+
                 submitButton.dataset.originalText =
                     submitButton.innerText;
 
+
                 submitButton.innerText =
                     "Registering...";
+
             }
 
 
@@ -724,6 +838,7 @@ if (registrationForm) {
                     throw new Error(
                         "Name can contain letters and spaces only."
                     );
+
                 }
 
 
@@ -751,6 +866,7 @@ if (registrationForm) {
                     throw new Error(
                         "Please enter a valid 10-digit Indian mobile number."
                     );
+
                 }
 
 
@@ -765,6 +881,7 @@ if (registrationForm) {
                     throw new Error(
                         "Please enter a valid area."
                     );
+
                 }
 
 
@@ -772,13 +889,12 @@ if (registrationForm) {
                 // CITY VALIDATION
                 // ------------------------------------
 
-                if (
-                    !city
-                ) {
+                if (!city) {
 
                     throw new Error(
                         "Please select a city."
                     );
+
                 }
 
 
@@ -807,9 +923,11 @@ if (registrationForm) {
                         duplicateError
                     );
 
+
                     throw new Error(
                         "Unable to check registration. Please try again."
                     );
+
                 }
 
 
@@ -821,6 +939,7 @@ if (registrationForm) {
                     throw new Error(
                         "This phone number is already registered."
                     );
+
                 }
 
 
@@ -858,6 +977,7 @@ if (registrationForm) {
 
                     photo_url:
                         null
+
                 };
 
 
@@ -898,6 +1018,7 @@ if (registrationForm) {
                         throw new Error(
                             "This registration already exists."
                         );
+
                     }
 
 
@@ -908,12 +1029,14 @@ if (registrationForm) {
                         throw new Error(
                             "Registration is temporarily unavailable. Please try again."
                         );
+
                     }
 
 
                     throw new Error(
                         "Registration failed. Please try again."
                     );
+
                 }
 
 
@@ -933,6 +1056,7 @@ if (registrationForm) {
 
                     successIdElement.innerText =
                         registrationId;
+
                 }
 
 
@@ -947,6 +1071,7 @@ if (registrationForm) {
 
                     selectedFileName.innerText =
                         "No file selected";
+
                 }
 
 
@@ -957,6 +1082,7 @@ if (registrationForm) {
 
                     ocrStatus.className =
                         "ocr-status";
+
                 }
 
 
@@ -969,6 +1095,7 @@ if (registrationForm) {
                         "registerPage"
                     );
 
+
                 const successPage =
                     document.getElementById(
                         "successPage"
@@ -980,6 +1107,7 @@ if (registrationForm) {
                     registerPage.classList.remove(
                         "active-page"
                     );
+
                 }
 
 
@@ -988,6 +1116,7 @@ if (registrationForm) {
                     successPage.classList.add(
                         "active-page"
                     );
+
                 }
 
 
@@ -1016,13 +1145,18 @@ if (registrationForm) {
                     submitButton.disabled =
                         false;
 
+
                     submitButton.innerText =
                         submitButton.dataset.originalText ||
                         "Register Now";
+
                 }
+
             }
+
         }
     );
+
 }
 
 
@@ -1037,6 +1171,7 @@ function registerAnother() {
             "successPage"
         );
 
+
     const registerPage =
         document.getElementById(
             "registerPage"
@@ -1048,6 +1183,7 @@ function registerAnother() {
         successPage.classList.remove(
             "active-page"
         );
+
     }
 
 
@@ -1056,50 +1192,7 @@ function registerAnother() {
         registerPage.classList.add(
             "active-page"
         );
+
     }
-}
-
-
-
-
-// ============================================================
-// MOBILE PHOTO UPLOAD BUTTON
-// ============================================================
-
-const photoUploadButton =
-    document.getElementById("photoUploadButton");
-
-const photoInput =
-    document.getElementById("registrationImage");
-
-if (photoUploadButton && photoInput) {
-
-    photoUploadButton.addEventListener(
-        "click",
-        function () {
-
-            photoInput.click();
-
-        }
-    );
-
-
-    photoUploadButton.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (
-                event.key === "Enter" ||
-                event.key === " "
-            ) {
-
-                event.preventDefault();
-
-                photoInput.click();
-
-            }
-
-        }
-    );
 
 }
