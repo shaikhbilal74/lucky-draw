@@ -129,10 +129,7 @@
                     <!-- PHOTO UPLOAD -->
                     <!-- ================================= -->
 
-                    <label
-                        class="compact-upload"
-                        for="registrationImage"
-                    >
+                    <div class="compact-upload">
 
                         <div class="compact-upload-icon">
 
@@ -169,21 +166,16 @@
                         </div>
 
 
-                        <!--
-                            IMPORTANT:
-                            The real file input is now INSIDE
-                            the upload area so mobile browsers
-                            can activate it directly.
-                        -->
+                        <!-- REAL FILE INPUT -->
 
                         <input
                             type="file"
                             id="registrationImage"
-                            accept="image/jpeg,image/png,image/webp"
+                            accept="image/*"
                             capture="environment"
                         >
 
-                    </label>
+                    </div>
 
 
 
