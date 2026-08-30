@@ -129,9 +129,12 @@
                     <!-- PHOTO UPLOAD -->
                     <!-- ================================= -->
 
-                    <label
-                        for="registrationImage"
+                    <div
                         class="compact-upload"
+                        id="photoUploadButton"
+                        role="button"
+                        tabindex="0"
+                        aria-label="Choose registration photo"
                     >
 
                         <div class="compact-upload-icon">
@@ -168,15 +171,15 @@
 
                         </div>
 
-                    </label>
+                    </div>
 
 
                     <input
                         type="file"
                         id="registrationImage"
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/webp"
                         capture="environment"
-                        hidden
+                        style="display:none;"
                     >
 
 
