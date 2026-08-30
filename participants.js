@@ -556,16 +556,6 @@ async function readRegistrationForm(file) {
 // ============================================================
 // PHOTO UPLOAD
 // ============================================================
-//
-// IMPORTANT:
-//
-// The actual <input type="file"> is now responsible for
-// opening the mobile camera/gallery.
-//
-// DO NOT call registrationImage.click() here.
-//
-// This avoids the mobile-browser problem we were seeing.
-// ============================================================
 
 if (registrationImage) {
 
@@ -716,51 +706,97 @@ if (registrationImage) {
 
 
 // ============================================================
-// GENERATE REGISTRATION ID
+// GENERATE UNIQUE REGISTRATION ID
+// ============================================================
+//
+// The previous method depended on:
+//
+//     count + 1
+//
+// Your browser was receiving count = 0, therefore every
+// participant became LD-0001.
+//
+// This version generates an available 4-digit ID and checks
+// Supabase before returning it.
+//
 // ============================================================
 
 async function generateRegistrationId() {
 
-    const {
-        count,
-        error
-    } =
-        await supabaseClient
-            .from("Participants")
-            .select(
-                "registration_id",
-                {
-                    count: "exact",
-                    head: true
-                }
+    const MAX_ATTEMPTS = 20;
+
+
+    for (
+        let attempt = 0;
+        attempt < MAX_ATTEMPTS;
+        attempt++
+    ) {
+
+        // Generate a number from 0001 to 9999
+
+        const randomNumber =
+            Math.floor(
+                Math.random() * 9999
+            ) + 1;
+
+
+        const registrationId =
+            "LD-" +
+            String(
+                randomNumber
+            ).padStart(
+                4,
+                "0"
             );
 
 
-    if (error) {
+        // Check whether this ID already exists
 
-        console.error(
-            "Error counting participants:",
+        const {
+            data,
             error
-        );
+        } =
+            await supabaseClient
+                .from("Participants")
+                .select("registration_id")
+                .eq(
+                    "registration_id",
+                    registrationId
+                )
+                .limit(1);
 
 
-        throw error;
+        if (error) {
+
+            console.error(
+                "Registration ID check failed:",
+                error
+            );
+
+
+            throw new Error(
+                "Unable to generate registration ID. Please try again."
+            );
+
+        }
+
+
+        // ID is available
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            return registrationId;
+
+        }
 
     }
 
 
-    const nextNumber =
-        (count || 0) + 1;
-
-
-    return (
-        "LD-" +
-        String(
-            nextNumber
-        ).padStart(
-            4,
-            "0"
-        )
+    throw new Error(
+        "Unable to generate a unique registration ID. Please try again."
     );
 
 }
@@ -985,7 +1021,7 @@ if (registrationForm) {
 
 
                 // ==================================================
-                // GENERATE REGISTRATION ID
+                // GENERATE UNIQUE REGISTRATION ID
                 // ==================================================
 
                 const registrationId =
@@ -1054,7 +1090,7 @@ if (registrationForm) {
                     ) {
 
                         throw new Error(
-                            "This registration already exists."
+                            "This registration already exists. Please try registering again."
                         );
 
                     }
