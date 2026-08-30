@@ -671,12 +671,6 @@ if (registrationImage) {
 // ============================================================
 // GENERATE REGISTRATION ID
 // ============================================================
-//
-// NOTE:
-// This is kept compatible with your current database.
-// Later we should move ID generation to the database,
-// because client-side ID generation can have race conditions.
-// ============================================================
 
 async function generateRegistrationId() {
 
@@ -1007,9 +1001,6 @@ if (registrationForm) {
                         insertError
                     );
 
-
-                    // Do not expose database details
-                    // to the public user.
 
                     if (
                         insertError.code === "23505"
