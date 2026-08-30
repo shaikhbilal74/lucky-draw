@@ -1058,3 +1058,48 @@ function registerAnother() {
         );
     }
 }
+
+
+
+
+// ============================================================
+// MOBILE PHOTO UPLOAD BUTTON
+// ============================================================
+
+const photoUploadButton =
+    document.getElementById("photoUploadButton");
+
+const photoInput =
+    document.getElementById("registrationImage");
+
+if (photoUploadButton && photoInput) {
+
+    photoUploadButton.addEventListener(
+        "click",
+        function () {
+
+            photoInput.click();
+
+        }
+    );
+
+
+    photoUploadButton.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+                photoInput.click();
+
+            }
+
+        }
+    );
+
+}
