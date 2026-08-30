@@ -129,12 +129,9 @@
                     <!-- PHOTO UPLOAD -->
                     <!-- ================================= -->
 
-                    <div
+                    <label
                         class="compact-upload"
-                        id="photoUploadButton"
-                        role="button"
-                        tabindex="0"
-                        aria-label="Choose registration photo"
+                        for="registrationImage"
                     >
 
                         <div class="compact-upload-icon">
@@ -171,16 +168,22 @@
 
                         </div>
 
-                    </div>
 
+                        <!--
+                            IMPORTANT:
+                            The real file input is now INSIDE
+                            the upload area so mobile browsers
+                            can activate it directly.
+                        -->
 
-                    <input
-                        type="file"
-                        id="registrationImage"
-                        accept="image/jpeg,image/png,image/webp"
-                        capture="environment"
-                        style="display:none;"
-                    >
+                        <input
+                            type="file"
+                            id="registrationImage"
+                            accept="image/jpeg,image/png,image/webp"
+                            capture="environment"
+                        >
+
+                    </label>
 
 
 
