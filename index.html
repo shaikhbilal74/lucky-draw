@@ -126,10 +126,18 @@
 
 
                     <!-- ================================= -->
-                    <!-- PHOTO UPLOAD -->
+                    <!-- MOBILE-SAFE PHOTO UPLOAD -->
                     <!-- ================================= -->
 
-                    <div class="compact-upload">
+                    <div
+                        class="compact-upload"
+                        id="photoUploadButton"
+                        style="
+                            position: relative;
+                            cursor: pointer;
+                            overflow: hidden;
+                        "
+                    >
 
                         <div class="compact-upload-icon">
 
@@ -166,13 +174,34 @@
                         </div>
 
 
-                        <!-- REAL FILE INPUT -->
+                        <!--
+                            IMPORTANT:
+                            This is the REAL file input.
+
+                            It is NOT display:none.
+                            It sits over the entire upload box
+                            with opacity 0.
+
+                            This allows mobile browsers to open
+                            the native camera/gallery/file picker.
+                        -->
 
                         <input
                             type="file"
                             id="registrationImage"
+                            name="registrationImage"
                             accept="image/*"
-                            capture="environment"
+                            style="
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                opacity: 0;
+                                cursor: pointer;
+                                z-index: 10;
+                                display: block;
+                            "
                         >
 
                     </div>
