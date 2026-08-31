@@ -1265,79 +1265,227 @@ async function selectNewWinner() {
         }
 
 
-        console.log(
-            "Calling secure draw-winner Edge Function..."
-        );
+        // ====================================================
+        // REMEMBER THE WINNER THAT WAS RESET
+        // ====================================================
 
-
-        const {
-            data,
-            error
-        } = await supabaseClient.functions.invoke(
-            "draw-winner",
-            {
-                body: {
-                    action: "draw"
-                }
-            }
-        );
-
-
-        if (error) {
-
-            console.error(
-                "DRAW WINNER FUNCTION ERROR:",
-                error
+        const previousWinnerId =
+            localStorage.getItem(
+                "previousLuckyDrawWinnerId"
             );
 
 
-            let message =
-                "Unable to draw winner. Please try again.";
+        // ====================================================
+        // MAXIMUM RETRIES
+        // ====================================================
+        //
+        // If the server randomly returns the same winner
+        // that was just reset, request another server-side
+        // draw.
+        //
+        // This keeps the actual winner selection server-side.
+        // ====================================================
+
+        const MAX_DRAW_ATTEMPTS = 20;
 
 
-            if (
-                error.context
-            ) {
+        let selectedWinner = null;
 
-                try {
+        let lastResponse = null;
 
-                    const errorBody =
-                        await error.context.json();
 
-                    if (
-                        errorBody?.error
-                    ) {
+        for (
+            let attempt = 1;
+            attempt <= MAX_DRAW_ATTEMPTS;
+            attempt++
+        ) {
 
-                        message =
-                            errorBody.error;
+            console.log(
+                `Calling secure draw-winner Edge Function... Attempt ${attempt}`
+            );
+
+
+            const {
+                data,
+                error
+            } = await supabaseClient.functions.invoke(
+                "draw-winner",
+                {
+                    body: {
+                        action: "draw"
+                    }
+                }
+            );
+
+
+            if (error) {
+
+                console.error(
+                    "DRAW WINNER FUNCTION ERROR:",
+                    error
+                );
+
+
+                let message =
+                    "Unable to draw winner. Please try again.";
+
+
+                if (
+                    error.context
+                ) {
+
+                    try {
+
+                        const errorBody =
+                            await error.context.json();
+
+                        if (
+                            errorBody?.error
+                        ) {
+
+                            message =
+                                errorBody.error;
+
+                        }
+
+                    } catch (_) {
+
+                        // Ignore response parsing errors.
 
                     }
 
-                } catch (_) {
-
-                    // Ignore response parsing errors.
-
                 }
+
+
+                alert(message);
+
+                return;
 
             }
 
 
-            alert(message);
+            if (!data) {
 
-            return;
+                console.error(
+                    "DRAW FUNCTION RETURNED NO DATA."
+                );
+
+
+                alert(
+                    "The server returned no response."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                data.success !== true
+            ) {
+
+                console.error(
+                    "DRAW FUNCTION FAILED:",
+                    data
+                );
+
+
+                alert(
+                    data.error ||
+                    "The server could not complete the draw."
+                );
+
+                return;
+
+            }
+
+
+            if (!data.winner) {
+
+                console.error(
+                    "DRAW FUNCTION DID NOT RETURN WINNER:",
+                    data
+                );
+
+
+                alert(
+                    "The server did not return a winner."
+                );
+
+                return;
+
+            }
+
+
+            lastResponse =
+                data;
+
+
+            const newWinnerId =
+                data.winner.registration_id ||
+                data.winner.id ||
+                "";
+
+
+            // =================================================
+            // FIRST DRAW OR NO PREVIOUS WINNER
+            // =================================================
+
+            if (
+                !previousWinnerId
+            ) {
+
+                selectedWinner =
+                    data.winner;
+
+                break;
+
+            }
+
+
+            // =================================================
+            // DIFFERENT PARTICIPANT
+            // =================================================
+
+            if (
+                String(newWinnerId) !==
+                String(previousWinnerId)
+            ) {
+
+                selectedWinner =
+                    data.winner;
+
+                break;
+
+            }
+
+
+            // =================================================
+            // SAME PARTICIPANT
+            // =================================================
+
+            console.warn(
+                "The server selected the previous winner again.",
+                "Requesting another draw..."
+            );
 
         }
 
 
-        if (!data) {
+        // ====================================================
+        // SAFETY CHECK
+        // ====================================================
+
+        if (!selectedWinner) {
 
             console.error(
-                "DRAW FUNCTION RETURNED NO DATA."
+                "Could not select a different winner after multiple attempts.",
+                lastResponse
             );
 
 
             alert(
-                "The server returned no response."
+                "The previous winner was selected again. Please press Draw Winner once more."
             );
 
             return;
@@ -1345,53 +1493,44 @@ async function selectNewWinner() {
         }
 
 
-        if (
-            data.success !== true
-        ) {
+        // ====================================================
+        // SAVE CURRENT WINNER AS THE PREVIOUS WINNER
+        // ====================================================
+        //
+        // This is important for the next reset.
+        // ====================================================
 
-            console.error(
-                "DRAW FUNCTION FAILED:",
-                data
+        const selectedWinnerId =
+            selectedWinner.registration_id ||
+            selectedWinner.id ||
+            "";
+
+
+        if (selectedWinnerId) {
+
+            localStorage.setItem(
+                "currentLuckyDrawWinnerId",
+                String(selectedWinnerId)
             );
-
-
-            alert(
-                data.error ||
-                "The server could not complete the draw."
-            );
-
-            return;
 
         }
 
 
-        if (!data.winner) {
-
-            console.error(
-                "DRAW FUNCTION DID NOT RETURN WINNER:",
-                data
-            );
-
-
-            alert(
-                "The server did not return a winner."
-            );
-
-            return;
-
-        }
-
-
-        // Show winner directly.
+        // ====================================================
+        // SHOW WINNER DIRECTLY
+        // ====================================================
+        //
         // No success popup.
+        // ====================================================
+
         displayWinner(
-            data.winner
+            selectedWinner
         );
 
 
         console.log(
             "Winner selected securely by server:",
-            data.winner
+            selectedWinner
         );
 
     } catch (error) {
@@ -1712,9 +1851,6 @@ function closeResetModal() {
 
         modal.classList.remove("show");
 
-        // Important:
-        // resetDraw() uses inline display:flex.
-        // We must remove it when Cancel is clicked.
         modal.style.display = "none";
 
     }
@@ -1740,8 +1876,71 @@ async function confirmResetDraw() {
     }
 
 
-    // Close the colorful confirmation box
-    // before starting the secure reset.
+    // ========================================================
+    // REMEMBER CURRENT WINNER BEFORE RESET
+    // ========================================================
+    //
+    // This is the key fix.
+    //
+    // We keep the winner's ID even though the server-side
+    // winner is being reset.
+    //
+    // The next draw will make sure this participant is not
+    // selected again.
+    // ========================================================
+
+    try {
+
+        const {
+            data: statusData,
+            error: statusError
+        } =
+            await supabaseClient.functions.invoke(
+                "draw-winner",
+                {
+                    body: {
+                        action: "status"
+                    }
+                }
+            );
+
+
+        if (
+            !statusError &&
+            statusData?.winner
+        ) {
+
+            const currentWinnerId =
+                statusData.winner.registration_id ||
+                statusData.winner.id ||
+                "";
+
+
+            if (currentWinnerId) {
+
+                localStorage.setItem(
+                    "previousLuckyDrawWinnerId",
+                    String(currentWinnerId)
+                );
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Unable to retrieve current winner before reset:",
+            error
+        );
+
+    }
+
+
+    // ========================================================
+    // CLOSE RESET MODAL
+    // ========================================================
+
     closeResetModal();
 
 
@@ -1857,9 +2056,14 @@ async function confirmResetDraw() {
         }
 
 
-        // Clear winner immediately from the screen.
+        // ====================================================
+        // CLEAR CURRENT WINNER FROM SCREEN
+        // ====================================================
+
         const winnerResult =
-            getElement("winnerResult");
+            getElement(
+                "winnerResult"
+            );
 
 
         if (winnerResult) {
