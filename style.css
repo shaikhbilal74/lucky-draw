@@ -2711,3 +2711,228 @@ footer {
         padding: 12px 15px;
     }
 }
+
+
+
+
+
+
+
+
+/* =========================================
+   DRAW HISTORY TABLE - FINAL STYLING
+   ========================================= */
+
+#drawHistorySection {
+    width: 100%;
+}
+
+/* History header card */
+#drawHistorySection .history-header {
+    position: relative;
+}
+
+/* History table container */
+#drawHistorySection .history-table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 0 0 24px 24px;
+}
+
+/* Draw history table */
+#drawHistorySection table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 850px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+/* Table header */
+#drawHistorySection table thead th {
+    background: linear-gradient(135deg, #fff0f4, #fff7ed);
+    color: #a9003d;
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 18px 22px;
+    text-align: left;
+    border-bottom: 2px solid #ffb7c9;
+    white-space: nowrap;
+}
+
+/* Table rows */
+#drawHistorySection table tbody tr {
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+/* Alternate row */
+#drawHistorySection table tbody tr:nth-child(even) {
+    background: #fff9fb;
+}
+
+/* Hover effect */
+#drawHistorySection table tbody tr:hover {
+    background: linear-gradient(
+        90deg,
+        #fff1f5,
+        #fff8ef
+    );
+    transform: scale(1.002);
+}
+
+/* Table cells */
+#drawHistorySection table tbody td {
+    padding: 17px 22px;
+    font-size: 15px;
+    color: #17233d;
+    border-bottom: 1px solid #f0dfe5;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Last row */
+#drawHistorySection table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Draw number */
+#drawHistorySection table tbody td:first-child {
+    font-weight: 800;
+    color: #ff2455;
+}
+
+/* Winner name */
+#drawHistorySection table tbody td:nth-child(4) {
+    font-weight: 700;
+    color: #111827;
+}
+
+/* Registration ID */
+#drawHistorySection table tbody td:nth-child(5) {
+    font-weight: 700;
+    color: #174ea6;
+}
+
+/* Registration ID badge */
+#drawHistorySection .registration-id {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #edf4ff, #f4f8ff);
+    border: 1px solid #d7e5ff;
+    color: #1757b8;
+    font-weight: 800;
+}
+
+/* Draw number badge */
+#drawHistorySection .draw-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    height: 38px;
+    padding: 0 10px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #ffe8ef, #fff1dc);
+    border: 1px solid #ffc4d2;
+    color: #f21f55;
+    font-weight: 800;
+}
+
+/* Winner styling */
+#drawHistorySection .winner-name {
+    font-weight: 800;
+    color: #111827;
+}
+
+/* Date */
+#drawHistorySection .draw-date {
+    font-weight: 600;
+    color: #253b63;
+}
+
+/* Time */
+#drawHistorySection .draw-time {
+    font-weight: 700;
+    color: #d81b4e;
+}
+
+/* Phone */
+#drawHistorySection .winner-phone {
+    font-weight: 600;
+    color: #21466f;
+}
+
+/* Download Excel button area */
+#drawHistorySection .history-download {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+/* Download Excel button */
+#drawHistorySection button[onclick*="Excel"],
+#drawHistorySection .download-excel-btn {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #ff3158, #ff8a00);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(255, 74, 85, 0.22);
+    transition: all 0.2s ease;
+}
+
+#drawHistorySection button[onclick*="Excel"]:hover,
+#drawHistorySection .download-excel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(255, 74, 85, 0.30);
+}
+
+#drawHistorySection button[onclick*="Excel"]:active,
+#drawHistorySection .download-excel-btn:active {
+    transform: translateY(0);
+}
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 768px) {
+
+    #drawHistorySection {
+        width: 100%;
+    }
+
+    #drawHistorySection table {
+        min-width: 780px;
+    }
+
+    #drawHistorySection table thead th {
+        padding: 14px 16px;
+        font-size: 13px;
+    }
+
+    #drawHistorySection table tbody td {
+        padding: 14px 16px;
+        font-size: 14px;
+    }
+
+    #drawHistorySection .history-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #drawHistorySection button[onclick*="Excel"],
+    #drawHistorySection .download-excel-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+}
