@@ -3036,3 +3036,42 @@ footer {
     }
 
 }
+
+
+
+
+.download-history-btn {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #ff3366, #ff8a00);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(255, 76, 80, 0.20);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.download-history-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 20px rgba(255, 76, 80, 0.28);
+}
+
+.download-history-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+
+    .history-table-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .download-history-btn {
+        width: 100%;
+    }
+
+}
