@@ -77,7 +77,6 @@
                 novalidate
             >
 
-
                 <label for="adminEmail">
                     📧 Admin Email
                 </label>
@@ -199,10 +198,6 @@
                     📊 Dashboard
                 </button>
 
-
-                <!-- ========================= -->
-                <!-- NEW: DRAW HISTORY BUTTON -->
-                <!-- ========================= -->
 
                 <button
                     class="menu-btn"
@@ -420,7 +415,7 @@
 
 
             <!-- ========================= -->
-            <!-- NEW: DRAW HISTORY SECTION -->
+            <!-- DRAW HISTORY SECTION -->
             <!-- ========================= -->
 
             <div
@@ -428,72 +423,130 @@
                 class="admin-section"
             >
 
-                <div class="winner-card">
 
-                    <h2>
-                        📜 Draw History
-                    </h2>
+                <!-- ========================= -->
+                <!-- HISTORY HEADER -->
+                <!-- ========================= -->
 
-                    <p>
-                        Previous lucky draws and their winners.
-                    </p>
+                <div class="history-header-card">
+
+                    <div class="history-header-icon">
+                        📜
+                    </div>
+
+
+                    <div class="history-header-content">
+
+                        <h2>
+                            Draw History
+                        </h2>
+
+
+                        <p>
+                            View all previous lucky draws and their winners.
+                        </p>
+
+                    </div>
 
                 </div>
 
 
                 <!-- ========================= -->
-                <!-- DRAW HISTORY TABLE -->
+                <!-- HISTORY TABLE CARD -->
                 <!-- ========================= -->
 
-                <div class="table-container">
+                <div class="history-table-card">
 
 
-                    <table id="drawHistoryTable">
+                    <div class="history-table-header">
+
+                        <div>
+
+                            <h3>
+                                Previous Draws
+                            </h3>
 
 
-                        <thead>
+                            <p>
+                                Every completed draw is recorded here.
+                            </p>
 
-                            <tr>
+                        </div>
 
-                                <th>
-                                    Draw No.
-                                </th>
-
-
-                                <th>
-                                    Date
-                                </th>
+                    </div>
 
 
-                                <th>
-                                    Time
-                                </th>
+                    <!-- ========================= -->
+                    <!-- HISTORY TABLE -->
+                    <!-- ========================= -->
+
+                    <div class="history-table-wrapper">
 
 
-                                <th>
-                                    Winner
-                                </th>
+                        <table
+                            id="drawHistoryTable"
+                            class="history-table"
+                        >
 
 
-                                <th>
-                                    Registration ID
-                                </th>
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Draw No.
+                                    </th>
 
 
-                                <th>
-                                    Phone
-                                </th>
-
-                            </tr>
-
-                        </thead>
+                                    <th>
+                                        Date
+                                    </th>
 
 
-                        <tbody id="drawHistoryList">
-                        </tbody>
+                                    <th>
+                                        Time
+                                    </th>
 
 
-                    </table>
+                                    <th>
+                                        Winner
+                                    </th>
+
+
+                                    <th>
+                                        Registration ID
+                                    </th>
+
+
+                                    <th>
+                                        Phone
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="drawHistoryList">
+
+                                <tr>
+
+                                    <td
+                                        colspan="6"
+                                        class="history-loading"
+                                    >
+                                        Loading draw history...
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
 
 
                 </div>
