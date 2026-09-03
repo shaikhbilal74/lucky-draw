@@ -199,6 +199,19 @@
                     📊 Dashboard
                 </button>
 
+
+                <!-- ========================= -->
+                <!-- NEW: DRAW HISTORY BUTTON -->
+                <!-- ========================= -->
+
+                <button
+                    class="menu-btn"
+                    type="button"
+                    onclick="showAdminSection('drawHistorySection', this)"
+                >
+                    📜 Draw History
+                </button>
+
             </div>
 
 
@@ -394,6 +407,89 @@
 
 
                         <tbody id="participantList">
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- NEW: DRAW HISTORY SECTION -->
+            <!-- ========================= -->
+
+            <div
+                id="drawHistorySection"
+                class="admin-section"
+            >
+
+                <div class="winner-card">
+
+                    <h2>
+                        📜 Draw History
+                    </h2>
+
+                    <p>
+                        Previous lucky draws and their winners.
+                    </p>
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- DRAW HISTORY TABLE -->
+                <!-- ========================= -->
+
+                <div class="table-container">
+
+
+                    <table id="drawHistoryTable">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Draw No.
+                                </th>
+
+
+                                <th>
+                                    Date
+                                </th>
+
+
+                                <th>
+                                    Time
+                                </th>
+
+
+                                <th>
+                                    Winner
+                                </th>
+
+
+                                <th>
+                                    Registration ID
+                                </th>
+
+
+                                <th>
+                                    Phone
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="drawHistoryList">
                         </tbody>
 
 
