@@ -3075,3 +3075,286 @@ footer {
     }
 
 }
+
+
+
+
+
+/* =========================================================
+   DRAW HISTORY
+   ========================================================= */
+
+.history-header-card {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: linear-gradient(135deg, #fff1f4, #fff8ef);
+    border: 1px solid #ffc5d1;
+    border-radius: 28px;
+    padding: 28px 40px;
+    margin-bottom: 30px;
+    box-shadow: 0 12px 30px rgba(255, 51, 102, 0.08);
+}
+
+.history-icon {
+    width: 86px;
+    height: 86px;
+    min-width: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #ff3366, #ff8a00);
+    font-size: 42px;
+    box-shadow: 0 10px 22px rgba(255, 90, 50, 0.22);
+}
+
+.history-header-card h1 {
+    margin: 0 0 8px;
+    font-size: 36px;
+    font-weight: 800;
+    color: #ff2458;
+}
+
+.history-header-card p {
+    margin: 0;
+    font-size: 18px;
+    color: #174a7c;
+}
+
+
+/* =========================================================
+   HISTORY TABLE CARD
+   ========================================================= */
+
+.history-table-card {
+    background: #ffffff;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #ffd1da;
+}
+
+.history-table-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px 36px;
+    background: linear-gradient(135deg, #fff8fa, #fffdf8);
+    border-bottom: 1px solid #ffd9df;
+}
+
+.history-table-top h2 {
+    margin: 0 0 6px;
+    font-size: 27px;
+    color: #092b67;
+}
+
+.history-table-top p {
+    margin: 0;
+    font-size: 16px;
+    color: #31577d;
+}
+
+
+/* =========================================================
+   DOWNLOAD HISTORY BUTTON
+   ========================================================= */
+
+.download-history-btn {
+    border: none;
+    border-radius: 14px;
+    padding: 13px 22px;
+    background: linear-gradient(135deg, #ff3366, #ff8a00);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 7px 18px rgba(255, 70, 70, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.download-history-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(255, 70, 70, 0.30);
+}
+
+.download-history-btn:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   HISTORY TABLE
+   ========================================================= */
+
+.history-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#drawHistoryTable {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+#drawHistoryTable thead {
+    background: linear-gradient(135deg, #fff0f4, #fff7ef);
+}
+
+#drawHistoryTable th {
+    padding: 19px 22px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 800;
+    color: #a9003c;
+    border-bottom: 1px solid #ffc8d3;
+    white-space: nowrap;
+}
+
+#drawHistoryTable td {
+    padding: 20px 22px;
+    font-size: 16px;
+    color: #092b67;
+    border-bottom: 1px solid #eeeeee;
+    white-space: nowrap;
+}
+
+#drawHistoryTable tbody tr {
+    transition: background 0.2s ease;
+}
+
+#drawHistoryTable tbody tr:hover {
+    background: #fff7f9;
+}
+
+#drawHistoryTable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   DRAW NUMBER
+   ========================================================= */
+
+#drawHistoryTable td:first-child {
+    font-weight: 800;
+}
+
+#drawHistoryTable td:first-child::before {
+    content: "";
+}
+
+#drawHistoryTable td:first-child {
+    color: #ff2458;
+}
+
+
+/* =========================================================
+   WINNER
+   ========================================================= */
+
+#drawHistoryTable td:nth-child(4) {
+    font-weight: 700;
+    color: #111111;
+}
+
+
+/* =========================================================
+   REGISTRATION ID
+   ========================================================= */
+
+#drawHistoryTable td:nth-child(5) {
+    font-weight: 700;
+}
+
+#drawHistoryTable td:nth-child(5) {
+    color: #164d88;
+}
+
+
+/* =========================================================
+   NO DATA / LOADING / ERROR
+   ========================================================= */
+
+#drawHistoryTable .no-data {
+    text-align: center;
+    padding: 45px 20px;
+    color: #55708f;
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .history-header-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 25px;
+        gap: 18px;
+        border-radius: 22px;
+    }
+
+    .history-icon {
+        width: 70px;
+        height: 70px;
+        min-width: 70px;
+        border-radius: 20px;
+        font-size: 34px;
+    }
+
+    .history-header-card h1 {
+        font-size: 30px;
+    }
+
+    .history-header-card p {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .history-table-card {
+        border-radius: 22px;
+    }
+
+    .history-table-top {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px;
+    }
+
+    .history-table-top h2 {
+        font-size: 24px;
+    }
+
+    .history-table-top p {
+        font-size: 15px;
+    }
+
+    .download-history-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    #drawHistoryTable {
+        min-width: 850px;
+    }
+
+    #drawHistoryTable th {
+        padding: 16px 18px;
+        font-size: 14px;
+    }
+
+    #drawHistoryTable td {
+        padding: 17px 18px;
+        font-size: 15px;
+    }
+
+}
