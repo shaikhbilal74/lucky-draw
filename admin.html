@@ -422,8 +422,7 @@
 
                 <div class="history-table-card">
 
-
-                    <div class="history-table-top">
+                    <div class="history-table-header">
 
                         <div>
 
@@ -439,12 +438,12 @@
 
 
                         <button
+                            class="download-btn history-download-btn"
                             id="downloadHistoryButton"
-                            class="download-history-btn"
                             type="button"
-                            onclick="downloadDrawHistoryExcel()"
+                            onclick="downloadDrawHistory()"
                         >
-                            📥 Download Excel
+                            ⬇ Download Excel
                         </button>
 
                     </div>
@@ -456,7 +455,10 @@
 
                     <div class="history-table-container">
 
-                        <table id="drawHistoryTable">
+                        <table
+                            id="drawHistoryTable"
+                            class="draw-history-table"
+                        >
 
                             <thead>
 
@@ -531,14 +533,25 @@
 
 
     <!-- ========================= -->
-    <!-- EXCEL LIBRARY -->
+    <!-- SUPABASE -->
     <!-- ========================= -->
 
     <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
-        integrity="sha512-zFQ4B8hR8vK8gY8eK3rWqv0c1YxG5rJv0xJkq3QW2gYx9Yx8Kx6W9Y8Z7jvM2sJYx1Q3fK3LJ5JQk9Y8Vxw=="
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- ========================= -->
+    <!-- EXCEL LIBRARY -->
+    <!-- ========================= -->
+    <!--
+        No integrity attribute is used here because
+        the previous integrity hash was invalid and
+        prevented the XLSX library from loading.
+    -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
     ></script>
 
 
@@ -647,15 +660,6 @@
         </div>
 
     </div>
-
-
-    <!-- ========================= -->
-    <!-- SUPABASE -->
-    <!-- ========================= -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
 
 
     <!-- ========================= -->
