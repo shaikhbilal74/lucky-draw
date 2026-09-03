@@ -1112,6 +1112,322 @@ async function clearSearch() {
 
 
 // ============================================================
+// DRAW HISTORY
+// ============================================================
+
+async function loadDrawHistory() {
+
+    if (!isAdminAuthenticated) {
+
+        return;
+
+    }
+
+
+    const historyList =
+        getElement(
+            "drawHistoryList"
+        );
+
+
+    if (!historyList) {
+
+        console.error(
+            "Draw history table body was not found."
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // SHOW LOADING STATE
+    // --------------------------------------------------------
+
+    historyList.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="6"
+                class="no-data"
+            >
+                Loading draw history...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        console.log(
+            "Loading draw history..."
+        );
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("draw_history")
+            .select(`
+                id,
+                draw_number,
+                draw_date,
+                draw_time,
+                winner_name,
+                winner_registration_id,
+                winner_phone
+            `)
+            .order(
+                "draw_number",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "DRAW HISTORY FETCH ERROR:",
+                error
+            );
+
+
+            historyList.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="no-data"
+                    >
+                        Unable to load draw history.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // NO HISTORY
+        // ----------------------------------------------------
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            historyList.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="no-data"
+                    >
+                        No draws have been conducted yet.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // DISPLAY HISTORY
+        // ----------------------------------------------------
+
+        historyList.innerHTML = "";
+
+
+        data.forEach(
+            function(draw) {
+
+                historyList.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${escapeHTML(
+                                    draw.draw_number ?? "-"
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                draw.draw_date || "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                draw.draw_time || "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                draw.winner_name || "-"
+                            )}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${escapeHTML(
+                                    draw.winner_registration_id || "-"
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                draw.winner_phone || "-"
+                            )}
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+
+        console.log(
+            "Draw history loaded successfully:",
+            data.length,
+            "records"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "DRAW HISTORY EXCEPTION:",
+            error
+        );
+
+
+        historyList.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="no-data"
+                >
+                    Unable to load draw history.
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+// ============================================================
+// SHOW ADMIN SECTION
+// ============================================================
+
+function showAdminSection(
+    sectionId,
+    button
+) {
+
+    const sections =
+        document.querySelectorAll(
+            ".admin-section"
+        );
+
+
+    sections.forEach(
+        function(section) {
+
+            section.classList.remove(
+                "active-admin-section"
+            );
+
+        }
+    );
+
+
+    const menuButtons =
+        document.querySelectorAll(
+            ".menu-btn"
+        );
+
+
+    menuButtons.forEach(
+        function(menuButton) {
+
+            menuButton.classList.remove(
+                "active-menu"
+            );
+
+        }
+    );
+
+
+    const selectedSection =
+        getElement(
+            sectionId
+        );
+
+
+    if (selectedSection) {
+
+        selectedSection.classList.add(
+            "active-admin-section"
+        );
+
+    }
+
+
+    if (button) {
+
+        button.classList.add(
+            "active-menu"
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // LOAD DRAW HISTORY WHEN HISTORY SECTION IS OPENED
+    // --------------------------------------------------------
+
+    if (
+        sectionId ===
+        "drawHistorySection"
+    ) {
+
+        loadDrawHistory();
+
+    }
+
+}
+
+
+// ============================================================
 // DRAW MODAL
 // ============================================================
 
