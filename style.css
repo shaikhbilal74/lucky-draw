@@ -2936,3 +2936,103 @@ footer {
         font-size: 14px;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+   DRAW HISTORY - DOWNLOAD EXCEL BUTTON
+   ========================================= */
+
+#drawHistorySection button {
+    font-family: inherit;
+}
+
+#drawHistorySection .download-excel-btn,
+#drawHistorySection #downloadHistoryExcel,
+#drawHistorySection button[onclick*="Excel"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-width: 245px;
+    height: 58px;
+    padding: 0 28px;
+
+    border: 1px solid #079447;
+    border-radius: 30px;
+
+    background: linear-gradient(135deg, #08a94f, #18c75d);
+
+    color: #ffffff;
+
+    font-size: 20px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow: 0 8px 18px rgba(0, 150, 70, 0.22);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Hover */
+#drawHistorySection .download-excel-btn:hover,
+#drawHistorySection #downloadHistoryExcel:hover,
+#drawHistorySection button[onclick*="Excel"]:hover {
+    background: linear-gradient(135deg, #079947, #16b955);
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 12px 25px rgba(0, 150, 70, 0.30);
+}
+
+/* Click */
+#drawHistorySection .download-excel-btn:active,
+#drawHistorySection #downloadHistoryExcel:active,
+#drawHistorySection button[onclick*="Excel"]:active {
+    transform: translateY(0);
+
+    box-shadow: 0 5px 12px rgba(0, 150, 70, 0.20);
+}
+
+/* Disabled / Preparing state */
+#drawHistorySection .download-excel-btn:disabled,
+#drawHistorySection #downloadHistoryExcel:disabled {
+    opacity: 0.8;
+    cursor: wait;
+    transform: none;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    #drawHistorySection .download-excel-btn,
+    #drawHistorySection #downloadHistoryExcel,
+    #drawHistorySection button[onclick*="Excel"] {
+        min-width: 210px;
+        height: 52px;
+        padding: 0 20px;
+        font-size: 17px;
+    }
+}
+
+
+
+
