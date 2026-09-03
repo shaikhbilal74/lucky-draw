@@ -3036,3 +3036,77 @@ footer {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ================================
+   DRAW HISTORY - DOWNLOAD EXCEL
+   ================================ */
+
+#drawHistorySection .history-download-btn {
+    appearance: none;
+    -webkit-appearance: none;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 13px 24px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(135deg, #ff3d5a, #ff8a00);
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+
+    cursor: pointer;
+
+    box-shadow: 0 6px 16px rgba(255, 76, 80, 0.25);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+/* Hover */
+#drawHistorySection .history-download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 22px rgba(255, 76, 80, 0.35);
+}
+
+/* Click */
+#drawHistorySection .history-download-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(255, 76, 80, 0.25);
+}
+
+/* Disabled / Preparing Excel */
+#drawHistorySection .history-download-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+
+
