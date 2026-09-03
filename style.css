@@ -2777,3 +2777,262 @@ footer {
     }
 
 }
+
+
+
+
+
+
+
+/* ============================================================
+   COLORFUL DRAW HISTORY THEME
+   ============================================================ */
+
+/* History main header */
+.history-header-card {
+    background: linear-gradient(
+        135deg,
+        #fff1f5 0%,
+        #fff7ed 50%,
+        #fff 100%
+    );
+
+    border: 1px solid #ffd6df;
+
+    box-shadow:
+        0 12px 30px rgba(255, 61, 113, 0.10);
+}
+
+
+/* History icon */
+.history-header-icon {
+    background: linear-gradient(
+        135deg,
+        #ff3366,
+        #ff8a00
+    );
+
+    box-shadow:
+        0 10px 25px rgba(255, 75, 80, 0.28);
+}
+
+
+/* History title */
+.history-header-content h2 {
+    background: linear-gradient(
+        90deg,
+        #f7255b,
+        #ff7a00
+    );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    background-clip: text;
+}
+
+
+/* ============================================================
+   PREVIOUS DRAWS CARD
+   ============================================================ */
+
+.history-table-card {
+    border: 1px solid #ffdce5;
+
+    box-shadow:
+        0 14px 35px rgba(255, 61, 113, 0.09);
+}
+
+
+/* Table heading area */
+.history-table-header {
+    background: linear-gradient(
+        135deg,
+        #fff5f8,
+        #fff9f1
+    );
+
+    border-bottom: 1px solid #ffdce5;
+}
+
+
+.history-table-header h3 {
+    color: #172554;
+}
+
+
+.history-table-header p {
+    color: #64748b;
+}
+
+
+/* ============================================================
+   TABLE HEADER
+   ============================================================ */
+
+.history-table thead th {
+    background: linear-gradient(
+        90deg,
+        #fff0f5,
+        #fff7ed
+    );
+
+    color: #9f1239;
+
+    border-bottom: 2px solid #ffc4d3;
+}
+
+
+/* ============================================================
+   TABLE ROWS
+   ============================================================ */
+
+.history-table tbody tr:nth-child(even) {
+    background: #fffafb;
+}
+
+
+.history-table tbody tr:nth-child(odd) {
+    background: #ffffff;
+}
+
+
+.history-table tbody tr:hover {
+    background: linear-gradient(
+        90deg,
+        #fff0f5,
+        #fff8ee
+    );
+
+    box-shadow:
+        inset 4px 0 0 #ff3d71;
+}
+
+
+/* ============================================================
+   DRAW NUMBER
+   ============================================================ */
+
+.history-table tbody td:first-child strong {
+    background: linear-gradient(
+        135deg,
+        #ffe3ec,
+        #fff0d9
+    );
+
+    color: #e11d48;
+
+    border: 1px solid #ffc6d5;
+
+    box-shadow:
+        0 3px 8px rgba(225, 29, 72, 0.08);
+}
+
+
+/* ============================================================
+   WINNER
+   ============================================================ */
+
+.history-table tbody td:nth-child(4) {
+    color: #111827;
+}
+
+
+/* Winner name gets a subtle colorful accent */
+.history-table tbody td:nth-child(4)::before {
+    content: "🏆 ";
+
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   REGISTRATION ID
+   ============================================================ */
+
+.history-table tbody td:nth-child(5) strong {
+    background: linear-gradient(
+        135deg,
+        #eef2ff,
+        #f0f9ff
+    );
+
+    color: #3730a3;
+
+    border: 1px solid #dbeafe;
+
+    box-shadow:
+        0 3px 8px rgba(59, 130, 246, 0.08);
+}
+
+
+/* ============================================================
+   PHONE
+   ============================================================ */
+
+.history-table tbody td:nth-child(6) {
+    color: #334155;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   DATE + TIME
+   ============================================================ */
+
+.history-table tbody td:nth-child(2) {
+    color: #475569;
+    font-weight: 600;
+}
+
+
+.history-table tbody td:nth-child(3) {
+    color: #be123c;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   TABLE BORDERS
+   ============================================================ */
+
+.history-table tbody td {
+    border-bottom: 1px solid #fce7f3;
+}
+
+
+/* ============================================================
+   EMPTY / LOADING STATE
+   ============================================================ */
+
+.history-table .history-loading,
+.history-table .no-data {
+    background: #fffafb;
+
+    color: #64748b;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .history-header-card {
+        background: linear-gradient(
+            135deg,
+            #fff1f5,
+            #fff8ed
+        );
+    }
+
+    .history-table-header {
+        background: linear-gradient(
+            135deg,
+            #fff5f8,
+            #fffaf3
+        );
+    }
+
+}
