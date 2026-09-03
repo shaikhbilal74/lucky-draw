@@ -24,9 +24,7 @@
 
 </head>
 
-
 <body>
-
 
     <!-- ========================= -->
     <!-- NAVBAR -->
@@ -60,11 +58,9 @@
                 🔐
             </div>
 
-
             <h1>
                 Admin Login
             </h1>
-
 
             <p class="login-subtitle">
                 Secure access to the Lucky Draw dashboard
@@ -81,7 +77,6 @@
                     📧 Admin Email
                 </label>
 
-
                 <input
                     type="email"
                     id="adminEmail"
@@ -96,7 +91,6 @@
                 <label for="adminPassword">
                     🔑 Password
                 </label>
-
 
                 <input
                     type="password"
@@ -116,7 +110,6 @@
                     Login
                 </button>
 
-
             </form>
 
 
@@ -126,7 +119,6 @@
                 role="alert"
                 aria-live="polite"
             ></p>
-
 
         </div>
 
@@ -157,11 +149,9 @@
                         Lucky Draw Admin Dashboard
                     </h1>
 
-
                     <p>
                         Manage participants and conduct the lucky draw.
                     </p>
-
 
                     <p
                         id="loggedInAdmin"
@@ -179,7 +169,6 @@
                 >
                     🚪 Logout
                 </button>
-
 
             </div>
 
@@ -204,7 +193,7 @@
                     type="button"
                     onclick="showAdminSection('drawHistorySection', this)"
                 >
-                    📜  History
+                    📜 Draw History
                 </button>
 
             </div>
@@ -233,11 +222,9 @@
                             Total Participants
                         </h3>
 
-
                         <p id="participantCount">
                             0
                         </p>
-
 
                     </div>
 
@@ -248,7 +235,6 @@
                             🏆 Lucky Draw Winner
                         </h2>
 
-
                         <div id="winnerResult">
 
                             <p>
@@ -257,9 +243,7 @@
 
                         </div>
 
-
                     </div>
-
 
                 </div>
 
@@ -269,7 +253,6 @@
                 <!-- ========================= -->
 
                 <div class="admin-buttons">
-
 
                     <button
                         class="view-btn"
@@ -306,7 +289,6 @@
                         ⬇ Download Excel
                     </button>
 
-
                 </div>
 
 
@@ -315,7 +297,6 @@
                 <!-- ========================= -->
 
                 <div class="search-box">
-
 
                     <input
                         type="text"
@@ -344,7 +325,6 @@
                         Clear
                     </button>
 
-
                 </div>
 
 
@@ -354,43 +334,33 @@
 
                 <div class="table-container">
 
-
                     <table id="participantTable">
-
 
                         <thead>
 
                             <tr>
 
-                                <th>
-                                    No.
-                                </th>
-
+                                <th>No.</th>
 
                                 <th>
                                     Registration ID
                                 </th>
 
-
                                 <th>
                                     Name
                                 </th>
-
 
                                 <th>
                                     Phone
                                 </th>
 
-
                                 <th>
                                     Area
                                 </th>
 
-
                                 <th>
                                     City
                                 </th>
-
 
                                 <th>
                                     Source
@@ -404,12 +374,9 @@
                         <tbody id="participantList">
                         </tbody>
 
-
                     </table>
 
-
                 </div>
-
 
             </div>
 
@@ -430,17 +397,15 @@
 
                 <div class="history-header-card">
 
-                    <div class="history-header-icon">
+                    <div class="history-icon">
                         📜
                     </div>
 
+                    <div>
 
-                    <div class="history-header-content">
-
-                        <h2>
+                        <h1>
                             Draw History
-                        </h2>
-
+                        </h1>
 
                         <p>
                             View all previous lucky draws and their winners.
@@ -458,22 +423,29 @@
                 <div class="history-table-card">
 
 
-                    
+                    <div class="history-table-top">
 
-    <div>
-        <h3>Previous Draws</h3>
-        <p>Every completed draw is recorded here.</p>
-    </div>
+                        <div>
 
-    <button
-        id="downloadHistoryButton"
-        class="download-history-btn"
-        type="button"
-    >
-        📥 Download Excel
-    </button>
+                            <h2>
+                                Previous Draws
+                            </h2>
 
-</div>
+                            <p>
+                                Every completed draw is recorded here.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            id="downloadHistoryButton"
+                            class="download-history-btn"
+                            type="button"
+                            onclick="downloadDrawHistoryExcel()"
+                        >
+                            📥 Download Excel
+                        </button>
 
                     </div>
 
@@ -482,46 +454,36 @@
                     <!-- HISTORY TABLE -->
                     <!-- ========================= -->
 
-                    <div class="history-table-wrapper">
+                    <div class="history-table-container">
 
-
-                        <table
-                            id="drawHistoryTable"
-                            class="history-table"
-                        >
-
+                        <table id="drawHistoryTable">
 
                             <thead>
 
                                 <tr>
 
                                     <th>
-                                        Draw No.
+                                        DRAW NO.
                                     </th>
 
-
                                     <th>
-                                        Date
+                                        DATE
                                     </th>
 
-
                                     <th>
-                                        Time
+                                        TIME
                                     </th>
 
-
                                     <th>
-                                        Winner
+                                        WINNER
                                     </th>
 
-
                                     <th>
-                                        Registration ID
+                                        REGISTRATION ID
                                     </th>
 
-
                                     <th>
-                                        Phone
+                                        PHONE
                                     </th>
 
                                 </tr>
@@ -535,27 +497,22 @@
 
                                     <td
                                         colspan="6"
-                                        class="history-loading"
+                                        class="no-data"
                                     >
-                                        Loading draw history...
+                                        No draws have been conducted yet.
                                     </td>
 
                                 </tr>
 
                             </tbody>
 
-
                         </table>
-
 
                     </div>
 
-
                 </div>
 
-
             </div>
-
 
         </div>
 
@@ -579,6 +536,7 @@
 
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"
+        integrity="sha512-zFQ4B8hR8vK8gY8eK3rWqv0c1YxG5rJv0xJkq3QW2gYx9Yx8Kx6W9Y8Z7jvM2sJYx1Q3fK3LJ5JQk9Y8Vxw=="
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
     ></script>
@@ -596,27 +554,21 @@
         aria-labelledby="drawModalTitle"
     >
 
-
         <div class="draw-modal-content">
-
 
             <div class="draw-modal-icon">
                 🎲
             </div>
 
-
             <h2 id="drawModalTitle">
                 Ready to Draw?
             </h2>
-
 
             <p id="drawModalMessage">
                 Are you sure you want to draw a winner?
             </p>
 
-
             <div class="draw-modal-buttons">
-
 
                 <button
                     class="modal-cancel-btn"
@@ -626,7 +578,6 @@
                     Cancel
                 </button>
 
-
                 <button
                     class="modal-confirm-btn"
                     id="confirmDrawButton"
@@ -635,12 +586,9 @@
                     🎉 Draw Winner
                 </button>
 
-
             </div>
 
-
         </div>
-
 
     </div>
 
@@ -657,33 +605,26 @@
         aria-labelledby="resetModalTitle"
     >
 
-
         <div class="draw-modal-content">
-
 
             <div class="draw-modal-icon">
                 🔄
             </div>
 
-
             <h2 id="resetModalTitle">
                 Reset Lucky Draw?
             </h2>
-
 
             <p>
                 This will remove the current winner
                 and reset the draw.
             </p>
 
-
             <p>
                 All participants will become eligible again.
             </p>
 
-
             <div class="draw-modal-buttons">
-
 
                 <button
                     class="modal-cancel-btn"
@@ -693,7 +634,6 @@
                     Cancel
                 </button>
 
-
                 <button
                     class="modal-confirm-btn reset-confirm-btn"
                     id="confirmResetButton"
@@ -702,12 +642,9 @@
                     🔄 Reset Draw
                 </button>
 
-
             </div>
 
-
         </div>
-
 
     </div>
 
@@ -726,7 +663,6 @@
     <!-- ========================= -->
 
     <script src="admin.js"></script>
-
 
 </body>
 
