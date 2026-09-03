@@ -1,12 +1,13 @@
 // ============================================================
 // LUCKY DRAW ADMIN DASHBOARD
-// SECURE SUPABASE AUTH + ADMIN AUTHORIZATION
-// SERVER-SIDE DRAW + SECURE RESET + REALTIME PARTICIPANTS
+// SECURE SUPABASE AUTH + ADMIN AUTHORIZATION + REALTIME
 // ============================================================
 
 const SUPABASE_URL =
     "https://mvwaanrbqjozxbncogzf.supabase.co";
 
+// This is a Supabase publishable key.
+// NEVER put a Supabase service_role/secret key in browser code.
 const SUPABASE_KEY =
     "sb_publishable_-jVZOnMljZt3VqDkwHCf_g_o8GDU_6c";
 
@@ -31,11 +32,13 @@ let isInitializing = true;
 
 let dashboardLoadInProgress = false;
 
+let authTransitionInProgress = false;
+
 let drawAction = "new";
 
 
 // ============================================================
-// SECURITY HELPER
+// SECURITY / DISPLAY HELPERS
 // ============================================================
 
 function escapeHTML(value) {
@@ -58,7 +61,7 @@ function getElement(id) {
 
 
 // ============================================================
-// VERIFY ADMIN ACCESS
+// ADMIN AUTHORIZATION
 // ============================================================
 
 async function verifyAdminAccess() {
@@ -66,41 +69,25 @@ async function verifyAdminAccess() {
     try {
 
         const {
-            data: {
-                user
-            },
+            data: { user },
             error: userError
         } = await supabaseClient.auth.getUser();
 
 
-        if (userError) {
+        if (userError || !user) {
 
-            console.error(
-                "AUTH USER ERROR:",
-                userError
-            );
+            if (userError) {
 
-            return false;
+                console.error(
+                    "Unable to get authenticated user:",
+                    userError
+                );
 
-        }
-
-
-        if (!user) {
-
-            console.error(
-                "No authenticated Supabase user."
-            );
+            }
 
             return false;
 
         }
-
-
-        console.log(
-            "Authenticated user:",
-            user.id,
-            user.email
-        );
 
 
         const {
@@ -116,7 +103,7 @@ async function verifyAdminAccess() {
         if (error) {
 
             console.error(
-                "ADMIN TABLE ERROR:",
+                "Admin authorization check failed:",
                 error
             );
 
@@ -125,41 +112,13 @@ async function verifyAdminAccess() {
         }
 
 
-        if (!data) {
+        return data?.user_id === user.id;
 
-            console.error(
-                "ADMIN CHECK FAILED.",
-                "User exists in Auth but is NOT present in admin_users."
-            );
-
-            return false;
-
-        }
-
-
-        if (data.user_id !== user.id) {
-
-            console.error(
-                "ADMIN UUID MISMATCH."
-            );
-
-            return false;
-
-        }
-
-
-        console.log(
-            "ADMIN AUTHORIZATION SUCCESS:",
-            user.email
-        );
-
-
-        return true;
 
     } catch (error) {
 
         console.error(
-            "ADMIN VERIFICATION EXCEPTION:",
+            "Admin verification error:",
             error
         );
 
@@ -171,12 +130,10 @@ async function verifyAdminAccess() {
 
 
 // ============================================================
-// SHOW LOGIN PAGE
+// PAGE STATE
 // ============================================================
 
-function showLoginPage(
-    errorMessage = ""
-) {
+function showLoginPage(errorMessage = "") {
 
     const loginPage =
         getElement("loginPage");
@@ -215,6 +172,9 @@ function showLoginPage(
     }
 
 
+    const email =
+        getElement("adminEmail");
+
     const password =
         getElement("adminPassword");
 
@@ -226,14 +186,20 @@ function showLoginPage(
     }
 
 
+    if (
+        email &&
+        !errorMessage
+    ) {
+
+        email.focus();
+
+    }
+
+
     isAdminAuthenticated = false;
 
 }
 
-
-// ============================================================
-// SHOW ADMIN DASHBOARD
-// ============================================================
 
 async function showAdminDashboard() {
 
@@ -275,9 +241,7 @@ async function showAdminDashboard() {
 
 
         const {
-            data: {
-                user
-            }
+            data: { user }
         } = await supabaseClient.auth.getUser();
 
 
@@ -292,10 +256,8 @@ async function showAdminDashboard() {
 
             loggedInAdmin.textContent =
                 "Signed in as: " +
-                (
-                    user.email ||
-                    "Administrator"
-                );
+                (user.email ||
+                    "Administrator");
 
         }
 
@@ -308,6 +270,7 @@ async function showAdminDashboard() {
         await restoreWinner();
 
         startParticipantRealtime();
+
 
     } finally {
 
@@ -354,7 +317,10 @@ async function loginAdmin(event) {
     }
 
 
-    if (!email || !password) {
+    if (
+        !email ||
+        !password
+    ) {
 
         if (loginError) {
 
@@ -380,27 +346,26 @@ async function loginAdmin(event) {
 
     try {
 
-        console.log(
-            "Attempting Supabase login..."
-        );
-
-
         const {
             data,
             error
-        } = await supabaseClient.auth.signInWithPassword({
+        } =
+            await supabaseClient.auth
+                .signInWithPassword({
 
-            email: email,
+                    email,
+                    password
 
-            password: password
-
-        });
+                });
 
 
-        if (error) {
+        if (
+            error ||
+            !data?.user
+        ) {
 
             console.error(
-                "SUPABASE LOGIN ERROR:",
+                "Supabase login error:",
                 error
             );
 
@@ -417,41 +382,11 @@ async function loginAdmin(event) {
         }
 
 
-        if (!data?.user) {
-
-            console.error(
-                "Login succeeded but no user was returned."
-            );
-
-
-            if (loginError) {
-
-                loginError.textContent =
-                    "Unable to verify your account.";
-
-            }
-
-            return;
-
-        }
-
-
-        console.log(
-            "Password authentication successful:",
-            data.user.id
-        );
-
-
         const isAdmin =
             await verifyAdminAccess();
 
 
         if (!isAdmin) {
-
-            console.error(
-                "Authenticated user is not authorized as admin."
-            );
-
 
             await supabaseClient.auth.signOut();
 
@@ -468,17 +403,13 @@ async function loginAdmin(event) {
         }
 
 
-        console.log(
-            "Admin login successful."
-        );
-
-
         await showAdminDashboard();
+
 
     } catch (error) {
 
         console.error(
-            "LOGIN EXCEPTION:",
+            "Login exception:",
             error
         );
 
@@ -489,6 +420,7 @@ async function loginAdmin(event) {
                 "Unable to login. Please try again.";
 
         }
+
 
     } finally {
 
@@ -524,22 +456,24 @@ async function logoutAdmin() {
 
         const {
             error
-        } = await supabaseClient.auth.signOut();
+        } =
+            await supabaseClient.auth.signOut();
 
 
         if (error) {
 
             console.error(
-                "LOGOUT ERROR:",
+                "Logout error:",
                 error
             );
 
         }
 
+
     } catch (error) {
 
         console.error(
-            "LOGOUT EXCEPTION:",
+            "Logout exception:",
             error
         );
 
@@ -563,7 +497,7 @@ async function logoutAdmin() {
 
 
 // ============================================================
-// GET PARTICIPANTS
+// PARTICIPANTS
 // ============================================================
 
 async function getParticipants() {
@@ -580,23 +514,24 @@ async function getParticipants() {
         const {
             data,
             error
-        } = await supabaseClient
-            .from("Participants")
-            .select(
-                "id, created_at, registration_id, name, phone, area, city, source, photo_url"
-            )
-            .order(
-                "id",
-                {
-                    ascending: true
-                }
-            );
+        } =
+            await supabaseClient
+                .from("Participants")
+                .select(
+                    "id, created_at, registration_id, name, phone, area, city, source, photo_url"
+                )
+                .order(
+                    "id",
+                    {
+                        ascending: true
+                    }
+                );
 
 
         if (error) {
 
             console.error(
-                "PARTICIPANT FETCH ERROR:",
+                "Participant fetch error:",
                 error
             );
 
@@ -607,10 +542,11 @@ async function getParticipants() {
 
         return data || [];
 
+
     } catch (error) {
 
         console.error(
-            "PARTICIPANT FETCH EXCEPTION:",
+            "Participant fetch exception:",
             error
         );
 
@@ -620,10 +556,6 @@ async function getParticipants() {
 
 }
 
-
-// ============================================================
-// LOAD PARTICIPANTS
-// ============================================================
 
 async function loadParticipants() {
 
@@ -654,16 +586,14 @@ async function loadParticipants() {
 }
 
 
-// ============================================================
-// UPDATE PARTICIPANT COUNT
-// ============================================================
-
 function updateParticipantCount(
     participants
 ) {
 
     const countElement =
-        getElement("participantCount");
+        getElement(
+            "participantCount"
+        );
 
 
     if (countElement) {
@@ -704,7 +634,7 @@ function startParticipantRealtime() {
                     schema: "public",
                     table: "Participants"
                 },
-                async function(payload) {
+                async (payload) => {
 
                     console.log(
                         "Live participant update:",
@@ -734,12 +664,36 @@ function startParticipantRealtime() {
                 }
             )
             .subscribe(
-                function(status) {
+                (status) => {
 
                     console.log(
                         "Realtime status:",
                         status
                     );
+
+
+                    if (
+                        status ===
+                        "CHANNEL_ERROR"
+                    ) {
+
+                        console.error(
+                            "Realtime channel error. Check Supabase Realtime publication and RLS policies."
+                        );
+
+                    }
+
+
+                    if (
+                        status ===
+                        "TIMED_OUT"
+                    ) {
+
+                        console.error(
+                            "Realtime connection timed out."
+                        );
+
+                    }
 
                 }
             );
@@ -747,13 +701,11 @@ function startParticipantRealtime() {
 }
 
 
-// ============================================================
-// STOP REALTIME
-// ============================================================
-
 async function stopParticipantRealtime() {
 
-    if (!participantRealtimeChannel) {
+    if (
+        !participantRealtimeChannel
+    ) {
 
         return;
 
@@ -767,6 +719,7 @@ async function stopParticipantRealtime() {
                 participantRealtimeChannel
             );
 
+
     } catch (error) {
 
         console.error(
@@ -777,13 +730,14 @@ async function stopParticipantRealtime() {
     }
 
 
-    participantRealtimeChannel = null;
+    participantRealtimeChannel =
+        null;
 
 }
 
 
 // ============================================================
-// SOURCE
+// SOURCE LABEL
 // ============================================================
 
 function getProfessionalSource(
@@ -817,7 +771,9 @@ function getProfessionalSource(
 
     if (
         photoSources.has(rawSource) ||
-        Boolean(participant?.photo_url)
+        Boolean(
+            participant?.photo_url
+        )
     ) {
 
         return "Photo Upload";
@@ -902,37 +858,49 @@ function displayParticipants(
                         ${index + 1}
                     </td>
 
+
                     <td>
+
                         <strong>
                             ${escapeHTML(
                                 registrationId
                             )}
                         </strong>
+
                     </td>
+
 
                     <td>
                         ${escapeHTML(
-                            participant.name || "-"
+                            participant.name ||
+                            "-"
                         )}
                     </td>
 
-                    <td>
-                        ${escapeHTML(
-                            participant.phone || "-"
-                        )}
-                    </td>
 
                     <td>
                         ${escapeHTML(
-                            participant.area || "-"
+                            participant.phone ||
+                            "-"
                         )}
                     </td>
 
+
                     <td>
                         ${escapeHTML(
-                            participant.city || "-"
+                            participant.area ||
+                            "-"
                         )}
                     </td>
+
+
+                    <td>
+                        ${escapeHTML(
+                            participant.city ||
+                            "-"
+                        )}
+                    </td>
+
 
                     <td>
                         ${escapeHTML(
@@ -1017,7 +985,8 @@ async function performSearch() {
                 return (
 
                     String(
-                        participant.name || ""
+                        participant.name ||
+                        ""
                     )
                         .toLowerCase()
                         .includes(searchValue)
@@ -1025,7 +994,8 @@ async function performSearch() {
                     ||
 
                     String(
-                        participant.phone || ""
+                        participant.phone ||
+                        ""
                     )
                         .toLowerCase()
                         .includes(searchValue)
@@ -1033,7 +1003,8 @@ async function performSearch() {
                     ||
 
                     String(
-                        participant.registration_id || ""
+                        participant.registration_id ||
+                        ""
                     )
                         .toLowerCase()
                         .includes(searchValue)
@@ -1041,7 +1012,8 @@ async function performSearch() {
                     ||
 
                     String(
-                        participant.area || ""
+                        participant.area ||
+                        ""
                     )
                         .toLowerCase()
                         .includes(searchValue)
@@ -1049,14 +1021,17 @@ async function performSearch() {
                     ||
 
                     String(
-                        participant.city || ""
+                        participant.city ||
+                        ""
                     )
                         .toLowerCase()
                         .includes(searchValue)
 
                     ||
 
-                    source.includes(searchValue)
+                    source.includes(
+                        searchValue
+                    )
 
                 );
 
@@ -1141,10 +1116,6 @@ async function loadDrawHistory() {
     }
 
 
-    // --------------------------------------------------------
-    // SHOW LOADING STATE
-    // --------------------------------------------------------
-
     historyList.innerHTML = `
 
         <tr>
@@ -1171,23 +1142,24 @@ async function loadDrawHistory() {
         const {
             data,
             error
-        } = await supabaseClient
-            .from("draw_history")
-            .select(`
-                id,
-                draw_number,
-                draw_date,
-                draw_time,
-                winner_name,
-                winner_registration_id,
-                winner_phone
-            `)
-            .order(
-                "draw_number",
-                {
-                    ascending: false
-                }
-            );
+        } =
+            await supabaseClient
+                .from("draw_history")
+                .select(`
+                    id,
+                    draw_number,
+                    draw_date,
+                    draw_time,
+                    winner_name,
+                    winner_registration_id,
+                    winner_phone
+                `)
+                .order(
+                    "draw_number",
+                    {
+                        ascending: false
+                    }
+                );
 
 
         if (error) {
@@ -1218,10 +1190,6 @@ async function loadDrawHistory() {
         }
 
 
-        // ----------------------------------------------------
-        // NO HISTORY
-        // ----------------------------------------------------
-
         if (
             !data ||
             data.length === 0
@@ -1247,10 +1215,6 @@ async function loadDrawHistory() {
         }
 
 
-        // ----------------------------------------------------
-        // DISPLAY HISTORY
-        // ----------------------------------------------------
-
         historyList.innerHTML = "";
 
 
@@ -1262,42 +1226,57 @@ async function loadDrawHistory() {
                     <tr>
 
                         <td>
+
                             <strong>
                                 ${escapeHTML(
-                                    draw.draw_number ?? "-"
+                                    draw.draw_number ??
+                                    "-"
                                 )}
                             </strong>
+
                         </td>
+
 
                         <td>
                             ${escapeHTML(
-                                draw.draw_date || "-"
+                                draw.draw_date ||
+                                "-"
                             )}
                         </td>
+
 
                         <td>
                             ${escapeHTML(
-                                draw.draw_time || "-"
+                                draw.draw_time ||
+                                "-"
                             )}
                         </td>
+
 
                         <td>
                             ${escapeHTML(
-                                draw.winner_name || "-"
+                                draw.winner_name ||
+                                "-"
                             )}
                         </td>
 
+
                         <td>
+
                             <strong>
                                 ${escapeHTML(
-                                    draw.winner_registration_id || "-"
+                                    draw.winner_registration_id ||
+                                    "-"
                                 )}
                             </strong>
+
                         </td>
+
 
                         <td>
                             ${escapeHTML(
-                                draw.winner_phone || "-"
+                                draw.winner_phone ||
+                                "-"
                             )}
                         </td>
 
@@ -1411,10 +1390,6 @@ function showAdminSection(
     }
 
 
-    // --------------------------------------------------------
-    // LOAD DRAW HISTORY WHEN HISTORY SECTION IS OPENED
-    // --------------------------------------------------------
-
     if (
         sectionId ===
         "drawHistorySection"
@@ -1430,14 +1405,6 @@ function showAdminSection(
 // ============================================================
 // MAKE INLINE HTML EVENTS ACCESSIBLE
 // ============================================================
-//
-// The Draw History button in admin.html uses:
-//
-// onclick="showAdminSection('drawHistorySection', this)"
-//
-// Explicitly exposing these functions on window guarantees that
-// the inline HTML event can access them.
-// ============================================================
 
 window.showAdminSection =
     showAdminSection;
@@ -1447,19 +1414,416 @@ window.loadDrawHistory =
 
 
 // ============================================================
+// DOWNLOAD DRAW HISTORY TO EXCEL
+// ============================================================
+
+async function downloadDrawHistory() {
+
+    if (!isAdminAuthenticated) {
+
+        alert(
+            "Administrator authentication is required."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof XLSX === "undefined"
+    ) {
+
+        alert(
+            "Excel export library is unavailable. Please try again."
+        );
+
+        return;
+
+    }
+
+
+    const downloadButton =
+        getElement(
+            "downloadHistoryButton"
+        );
+
+
+    const originalText =
+        downloadButton
+            ? downloadButton.textContent
+            : "⬇ Download Excel";
+
+
+    if (downloadButton) {
+
+        downloadButton.disabled = true;
+
+        downloadButton.textContent =
+            "Preparing Excel...";
+
+    }
+
+
+    try {
+
+        console.log(
+            "Preparing draw history Excel file..."
+        );
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("draw_history")
+                .select(`
+                    draw_number,
+                    draw_date,
+                    draw_time,
+                    winner_name,
+                    winner_registration_id,
+                    winner_phone
+                `)
+                .order(
+                    "draw_number",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "DRAW HISTORY EXCEL FETCH ERROR:",
+                error
+            );
+
+
+            alert(
+                "Unable to load draw history for Excel export."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            alert(
+                "There is no draw history available to download."
+            );
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // PREPARE EXCEL DATA
+        // ----------------------------------------------------
+
+        const excelData =
+            data.map(
+                function(draw) {
+
+                    return {
+
+                        "Draw No.":
+                            draw.draw_number ??
+                            "",
+
+                        "Date":
+                            draw.draw_date ||
+                            "",
+
+                        "Time":
+                            draw.draw_time ||
+                            "",
+
+                        "Winner":
+                            draw.winner_name ||
+                            "",
+
+                        "Registration ID":
+                            draw.winner_registration_id ||
+                            "",
+
+                        "Phone":
+                            draw.winner_phone ||
+                            ""
+
+                    };
+
+                }
+            );
+
+
+        // ----------------------------------------------------
+        // CREATE WORKSHEET
+        // ----------------------------------------------------
+
+        const worksheet =
+            XLSX.utils.json_to_sheet(
+                excelData
+            );
+
+
+        // ----------------------------------------------------
+        // COLUMN WIDTHS
+        // ----------------------------------------------------
+
+        worksheet["!cols"] = [
+
+            {
+                wch: 12
+            },
+
+            {
+                wch: 15
+            },
+
+            {
+                wch: 15
+            },
+
+            {
+                wch: 28
+            },
+
+            {
+                wch: 22
+            },
+
+            {
+                wch: 18
+            }
+
+        ];
+
+
+        // ----------------------------------------------------
+        // CREATE WORKBOOK
+        // ----------------------------------------------------
+
+        const workbook =
+            XLSX.utils.book_new();
+
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Draw History"
+        );
+
+
+        // ----------------------------------------------------
+        // DOWNLOAD FILE
+        // ----------------------------------------------------
+
+        XLSX.writeFile(
+            workbook,
+            "Lucky_Draw_History.xlsx"
+        );
+
+
+        console.log(
+            "Draw history Excel downloaded successfully."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "DRAW HISTORY EXCEL EXCEPTION:",
+            error
+        );
+
+
+        alert(
+            "An error occurred while downloading draw history."
+        );
+
+
+    } finally {
+
+        if (downloadButton) {
+
+            downloadButton.disabled = false;
+
+            downloadButton.textContent =
+                originalText;
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// EXCEL - PARTICIPANTS
+// ============================================================
+
+async function downloadParticipants() {
+
+    const participants =
+        await getParticipants();
+
+
+    if (!participants.length) {
+
+        alert(
+            "No participants available to download!"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof XLSX === "undefined"
+    ) {
+
+        alert(
+            "Excel export library is unavailable."
+        );
+
+        return;
+
+    }
+
+
+    const excelData =
+        participants.map(
+            function(
+                participant,
+                index
+            ) {
+
+                return {
+
+                    "No.":
+                        index + 1,
+
+                    "Registration ID":
+                        participant.registration_id ||
+                        participant.id,
+
+                    "Name":
+                        participant.name ||
+                        "",
+
+                    "Phone":
+                        participant.phone ||
+                        "",
+
+                    "Area":
+                        participant.area ||
+                        "",
+
+                    "City":
+                        participant.city ||
+                        "",
+
+                    "Source":
+                        getProfessionalSource(
+                            participant
+                        )
+
+                };
+
+            }
+        );
+
+
+    const worksheet =
+        XLSX.utils.json_to_sheet(
+            excelData
+        );
+
+
+    worksheet["!cols"] = [
+
+        {
+            wch: 8
+        },
+
+        {
+            wch: 20
+        },
+
+        {
+            wch: 25
+        },
+
+        {
+            wch: 18
+        },
+
+        {
+            wch: 30
+        },
+
+        {
+            wch: 25
+        },
+
+        {
+            wch: 22
+        }
+
+    ];
+
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Participants"
+    );
+
+
+    XLSX.writeFile(
+        workbook,
+        "Lucky_Draw_Participants.xlsx"
+    );
+
+}
+
+
+// ============================================================
 // DRAW MODAL
 // ============================================================
 
 function openDrawModal() {
 
     const modal =
-        getElement("drawModal");
+        getElement(
+            "drawModal"
+        );
+
 
     const message =
-        getElement("drawModalMessage");
+        getElement(
+            "drawModalMessage"
+        );
+
 
     const confirmButton =
-        getElement("confirmDrawButton");
+        getElement(
+            "confirmDrawButton"
+        );
 
 
     drawAction =
@@ -1484,7 +1848,9 @@ function openDrawModal() {
 
     if (modal) {
 
-        modal.classList.add("show");
+        modal.classList.add(
+            "show"
+        );
 
     }
 
@@ -1498,12 +1864,16 @@ function openDrawModal() {
 function closeDrawModal() {
 
     const modal =
-        getElement("drawModal");
+        getElement(
+            "drawModal"
+        );
 
 
     if (modal) {
 
-        modal.classList.remove("show");
+        modal.classList.remove(
+            "show"
+        );
 
     }
 
@@ -1600,26 +1970,22 @@ async function selectNewWinner() {
         }
 
 
-        // ====================================================
-        // REMEMBER THE WINNER THAT WAS RESET
-        // ====================================================
-
         const previousWinnerId =
             localStorage.getItem(
                 "previousLuckyDrawWinnerId"
             );
 
 
-        // ====================================================
-        // MAXIMUM RETRIES
-        // ====================================================
-
-        const MAX_DRAW_ATTEMPTS = 20;
+        const MAX_DRAW_ATTEMPTS =
+            20;
 
 
-        let selectedWinner = null;
+        let selectedWinner =
+            null;
 
-        let lastResponse = null;
+
+        let lastResponse =
+            null;
 
 
         for (
@@ -1636,14 +2002,15 @@ async function selectNewWinner() {
             const {
                 data,
                 error
-            } = await supabaseClient.functions.invoke(
-                "draw-winner",
-                {
-                    body: {
-                        action: "draw"
+            } =
+                await supabaseClient.functions.invoke(
+                    "draw-winner",
+                    {
+                        body: {
+                            action: "draw"
+                        }
                     }
-                }
-            );
+                );
 
 
             if (error) {
@@ -1667,6 +2034,7 @@ async function selectNewWinner() {
                         const errorBody =
                             await error.context.json();
 
+
                         if (
                             errorBody?.error
                         ) {
@@ -1677,8 +2045,6 @@ async function selectNewWinner() {
                         }
 
                     } catch (_) {
-
-                        // Ignore response parsing errors.
 
                     }
 
@@ -1815,7 +2181,9 @@ async function selectNewWinner() {
 
             localStorage.setItem(
                 "currentLuckyDrawWinnerId",
-                String(selectedWinnerId)
+                String(
+                    selectedWinnerId
+                )
             );
 
         }
@@ -1831,6 +2199,7 @@ async function selectNewWinner() {
             selectedWinner
         );
 
+
     } catch (error) {
 
         console.error(
@@ -1842,6 +2211,7 @@ async function selectNewWinner() {
         alert(
             "An error occurred while drawing the winner."
         );
+
 
     } finally {
 
@@ -1879,7 +2249,10 @@ function displayWinner(
         );
 
 
-    if (!winnerResult || !winner) {
+    if (
+        !winnerResult ||
+        !winner
+    ) {
 
         return;
 
@@ -1898,29 +2271,73 @@ function displayWinner(
             🎉 Congratulations!
         </h3>
 
-        <p>
-            <strong>Registration ID:</strong>
-            ${escapeHTML(registrationId)}
-        </p>
 
         <p>
-            <strong>Name:</strong>
-            ${escapeHTML(winner.name || "-")}
+
+            <strong>
+                Registration ID:
+            </strong>
+
+            ${escapeHTML(
+                registrationId
+            )}
+
         </p>
 
-        <p>
-            <strong>Phone:</strong>
-            ${escapeHTML(winner.phone || "-")}
-        </p>
 
         <p>
-            <strong>Area:</strong>
-            ${escapeHTML(winner.area || "-")}
+
+            <strong>
+                Name:
+            </strong>
+
+            ${escapeHTML(
+                winner.name ||
+                "-"
+            )}
+
         </p>
 
+
         <p>
-            <strong>City:</strong>
-            ${escapeHTML(winner.city || "-")}
+
+            <strong>
+                Phone:
+            </strong>
+
+            ${escapeHTML(
+                winner.phone ||
+                "-"
+            )}
+
+        </p>
+
+
+        <p>
+
+            <strong>
+                Area:
+            </strong>
+
+            ${escapeHTML(
+                winner.area ||
+                "-"
+            )}
+
+        </p>
+
+
+        <p>
+
+            <strong>
+                City:
+            </strong>
+
+            ${escapeHTML(
+                winner.city ||
+                "-"
+            )}
+
         </p>
 
     `;
@@ -1930,7 +2347,6 @@ function displayWinner(
 
 // ============================================================
 // RESET DRAW
-// CUSTOM COLORFUL CONFIRMATION BOX
 // ============================================================
 
 function resetDraw() {
@@ -1947,16 +2363,9 @@ function resetDraw() {
 
 
     const modal =
-        getElement("resetModal");
-
-    const message =
-        getElement("resetModalMessage");
-
-    const confirmButton =
-        getElement("confirmResetButton");
-
-    const cancelButton =
-        getElement("cancelResetButton");
+        getElement(
+            "resetModal"
+        );
 
 
     if (!modal) {
@@ -1970,147 +2379,9 @@ function resetDraw() {
     }
 
 
-    modal.classList.add("show");
-
-    modal.style.position = "fixed";
-    modal.style.inset = "0";
-    modal.style.zIndex = "999999";
-    modal.style.display = "flex";
-    modal.style.alignItems = "center";
-    modal.style.justifyContent = "center";
-    modal.style.padding = "20px";
-    modal.style.background =
-        "rgba(15, 23, 42, 0.68)";
-    modal.style.backdropFilter =
-        "blur(7px)";
-
-
-    const modalBox =
-        modal.querySelector(
-            ".modal-content"
-        ) ||
-        modal.querySelector(
-            ".modal-dialog"
-        ) ||
-        modal.firstElementChild;
-
-
-    if (modalBox) {
-
-        modalBox.style.width = "100%";
-        modalBox.style.maxWidth = "580px";
-        modalBox.style.background = "#ffffff";
-        modalBox.style.borderRadius = "28px";
-        modalBox.style.padding = "38px";
-        modalBox.style.boxSizing = "border-box";
-        modalBox.style.textAlign = "center";
-        modalBox.style.boxShadow =
-            "0 25px 70px rgba(0,0,0,0.30)";
-        modalBox.style.borderTop =
-            "7px solid #ff3d71";
-
-    }
-
-
-    if (message) {
-
-        message.innerHTML = `
-
-            <div style="
-                text-align:center;
-                padding:5px 5px 18px;
-            ">
-
-                <div style="
-                    width:92px;
-                    height:92px;
-                    margin:0 auto 22px;
-                    border-radius:50%;
-                    background:
-                        linear-gradient(
-                            135deg,
-                            #ff3d71,
-                            #ff9d00
-                        );
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    font-size:46px;
-                    box-shadow:
-                        0 12px 28px
-                        rgba(255,61,113,0.28);
-                ">
-                    🔄
-                </div>
-
-                <h2 style="
-                    margin:0 0 14px;
-                    font-size:34px;
-                    font-weight:800;
-                    color:#0f172a;
-                ">
-                    Reset Lucky Draw?
-                </h2>
-
-                <p style="
-                    margin:0 auto;
-                    max-width:470px;
-                    font-size:18px;
-                    line-height:1.6;
-                    color:#334155;
-                ">
-                    Are you sure you want to reset the lucky draw?
-                    <br><br>
-                    The current winner will be removed and
-                    a new draw can be performed.
-                </p>
-
-            </div>
-
-        `;
-
-    }
-
-
-    if (confirmButton) {
-
-        confirmButton.textContent =
-            "🔄 Reset Draw";
-
-        confirmButton.style.border = "none";
-        confirmButton.style.borderRadius = "13px";
-        confirmButton.style.padding = "15px 30px";
-        confirmButton.style.minWidth = "160px";
-        confirmButton.style.background =
-            "linear-gradient(135deg, #ff3d71, #ff9d00)";
-        confirmButton.style.color = "#ffffff";
-        confirmButton.style.fontSize = "17px";
-        confirmButton.style.fontWeight = "700";
-        confirmButton.style.cursor = "pointer";
-        confirmButton.style.boxShadow =
-            "0 8px 20px rgba(255,61,113,0.25)";
-
-    }
-
-
-    if (cancelButton) {
-
-        cancelButton.textContent =
-            "Cancel";
-
-        cancelButton.style.border = "none";
-        cancelButton.style.borderRadius = "13px";
-        cancelButton.style.padding = "15px 30px";
-        cancelButton.style.minWidth = "125px";
-        cancelButton.style.background =
-            "#64748b";
-        cancelButton.style.color =
-            "#ffffff";
-        cancelButton.style.fontSize = "17px";
-        cancelButton.style.fontWeight = "700";
-        cancelButton.style.cursor = "pointer";
-
-    }
+    modal.classList.add(
+        "show"
+    );
 
 }
 
@@ -2122,14 +2393,16 @@ function resetDraw() {
 function closeResetModal() {
 
     const modal =
-        getElement("resetModal");
+        getElement(
+            "resetModal"
+        );
 
 
     if (modal) {
 
-        modal.classList.remove("show");
-
-        modal.style.display = "none";
+        modal.classList.remove(
+            "show"
+        );
 
     }
 
@@ -2137,108 +2410,52 @@ function closeResetModal() {
 
 
 // ============================================================
-// CONFIRM RESET
-// SECURE EDGE FUNCTION
+// CONFIRM RESET DRAW
 // ============================================================
 
 async function confirmResetDraw() {
 
-    if (!isAdminAuthenticated) {
-
-        alert(
-            "Administrator authentication is required."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        const {
-            data: statusData,
-            error: statusError
-        } =
-            await supabaseClient.functions.invoke(
-                "draw-winner",
-                {
-                    body: {
-                        action: "status"
-                    }
-                }
-            );
-
-
-        if (
-            !statusError &&
-            statusData?.winner
-        ) {
-
-            const currentWinnerId =
-                statusData.winner.registration_id ||
-                statusData.winner.id ||
-                "";
-
-
-            if (currentWinnerId) {
-
-                localStorage.setItem(
-                    "previousLuckyDrawWinnerId",
-                    String(currentWinnerId)
-                );
-
-            }
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Unable to retrieve current winner before reset:",
-            error
-        );
-
-    }
-
-
-    closeResetModal();
-
-
     const resetButton =
         getElement(
-            "resetDrawButton"
+            "confirmResetButton"
         );
+
+
+    if (resetButton) {
+
+        resetButton.disabled = true;
+
+        resetButton.textContent =
+            "🔄 Resetting...";
+
+    }
 
 
     try {
 
-        if (resetButton) {
+        if (!isAdminAuthenticated) {
 
-            resetButton.disabled = true;
+            alert(
+                "Administrator authentication is required."
+            );
 
-            resetButton.textContent =
-                "🔄 Resetting...";
+            return;
 
         }
-
-
-        console.log(
-            "Calling secure draw-winner Edge Function for reset..."
-        );
 
 
         const {
             data,
             error
-        } = await supabaseClient.functions.invoke(
-            "draw-winner",
-            {
-                body: {
-                    action: "reset"
+        } =
+            await supabaseClient.functions.invoke(
+                "draw-winner",
+                {
+                    body: {
+                        action: "reset"
+                    }
                 }
-            }
-        );
+            );
 
 
         if (error) {
@@ -2250,17 +2467,22 @@ async function confirmResetDraw() {
 
 
             let message =
-                "Unable to reset the draw. Please try again.";
+                "Unable to reset the draw.";
 
 
-            if (error.context) {
+            if (
+                error.context
+            ) {
 
                 try {
 
                     const errorBody =
                         await error.context.json();
 
-                    if (errorBody?.error) {
+
+                    if (
+                        errorBody?.error
+                    ) {
 
                         message =
                             errorBody.error;
@@ -2268,8 +2490,6 @@ async function confirmResetDraw() {
                     }
 
                 } catch (_) {
-
-                    // Ignore response parsing errors.
 
                 }
 
@@ -2285,11 +2505,6 @@ async function confirmResetDraw() {
 
         if (!data) {
 
-            console.error(
-                "RESET FUNCTION RETURNED NO DATA."
-            );
-
-
             alert(
                 "The server returned no response."
             );
@@ -2299,7 +2514,9 @@ async function confirmResetDraw() {
         }
 
 
-        if (data.success !== true) {
+        if (
+            data.success !== true
+        ) {
 
             console.error(
                 "RESET DRAW FAILED:",
@@ -2336,6 +2553,9 @@ async function confirmResetDraw() {
         }
 
 
+        closeResetModal();
+
+
         console.log(
             "Lucky draw reset successfully."
         );
@@ -2352,6 +2572,7 @@ async function confirmResetDraw() {
         alert(
             "An error occurred while resetting the draw."
         );
+
 
     } finally {
 
@@ -2383,7 +2604,9 @@ async function restoreWinner() {
 
 
     const winnerResult =
-        getElement("winnerResult");
+        getElement(
+            "winnerResult"
+        );
 
 
     if (!winnerResult) {
@@ -2404,22 +2627,18 @@ async function restoreWinner() {
         `;
 
 
-        console.log(
-            "Loading saved lucky draw winner..."
-        );
-
-
         const {
             data,
             error
-        } = await supabaseClient.functions.invoke(
-            "draw-winner",
-            {
-                body: {
-                    action: "status"
+        } =
+            await supabaseClient.functions.invoke(
+                "draw-winner",
+                {
+                    body: {
+                        action: "status"
+                    }
                 }
-            }
-        );
+            );
 
 
         if (error) {
@@ -2444,11 +2663,6 @@ async function restoreWinner() {
 
 
         if (!data) {
-
-            console.error(
-                "WINNER RESTORE RETURNED NO DATA."
-            );
-
 
             winnerResult.innerHTML = `
 
@@ -2486,12 +2700,6 @@ async function restoreWinner() {
         );
 
 
-        console.log(
-            "Saved winner restored successfully:",
-            data.winner
-        );
-
-
     } catch (error) {
 
         console.error(
@@ -2514,128 +2722,15 @@ async function restoreWinner() {
 
 
 // ============================================================
-// DOWNLOAD EXCEL
-// ============================================================
-
-async function downloadParticipants() {
-
-    const participants =
-        await getParticipants();
-
-
-    if (!participants.length) {
-
-        alert(
-            "No participants available to download!"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        typeof XLSX === "undefined"
-    ) {
-
-        alert(
-            "Excel export library is unavailable."
-        );
-
-        return;
-
-    }
-
-
-    const excelData =
-        participants.map(
-            function(
-                participant,
-                index
-            ) {
-
-                return {
-
-                    "No.":
-                        index + 1,
-
-                    "Registration ID":
-                        participant.registration_id ||
-                        participant.id,
-
-                    "Name":
-                        participant.name ||
-                        "",
-
-                    "Phone":
-                        participant.phone ||
-                        "",
-
-                    "Area":
-                        participant.area ||
-                        "",
-
-                    "City":
-                        participant.city ||
-                        "",
-
-                    "Source":
-                        getProfessionalSource(
-                            participant
-                        )
-
-                };
-
-            }
-        );
-
-
-    const worksheet =
-        XLSX.utils.json_to_sheet(
-            excelData
-        );
-
-
-    worksheet["!cols"] = [
-
-        { wch: 8 },
-        { wch: 20 },
-        { wch: 25 },
-        { wch: 18 },
-        { wch: 30 },
-        { wch: 25 },
-        { wch: 22 }
-
-    ];
-
-
-    const workbook =
-        XLSX.utils.book_new();
-
-
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        "Participants"
-    );
-
-
-    XLSX.writeFile(
-        workbook,
-        "Lucky_Draw_Participants.xlsx"
-    );
-
-}
-
-
-// ============================================================
 // EVENT LISTENERS
 // ============================================================
 
 function setupEventListeners() {
 
     const loginForm =
-        getElement("loginForm");
+        getElement(
+            "loginForm"
+        );
 
 
     if (loginForm) {
@@ -2649,7 +2744,9 @@ function setupEventListeners() {
 
 
     const logoutButton =
-        getElement("logoutButton");
+        getElement(
+            "logoutButton"
+        );
 
 
     if (logoutButton) {
@@ -2663,7 +2760,9 @@ function setupEventListeners() {
 
 
     const viewButton =
-        getElement("viewParticipantsButton");
+        getElement(
+            "viewParticipantsButton"
+        );
 
 
     if (viewButton) {
@@ -2677,7 +2776,9 @@ function setupEventListeners() {
 
 
     const drawButton =
-        getElement("drawWinnerButton");
+        getElement(
+            "drawWinnerButton"
+        );
 
 
     if (drawButton) {
@@ -2691,7 +2792,9 @@ function setupEventListeners() {
 
 
     const resetButton =
-        getElement("resetDrawButton");
+        getElement(
+            "resetDrawButton"
+        );
 
 
     if (resetButton) {
@@ -2704,8 +2807,14 @@ function setupEventListeners() {
     }
 
 
+    // --------------------------------------------------------
+    // PARTICIPANT EXCEL BUTTON
+    // --------------------------------------------------------
+
     const downloadButton =
-        getElement("downloadButton");
+        getElement(
+            "downloadButton"
+        );
 
 
     if (downloadButton) {
@@ -2718,8 +2827,30 @@ function setupEventListeners() {
     }
 
 
+    // --------------------------------------------------------
+    // DRAW HISTORY EXCEL BUTTON
+    // --------------------------------------------------------
+
+    const downloadHistoryButton =
+        getElement(
+            "downloadHistoryButton"
+        );
+
+
+    if (downloadHistoryButton) {
+
+        downloadHistoryButton.addEventListener(
+            "click",
+            downloadDrawHistory
+        );
+
+    }
+
+
     const searchButton =
-        getElement("searchButton");
+        getElement(
+            "searchButton"
+        );
 
 
     if (searchButton) {
@@ -2733,7 +2864,9 @@ function setupEventListeners() {
 
 
     const clearButton =
-        getElement("clearSearchButton");
+        getElement(
+            "clearSearchButton"
+        );
 
 
     if (clearButton) {
@@ -2747,7 +2880,9 @@ function setupEventListeners() {
 
 
     const searchInput =
-        getElement("searchInput");
+        getElement(
+            "searchInput"
+        );
 
 
     if (searchInput) {
@@ -2761,7 +2896,9 @@ function setupEventListeners() {
 
 
     const cancelDrawButton =
-        getElement("cancelDrawButton");
+        getElement(
+            "cancelDrawButton"
+        );
 
 
     if (cancelDrawButton) {
@@ -2775,7 +2912,9 @@ function setupEventListeners() {
 
 
     const confirmDrawButton =
-        getElement("confirmDrawButton");
+        getElement(
+            "confirmDrawButton"
+        );
 
 
     if (confirmDrawButton) {
@@ -2789,7 +2928,9 @@ function setupEventListeners() {
 
 
     const cancelResetButton =
-        getElement("cancelResetButton");
+        getElement(
+            "cancelResetButton"
+        );
 
 
     if (cancelResetButton) {
@@ -2803,7 +2944,9 @@ function setupEventListeners() {
 
 
     const confirmResetButton =
-        getElement("confirmResetButton");
+        getElement(
+            "confirmResetButton"
+        );
 
 
     if (confirmResetButton) {
@@ -2831,7 +2974,10 @@ supabaseClient.auth.onAuthStateChange(
         );
 
 
-        if (event === "SIGNED_OUT") {
+        if (
+            event ===
+            "SIGNED_OUT"
+        ) {
 
             if (!isInitializing) {
 
@@ -2862,7 +3008,9 @@ async function initializeAdmin() {
             data: {
                 session
             }
-        } = await supabaseClient.auth.getSession();
+        } =
+            await supabaseClient.auth
+                .getSession();
 
 
         if (!session) {
@@ -2899,6 +3047,7 @@ async function initializeAdmin() {
 
         await showAdminDashboard();
 
+
     } catch (error) {
 
         console.error(
@@ -2913,6 +3062,7 @@ async function initializeAdmin() {
         showLoginPage(
             "Unable to initialize admin access. Please try again."
         );
+
 
     } finally {
 
