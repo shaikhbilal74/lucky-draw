@@ -1695,20 +1695,6 @@ window.loadDrawHistory =
 // ============================================================
 // DOWNLOAD DRAW HISTORY TO EXCEL
 // ============================================================
-//
-// IMPORTANT:
-// This function intentionally follows the SAME simple pattern
-// as the working dashboard participant Excel function.
-//
-// It does NOT:
-// - change the button HTML
-// - change the button icon
-// - disable the button
-// - change the button text
-// - require a page refresh
-//
-// It simply fetches draw_history and creates the Excel file.
-// ============================================================
 
 async function downloadDrawHistory() {
 
@@ -2111,7 +2097,21 @@ function setupEventListeners() {
 
     if (downloadHistoryButton) {
 
-        downloadHistoryButton.addEventListener(
+        // Remove any inline click handler from the History button
+        // and replace the element so an old click listener cannot
+        // trigger a second Excel download.
+        const cleanHistoryButton =
+            downloadHistoryButton.cloneNode(true);
+
+        cleanHistoryButton.removeAttribute(
+            "onclick"
+        );
+
+        downloadHistoryButton.replaceWith(
+            cleanHistoryButton
+        );
+
+        cleanHistoryButton.addEventListener(
             "click",
             downloadDrawHistory
         );
