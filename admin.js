@@ -1428,6 +1428,25 @@ function showAdminSection(
 
 
 // ============================================================
+// MAKE INLINE HTML EVENTS ACCESSIBLE
+// ============================================================
+//
+// The Draw History button in admin.html uses:
+//
+// onclick="showAdminSection('drawHistorySection', this)"
+//
+// Explicitly exposing these functions on window guarantees that
+// the inline HTML event can access them.
+// ============================================================
+
+window.showAdminSection =
+    showAdminSection;
+
+window.loadDrawHistory =
+    loadDrawHistory;
+
+
+// ============================================================
 // DRAW MODAL
 // ============================================================
 
@@ -1594,13 +1613,6 @@ async function selectNewWinner() {
         // ====================================================
         // MAXIMUM RETRIES
         // ====================================================
-        //
-        // If the server randomly returns the same winner
-        // that was just reset, request another server-side
-        // draw.
-        //
-        // This keeps the actual winner selection server-side.
-        // ====================================================
 
         const MAX_DRAW_ATTEMPTS = 20;
 
@@ -1743,10 +1755,6 @@ async function selectNewWinner() {
                 "";
 
 
-            // =================================================
-            // FIRST DRAW OR NO PREVIOUS WINNER
-            // =================================================
-
             if (
                 !previousWinnerId
             ) {
@@ -1758,10 +1766,6 @@ async function selectNewWinner() {
 
             }
 
-
-            // =================================================
-            // DIFFERENT PARTICIPANT
-            // =================================================
 
             if (
                 String(newWinnerId) !==
@@ -1776,10 +1780,6 @@ async function selectNewWinner() {
             }
 
 
-            // =================================================
-            // SAME PARTICIPANT
-            // =================================================
-
             console.warn(
                 "The server selected the previous winner again.",
                 "Requesting another draw..."
@@ -1787,10 +1787,6 @@ async function selectNewWinner() {
 
         }
 
-
-        // ====================================================
-        // SAFETY CHECK
-        // ====================================================
 
         if (!selectedWinner) {
 
@@ -1809,13 +1805,6 @@ async function selectNewWinner() {
         }
 
 
-        // ====================================================
-        // SAVE CURRENT WINNER AS THE PREVIOUS WINNER
-        // ====================================================
-        //
-        // This is important for the next reset.
-        // ====================================================
-
         const selectedWinnerId =
             selectedWinner.registration_id ||
             selectedWinner.id ||
@@ -1831,13 +1820,6 @@ async function selectNewWinner() {
 
         }
 
-
-        // ====================================================
-        // SHOW WINNER DIRECTLY
-        // ====================================================
-        //
-        // No success popup.
-        // ====================================================
 
         displayWinner(
             selectedWinner
@@ -1988,10 +1970,6 @@ function resetDraw() {
     }
 
 
-    // --------------------------------------------------------
-    // OPEN RESET MODAL
-    // --------------------------------------------------------
-
     modal.classList.add("show");
 
     modal.style.position = "fixed";
@@ -2006,10 +1984,6 @@ function resetDraw() {
     modal.style.backdropFilter =
         "blur(7px)";
 
-
-    // --------------------------------------------------------
-    // FIND MODAL BOX
-    // --------------------------------------------------------
 
     const modalBox =
         modal.querySelector(
@@ -2037,10 +2011,6 @@ function resetDraw() {
 
     }
 
-
-    // --------------------------------------------------------
-    // RESET MESSAGE
-    // --------------------------------------------------------
 
     if (message) {
 
@@ -2102,10 +2072,6 @@ function resetDraw() {
     }
 
 
-    // --------------------------------------------------------
-    // CONFIRM RESET BUTTON
-    // --------------------------------------------------------
-
     if (confirmButton) {
 
         confirmButton.textContent =
@@ -2126,10 +2092,6 @@ function resetDraw() {
 
     }
 
-
-    // --------------------------------------------------------
-    // CANCEL BUTTON
-    // --------------------------------------------------------
 
     if (cancelButton) {
 
@@ -2192,19 +2154,6 @@ async function confirmResetDraw() {
     }
 
 
-    // ========================================================
-    // REMEMBER CURRENT WINNER BEFORE RESET
-    // ========================================================
-    //
-    // This is the key fix.
-    //
-    // We keep the winner's ID even though the server-side
-    // winner is being reset.
-    //
-    // The next draw will make sure this participant is not
-    // selected again.
-    // ========================================================
-
     try {
 
         const {
@@ -2252,10 +2201,6 @@ async function confirmResetDraw() {
 
     }
 
-
-    // ========================================================
-    // CLOSE RESET MODAL
-    // ========================================================
 
     closeResetModal();
 
@@ -2371,10 +2316,6 @@ async function confirmResetDraw() {
 
         }
 
-
-        // ====================================================
-        // CLEAR CURRENT WINNER FROM SCREEN
-        // ====================================================
 
         const winnerResult =
             getElement(
@@ -2846,8 +2787,6 @@ function setupEventListeners() {
 
     }
 
-
-    // Reset modal listeners
 
     const cancelResetButton =
         getElement("cancelResetButton");
