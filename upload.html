@@ -17,8 +17,9 @@
         href="style.css"
     >
 
+
     <!-- ================================= -->
-    <!-- UPLOAD PAGE UI ONLY -->
+    <!-- UPLOAD PAGE UI -->
     <!-- ================================= -->
 
     <style>
@@ -29,22 +30,35 @@
 
         .upload-page {
             min-height: calc(100vh - 80px);
+
             display: flex;
+
             justify-content: center;
+
             align-items: flex-start;
+
             padding: 55px 20px 70px;
+
             box-sizing: border-box;
         }
 
 
         .upload-card {
             width: 100%;
+
             max-width: 700px;
+
             background: #ffffff;
+
             border-radius: 22px;
+
             padding: 38px;
+
             box-sizing: border-box;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+
+            box-shadow:
+                0 12px 35px
+                rgba(0, 0, 0, 0.08);
         }
 
 
@@ -54,6 +68,7 @@
 
         .upload-header {
             text-align: center;
+
             margin-bottom: 28px;
         }
 
@@ -61,66 +76,49 @@
         .upload-header-icon {
             width: 64px;
             height: 64px;
+
             margin: 0 auto 16px;
+
             border-radius: 18px;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
             font-size: 32px;
-            background: linear-gradient(
-                135deg,
-                #fff1f4,
-                #fff7ec
-            );
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff1f4,
+                    #fff7ec
+                );
         }
 
 
         .upload-header h1 {
             margin: 0 0 10px;
+
             font-size: 32px;
+
             line-height: 1.2;
+
             color: #111827;
         }
 
 
         .upload-header p {
             margin: 0 auto;
+
             max-width: 570px;
+
             font-size: 16px;
+
             line-height: 1.6;
+
             color: #64748b;
-        }
-
-
-        /* ================================= */
-        /* SMALL INSTRUCTION */
-        /* ================================= */
-
-        .upload-tip {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 18px;
-            padding: 14px 16px;
-            border-radius: 14px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            color: #475569;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-
-        .upload-tip-icon {
-            flex-shrink: 0;
-            font-size: 18px;
-        }
-
-
-        .upload-tip strong {
-            display: block;
-            margin-bottom: 2px;
-            color: #1e293b;
         }
 
 
@@ -130,32 +128,48 @@
 
         .compact-upload {
             width: 100%;
+
             min-height: 105px;
+
             box-sizing: border-box;
+
             display: flex;
+
             align-items: center;
+
             gap: 16px;
+
             padding: 18px 20px;
+
             border: 2px dashed #ff6b81;
+
             border-radius: 16px;
-            background: linear-gradient(
-                135deg,
-                #fff8f9,
-                #fffaf5
-            );
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff8f9,
+                    #fffaf7
+                );
+
             cursor: pointer;
+
             transition:
                 border-color 0.2s ease,
                 background 0.2s ease,
-                transform 0.2s ease,
-                box-shadow 0.2s ease;
+                transform 0.2s ease;
         }
 
 
         .compact-upload:hover {
-            border-color: #ff4260;
-            background: #fff5f7;
-            box-shadow: 0 6px 18px rgba(255, 66, 96, 0.08);
+            border-color: #ff4776;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff5f7,
+                    #fff8f2
+                );
         }
 
 
@@ -164,48 +178,108 @@
         }
 
 
+        /* ================================= */
+        /* UPLOAD ICON */
+        /* ================================= */
+
         .compact-upload-icon {
             width: 54px;
             height: 54px;
-            flex-shrink: 0;
-            border-radius: 14px;
+
+            min-width: 54px;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
-            background: #fff0f3;
+
+            border-radius: 14px;
+
+            background: #fff0f5;
+
             font-size: 27px;
         }
 
 
+        /* ================================= */
+        /* UPLOAD TEXT */
+        /* ================================= */
+
         .compact-upload-main {
-            min-width: 0;
             flex: 1;
+
+            min-width: 0;
+
             display: flex;
+
             flex-direction: column;
+
             gap: 4px;
         }
 
 
         .compact-upload-main strong {
             font-size: 17px;
-            color: #0f172a;
+
+            color: #111827;
         }
 
 
         .compact-upload-main span {
             font-size: 14px;
+
             color: #64748b;
         }
 
 
+        /* ================================= */
+        /* SELECTED FILE NAME */
+        /* ================================= */
+
         .selected-file-name {
-            max-width: 220px;
+            max-width: 130px;
+
             overflow: hidden;
+
             text-overflow: ellipsis;
+
             white-space: nowrap;
+
+            font-size: 13px;
+
             color: #334155;
-            font-size: 14px;
+
             text-align: right;
+        }
+
+
+        /* ================================= */
+        /* REAL FILE INPUT */
+        /* ================================= */
+
+        #registrationImage {
+            position: absolute;
+
+            width: 1px;
+
+            height: 1px;
+
+            padding: 0;
+
+            margin: -1px;
+
+            overflow: hidden;
+
+            clip: rect(0, 0, 0, 0);
+
+            clip-path: inset(50%);
+
+            white-space: nowrap;
+
+            border: 0;
+
+            opacity: 0;
         }
 
 
@@ -214,102 +288,138 @@
         /* ================================= */
 
         .ocr-status {
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 18px;
-            padding: 17px 18px;
-            border-radius: 15px;
             display: flex;
-            align-items: flex-start;
-            gap: 13px;
+
+            align-items: center;
+
+            gap: 14px;
+
+            margin-top: 18px;
+
+            padding: 16px 18px;
+
+            border-radius: 14px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
         }
 
 
         .ocr-status-icon {
-            width: 32px;
-            height: 32px;
-            flex-shrink: 0;
-            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+
+            min-width: 34px;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
-            font-weight: 700;
+
+            border-radius: 50%;
+
+            background: #eef2ff;
+
+            color: #1d4ed8;
+
             font-size: 17px;
+
+            font-weight: 700;
         }
 
 
         .ocr-status strong {
             display: block;
-            margin-bottom: 4px;
+
+            margin-bottom: 3px;
+
             font-size: 16px;
+
+            color: #111827;
         }
 
 
         .ocr-status p {
             margin: 0;
-            font-size: 14px;
-            line-height: 1.5;
+
+            font-size: 13px;
+
+            line-height: 1.45;
+
+            color: #64748b;
         }
 
 
-        .ocr-loading {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1e40af;
-        }
+        /* ================================= */
+        /* OCR SUCCESS */
+        /* ================================= */
 
-
-        .ocr-loading .ocr-status-icon {
-            background: #dbeafe;
-        }
-
-
-        .ocr-success {
+        .ocr-status.ocr-success {
             background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            color: #166534;
+
+            border-color: #bbf7d0;
         }
 
 
-        .ocr-success .ocr-status-icon {
+        .ocr-status.ocr-success
+        .ocr-status-icon {
             background: #dcfce7;
+
             color: #15803d;
         }
 
 
-        .ocr-warning {
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-            color: #9a3412;
+        /* ================================= */
+        /* OCR WARNING */
+        /* ================================= */
+
+        .ocr-status.ocr-warning {
+            background: #fffbeb;
+
+            border-color: #fde68a;
         }
 
 
-        .ocr-warning .ocr-status-icon {
-            background: #ffedd5;
-            color: #c2410c;
+        .ocr-status.ocr-warning
+        .ocr-status-icon {
+            background: #fef3c7;
+
+            color: #b45309;
         }
 
 
         /* ================================= */
-        /* BUTTONS */
+        /* CONTINUE BUTTON */
         /* ================================= */
 
         #continueButton {
             width: 100%;
-            margin-top: 22px;
-            min-height: 54px;
+
+            min-height: 52px;
+
+            margin-top: 20px;
+
             border: none;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 700;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ff3d71,
+                    #ff7a00
+                );
+
             color: #ffffff;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
             cursor: pointer;
-            background: linear-gradient(
-                135deg,
-                #ff3b5c,
-                #ff7518
-            );
-            box-shadow: 0 8px 18px rgba(255, 81, 61, 0.18);
+
             transition:
                 transform 0.2s ease,
                 box-shadow 0.2s ease;
@@ -318,41 +428,77 @@
 
         #continueButton:hover {
             transform: translateY(-1px);
-            box-shadow: 0 10px 22px rgba(255, 81, 61, 0.25);
+
+            box-shadow:
+                0 8px 20px
+                rgba(255, 61, 113, 0.22);
         }
 
 
-        #continueButton:active {
-            transform: translateY(0);
-        }
-
+        /* ================================= */
+        /* BACK BUTTON */
+        /* ================================= */
 
         .back-btn {
             width: 100%;
+
             min-height: 52px;
-            margin-top: 12px;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 600;
+
+            margin-top: 10px;
+
+            border: none;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #4f46e5
+                );
+
+            color: #ffffff;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
             cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .back-btn:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 8px 20px
+                rgba(37, 99, 235, 0.20);
         }
 
 
         /* ================================= */
-        /* MOBILE */
+        /* TABLET / MOBILE */
         /* ================================= */
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
 
             .upload-page {
                 min-height: calc(100vh - 70px);
-                padding: 25px 14px 40px;
+
+                padding: 28px 14px 50px;
             }
 
 
             .upload-card {
-                padding: 24px 18px;
-                border-radius: 18px;
+                max-width: 100%;
+
+                padding: 26px 20px;
+
+                border-radius: 19px;
             }
 
 
@@ -364,35 +510,36 @@
             .upload-header-icon {
                 width: 56px;
                 height: 56px;
+
                 margin-bottom: 13px;
+
                 font-size: 28px;
+
                 border-radius: 15px;
             }
 
 
             .upload-header h1 {
                 font-size: 26px;
+
                 line-height: 1.25;
             }
 
 
             .upload-header p {
                 font-size: 14px;
+
                 line-height: 1.5;
-            }
-
-
-            .upload-tip {
-                padding: 12px 13px;
-                font-size: 13px;
-                margin-bottom: 14px;
             }
 
 
             .compact-upload {
                 min-height: 92px;
+
                 padding: 14px;
+
                 gap: 12px;
+
                 border-radius: 14px;
             }
 
@@ -400,7 +547,11 @@
             .compact-upload-icon {
                 width: 46px;
                 height: 46px;
+
+                min-width: 46px;
+
                 border-radius: 12px;
+
                 font-size: 23px;
             }
 
@@ -417,13 +568,16 @@
 
             .selected-file-name {
                 max-width: 105px;
+
                 font-size: 12px;
             }
 
 
             .ocr-status {
                 padding: 14px;
+
                 margin-top: 14px;
+
                 gap: 10px;
             }
 
@@ -431,6 +585,9 @@
             .ocr-status-icon {
                 width: 29px;
                 height: 29px;
+
+                min-width: 29px;
+
                 font-size: 15px;
             }
 
@@ -447,15 +604,102 @@
 
             #continueButton {
                 min-height: 50px;
+
                 margin-top: 18px;
+
                 font-size: 15px;
             }
 
 
             .back-btn {
                 min-height: 48px;
+
                 margin-top: 10px;
+
                 font-size: 14px;
+            }
+
+        }
+
+
+        /* ================================= */
+        /* VERY SMALL PHONES */
+        /* ================================= */
+
+        @media (max-width: 400px) {
+
+            .upload-page {
+                padding: 18px 9px 40px;
+            }
+
+
+            .upload-card {
+                padding: 20px 14px;
+
+                border-radius: 16px;
+            }
+
+
+            .upload-header h1 {
+                font-size: 24px;
+            }
+
+
+            .upload-header p {
+                font-size: 13px;
+            }
+
+
+            .compact-upload {
+                min-height: 80px;
+
+                padding: 10px;
+
+                gap: 9px;
+            }
+
+
+            .compact-upload-icon {
+                width: 40px;
+                height: 40px;
+
+                min-width: 40px;
+
+                font-size: 20px;
+            }
+
+
+            .compact-upload-main strong {
+                font-size: 13px;
+            }
+
+
+            .compact-upload-main span {
+                font-size: 11px;
+            }
+
+
+            .selected-file-name {
+                max-width: 75px;
+
+                font-size: 10px;
+            }
+
+
+            .ocr-status {
+                padding: 12px;
+
+                gap: 9px;
+            }
+
+
+            .ocr-status strong {
+                font-size: 13px;
+            }
+
+
+            .ocr-status p {
+                font-size: 11px;
             }
 
         }
@@ -467,6 +711,7 @@
 
 <body>
 
+
     <!-- ================================= -->
     <!-- NAVBAR -->
     <!-- ================================= -->
@@ -474,14 +719,20 @@
     <nav class="navbar">
 
         <div class="logo">
+
             🎉 <span>Lucky</span>Draw
+
         </div>
 
+
         <div class="participant-label">
+
             Registration
+
         </div>
 
     </nav>
+
 
 
     <!-- ================================= -->
@@ -513,44 +764,13 @@
 
 
                 <p>
-                    Upload a photo of your completed registration
-                    form and we'll automatically read your details.
+                    Upload a photo of your completed
+                    registration form and we'll
+                    automatically read your details.
                 </p>
 
             </div>
 
-
-            <!-- ================================= -->
-            <!-- HELPFUL TIP -->
-            <!-- ================================= -->
-
-            <div class="upload-tip">
-
-                <div
-                    class="upload-tip-icon"
-                    aria-hidden="true"
-                >
-                    💡
-                </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
-            </div>
 
 
             <!-- ================================= -->
@@ -577,6 +797,7 @@
                         Choose Photo
                     </strong>
 
+
                     <span>
                         JPG, PNG or other image
                     </span>
@@ -594,6 +815,7 @@
             </label>
 
 
+
             <!-- ================================= -->
             <!-- REAL FILE INPUT -->
             <!-- ================================= -->
@@ -603,20 +825,8 @@
                 id="registrationImage"
                 name="registrationImage"
                 accept="image/*"
-                style="
-                    position: absolute;
-                    width: 1px;
-                    height: 1px;
-                    padding: 0;
-                    margin: -1px;
-                    overflow: hidden;
-                    clip: rect(0, 0, 0, 0);
-                    clip-path: inset(50%);
-                    white-space: nowrap;
-                    border: 0;
-                    opacity: 0;
-                "
             >
+
 
 
             <!-- ================================= -->
@@ -639,18 +849,24 @@
 
                 <div>
 
-                    <strong id="ocrStatusTitle">
+                    <strong
+                        id="ocrStatusTitle"
+                    >
                         Reading form...
                     </strong>
 
 
-                    <p id="ocrStatusText">
-                        Please wait while we read your registration form.
+                    <p
+                        id="ocrStatusText"
+                    >
+                        Please wait while we read
+                        your registration form.
                     </p>
 
                 </div>
 
             </div>
+
 
 
             <!-- ================================= -->
@@ -660,11 +876,11 @@
             <button
                 type="button"
                 id="continueButton"
-                class="register-btn"
                 style="display: none;"
             >
                 Review Your Details
             </button>
+
 
 
             <!-- ================================= -->
@@ -679,10 +895,10 @@
                 ← Back to Registration
             </button>
 
-
         </div>
 
     </section>
+
 
 
     <!-- ================================= -->
@@ -692,6 +908,7 @@
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
+
 
 
     <!-- ================================= -->
@@ -711,6 +928,11 @@
         const OCR_FUNCTION_URL =
             `${SUPABASE_URL}/functions/v1/read-registration-form`;
 
+
+
+        // ============================================
+        // ELEMENTS
+        // ============================================
 
         const registrationImage =
             document.getElementById(
@@ -753,6 +975,11 @@
                 "continueButton"
             );
 
+
+
+        // ============================================
+        // OCR STATUS
+        // ============================================
 
         function showOCRStatus(
             icon,
@@ -809,6 +1036,11 @@
         }
 
 
+
+        // ============================================
+        // FILE → BASE64
+        // ============================================
+
         function fileToBase64(file) {
 
             return new Promise(
@@ -818,7 +1050,7 @@
                         new FileReader();
 
 
-                    reader.onload = () => {
+                    reader.onload = function () {
 
                         resolve(
                             reader.result
@@ -827,7 +1059,7 @@
                     };
 
 
-                    reader.onerror = () => {
+                    reader.onerror = function () {
 
                         reject(
                             new Error(
@@ -846,6 +1078,163 @@
         }
 
 
+
+        // ============================================
+        // FILL FORM FROM OCR
+        // ============================================
+
+        function fillForm(data) {
+
+            let fieldsFound = 0;
+
+
+            // ----------------------------------------
+            // NAME
+            // ----------------------------------------
+
+            if (
+                data.name &&
+                typeof data.name === "string"
+            ) {
+
+                const nameElement =
+                    document.getElementById(
+                        "name"
+                    );
+
+
+                if (nameElement) {
+
+                    nameElement.value =
+                        data.name.trim();
+
+                    fieldsFound++;
+
+                }
+
+            }
+
+
+            // ----------------------------------------
+            // PHONE
+            // ----------------------------------------
+
+            if (
+                data.phone &&
+                typeof data.phone === "string"
+            ) {
+
+                const phoneElement =
+                    document.getElementById(
+                        "phone"
+                    );
+
+
+                if (phoneElement) {
+
+                    const cleanPhone =
+                        data.phone.replace(
+                            /\D/g,
+                            ""
+                        );
+
+
+                    phoneElement.value =
+                        cleanPhone;
+
+                    fieldsFound++;
+
+                }
+
+            }
+
+
+            // ----------------------------------------
+            // AREA
+            // ----------------------------------------
+
+            if (
+                data.area &&
+                typeof data.area === "string"
+            ) {
+
+                const areaElement =
+                    document.getElementById(
+                        "area"
+                    );
+
+
+                if (areaElement) {
+
+                    areaElement.value =
+                        data.area.trim();
+
+                    fieldsFound++;
+
+                }
+
+            }
+
+
+            // ----------------------------------------
+            // CITY
+            // ----------------------------------------
+
+            if (
+                data.city &&
+                typeof data.city === "string"
+            ) {
+
+                const citySelect =
+                    document.getElementById(
+                        "city"
+                    );
+
+
+                if (citySelect) {
+
+                    const city =
+                        data.city
+                            .trim()
+                            .toLowerCase();
+
+
+                    const matchingOption =
+                        Array.from(
+                            citySelect.options
+                        ).find(
+                            option =>
+                                option.value
+                                    .trim()
+                                    .toLowerCase() ===
+                                city
+                        );
+
+
+                    if (matchingOption) {
+
+                        citySelect.value =
+                            matchingOption.value;
+
+                        fieldsFound++;
+
+                    }
+
+                }
+
+            }
+
+
+            return fieldsFound;
+
+        }
+
+
+
+        // ============================================
+        // OCR / REGISTRATION PHOTO READER
+        // ============================================
+
         async function readRegistrationForm(
             file
         ) {
@@ -854,7 +1243,7 @@
 
                 showOCRStatus(
                     "⏳",
-                    "Reading form...",
+                    "Reading your form...",
                     "Please wait while we read the registration details.",
                     "ocr-loading"
                 );
@@ -868,17 +1257,79 @@
                 }
 
 
-                const imageBase64 =
-                    await fileToBase64(file);
+                // ------------------------------------
+                // BASIC FILE CHECK
+                // ------------------------------------
 
+                const allowedTypes = [
+                    "image/jpeg",
+                    "image/jpg",
+                    "image/png",
+                    "image/webp"
+                ];
+
+
+                if (
+                    !allowedTypes.includes(
+                        file.type
+                    )
+                ) {
+
+                    throw new Error(
+                        "Please upload a JPG, PNG, or WebP image."
+                    );
+
+                }
+
+
+                // ------------------------------------
+                // MAXIMUM FILE SIZE
+                // ------------------------------------
+
+                const MAX_FILE_SIZE =
+                    10 * 1024 * 1024;
+
+
+                if (
+                    file.size >
+                    MAX_FILE_SIZE
+                ) {
+
+                    throw new Error(
+                        "Image is too large. Maximum size is 10 MB."
+                    );
+
+                }
+
+
+                // ------------------------------------
+                // CONVERT IMAGE
+                // ------------------------------------
+
+                const imageBase64 =
+                    await fileToBase64(
+                        file
+                    );
+
+
+                console.log(
+                    "Sending image to OCR service..."
+                );
+
+
+                // ------------------------------------
+                // CALL EDGE FUNCTION
+                // ------------------------------------
 
                 const response =
                     await fetch(
                         OCR_FUNCTION_URL,
                         {
+
                             method: "POST",
 
                             headers: {
+
                                 "Content-Type":
                                     "application/json",
 
@@ -887,21 +1338,35 @@
 
                                 "Authorization":
                                     `Bearer ${SUPABASE_KEY}`
+
                             },
 
                             body: JSON.stringify({
+
                                 image:
                                     imageBase64,
 
                                 mimeType:
                                     file.type
+
                             })
+
                         }
                     );
 
 
+                // ------------------------------------
+                // READ RESPONSE
+                // ------------------------------------
+
                 const responseText =
                     await response.text();
+
+
+                console.log(
+                    "OCR FUNCTION RESPONSE:",
+                    responseText
+                );
 
 
                 let result;
@@ -923,7 +1388,17 @@
                 }
 
 
+                // ------------------------------------
+                // HTTP ERROR
+                // ------------------------------------
+
                 if (!response.ok) {
+
+                    console.error(
+                        "OCR Edge Function error:",
+                        result
+                    );
+
 
                     throw new Error(
                         result.message ||
@@ -932,6 +1407,10 @@
 
                 }
 
+
+                // ------------------------------------
+                // OCR FAILURE
+                // ------------------------------------
 
                 if (!result.success) {
 
@@ -948,15 +1427,35 @@
                 }
 
 
+                // ------------------------------------
+                // EXTRACT DATA
+                // ------------------------------------
+
                 const data =
                     result.data || {};
 
 
-                sessionStorage.setItem(
-                    "luckyDrawOCRData",
-                    JSON.stringify(data)
+                console.log(
+                    "Extracted registration data:",
+                    data
                 );
 
+
+                // ------------------------------------
+                // SAVE OCR DATA
+                // ------------------------------------
+
+                sessionStorage.setItem(
+                    "luckyDrawOCRData",
+                    JSON.stringify(
+                        data
+                    )
+                );
+
+
+                // ------------------------------------
+                // SUCCESS MESSAGE
+                // ------------------------------------
 
                 showOCRStatus(
                     "✓",
@@ -965,6 +1464,10 @@
                     "ocr-success"
                 );
 
+
+                // ------------------------------------
+                // SHOW REVIEW BUTTON
+                // ------------------------------------
 
                 if (continueButton) {
 
@@ -995,6 +1498,23 @@
         }
 
 
+
+        // ============================================
+        // PHOTO UPLOAD
+        // ============================================
+        //
+        // IMPORTANT:
+        //
+        // The real input handles the mobile
+        // camera/gallery.
+        //
+        // We intentionally DO NOT use:
+        //
+        // registrationImage.click()
+        //
+        // This keeps mobile upload working.
+        // ============================================
+
         if (registrationImage) {
 
             registrationImage.addEventListener(
@@ -1002,7 +1522,10 @@
                 async function () {
 
                     const file =
-                        this.files[0];
+                        this.files &&
+                        this.files.length > 0
+                            ? this.files[0]
+                            : null;
 
 
                     if (!file) {
@@ -1014,12 +1537,14 @@
 
                         }
 
+
                         if (ocrStatus) {
 
                             ocrStatus.style.display =
                                 "none";
 
                         }
+
 
                         if (continueButton) {
 
@@ -1033,8 +1558,13 @@
                     }
 
 
+                    // --------------------------------
+                    // FILE TYPE
+                    // --------------------------------
+
                     const allowedTypes = [
                         "image/jpeg",
+                        "image/jpg",
                         "image/png",
                         "image/webp"
                     ];
@@ -1050,6 +1580,7 @@
                             "Please upload a JPG, PNG, or WebP image."
                         );
 
+
                         this.value =
                             "";
 
@@ -1057,6 +1588,10 @@
 
                     }
 
+
+                    // --------------------------------
+                    // FILE SIZE
+                    // --------------------------------
 
                     const MAX_FILE_SIZE =
                         10 * 1024 * 1024;
@@ -1071,6 +1606,7 @@
                             "Image is too large. Maximum size is 10 MB."
                         );
 
+
                         this.value =
                             "";
 
@@ -1079,6 +1615,10 @@
                     }
 
 
+                    // --------------------------------
+                    // DISPLAY FILE NAME
+                    // --------------------------------
+
                     if (selectedFileName) {
 
                         selectedFileName.innerText =
@@ -1086,6 +1626,10 @@
 
                     }
 
+
+                    // --------------------------------
+                    // START OCR
+                    // --------------------------------
 
                     await readRegistrationForm(
                         file
@@ -1096,6 +1640,11 @@
 
         }
 
+
+
+        // ============================================
+        // CONTINUE TO REGISTRATION
+        // ============================================
 
         if (continueButton) {
 
