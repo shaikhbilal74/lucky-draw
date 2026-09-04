@@ -3242,6 +3242,21 @@ footer {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* =========================================================
    PARTICIPANT STATISTICS CARD
    ========================================================= */
@@ -3251,15 +3266,14 @@ footer {
 
     background: #ffffff;
 
-    border: 1px solid #e7eaf0;
+    border: 1px solid #e5e7eb;
 
     border-radius: 24px;
 
     padding: 36px 38px;
 
     box-shadow:
-        0 10px 28px rgba(15, 23, 42, 0.07),
-        0 2px 6px rgba(15, 23, 42, 0.04);
+        0 10px 25px rgba(0, 0, 0, 0.07);
 
     overflow: hidden;
 
@@ -3270,7 +3284,7 @@ footer {
 
 
 /* =========================================================
-   TOP GRADIENT ACCENT
+   TOP ACCENT LINE
    ========================================================= */
 
 .dashboard-summary .stat-card::before {
@@ -3282,37 +3296,14 @@ footer {
     left: 0;
 
     width: 100%;
-    height: 6px;
+    height: 5px;
 
     background: linear-gradient(
         90deg,
-        #2563eb 0%,
-        #7c3aed 50%,
-        #f43f5e 100%
+        #2563eb,
+        #7c3aed,
+        #f43f5e
     );
-}
-
-
-/* =========================================================
-   SUBTLE BACKGROUND GLOW
-   ========================================================= */
-
-.dashboard-summary .stat-card::after {
-    content: "";
-
-    position: absolute;
-
-    width: 180px;
-    height: 180px;
-
-    right: -80px;
-    bottom: -100px;
-
-    background: rgba(37, 99, 235, 0.045);
-
-    border-radius: 50%;
-
-    pointer-events: none;
 }
 
 
@@ -3351,9 +3342,6 @@ footer {
     line-height: 1;
 
     text-align: center;
-
-    text-shadow:
-        0 3px 8px rgba(244, 63, 94, 0.12);
 }
 
 
@@ -3362,11 +3350,10 @@ footer {
    ========================================================= */
 
 .dashboard-summary .stat-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
 
     box-shadow:
-        0 16px 34px rgba(15, 23, 42, 0.10),
-        0 5px 12px rgba(37, 99, 235, 0.06);
+        0 14px 30px rgba(0, 0, 0, 0.09);
 }
 
 
