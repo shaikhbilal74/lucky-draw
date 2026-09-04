@@ -450,6 +450,135 @@
     ></script>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script
+    src="participants.js"
+></script>
+
+
+<script>
+
+    // Load OCR data from upload.html
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const savedOCRData =
+            sessionStorage.getItem("luckyDrawOCRData");
+
+        if (!savedOCRData) {
+            return;
+        }
+
+        try {
+
+            const data =
+                JSON.parse(savedOCRData);
+
+            const nameInput =
+                document.getElementById("name");
+
+            const phoneInput =
+                document.getElementById("phone");
+
+            const areaInput =
+                document.getElementById("area");
+
+            const cityInput =
+                document.getElementById("city");
+
+
+            if (nameInput && data.name) {
+                nameInput.value = data.name;
+            }
+
+
+            if (phoneInput && data.phone) {
+                phoneInput.value = data.phone;
+            }
+
+
+            if (areaInput && data.area) {
+                areaInput.value = data.area;
+            }
+
+
+            if (cityInput && data.city) {
+                cityInput.value = data.city;
+            }
+
+
+            // Remove the temporary OCR data
+            sessionStorage.removeItem(
+                "luckyDrawOCRData"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Unable to load OCR data:",
+                error
+            );
+
+        }
+
+    });
+
+</script>
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+    
+
+
 </body>
 
 </html>
