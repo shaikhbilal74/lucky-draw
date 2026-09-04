@@ -142,26 +142,6 @@
 
 
                 <!-- ================================= -->
-                <!-- AREA -->
-                <!-- ================================= -->
-
-                <label for="area">
-
-                    📍 Area
-
-                </label>
-
-
-                <textarea
-                    id="area"
-                    placeholder="House No., Street, Area"
-                    autocomplete="street-address"
-                    required
-                ></textarea>
-
-
-
-                <!-- ================================= -->
                 <!-- CITY -->
                 <!-- ================================= -->
 
@@ -305,6 +285,27 @@
 
 
                 <!-- ================================= -->
+                <!-- AREA -->
+                <!-- ================================= -->
+
+                <label for="area">
+
+                    📍 Area
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="area"
+                    placeholder="House No., Street, Area"
+                    autocomplete="street-address"
+                    required
+                >
+
+
+
+                <!-- ================================= -->
                 <!-- REGISTER BUTTON -->
                 <!-- ================================= -->
 
@@ -441,6 +442,7 @@
     ></script>
 
 
+
     <!-- ================================= -->
     <!-- PARTICIPANTS JAVASCRIPT -->
     <!-- ================================= -->
@@ -451,132 +453,99 @@
 
 
 
+    <!-- ================================= -->
+    <!-- LOAD OCR DATA FROM UPLOAD PAGE -->
+    <!-- ================================= -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const savedOCRData =
+                sessionStorage.getItem("luckyDrawOCRData");
 
 
+            if (!savedOCRData) {
 
+                return;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script
-    src="participants.js"
-></script>
-
-
-<script>
-
-    // Load OCR data from upload.html
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const savedOCRData =
-            sessionStorage.getItem("luckyDrawOCRData");
-
-        if (!savedOCRData) {
-            return;
-        }
-
-        try {
-
-            const data =
-                JSON.parse(savedOCRData);
-
-            const nameInput =
-                document.getElementById("name");
-
-            const phoneInput =
-                document.getElementById("phone");
-
-            const areaInput =
-                document.getElementById("area");
-
-            const cityInput =
-                document.getElementById("city");
-
-
-            if (nameInput && data.name) {
-                nameInput.value = data.name;
             }
 
 
-            if (phoneInput && data.phone) {
-                phoneInput.value = data.phone;
+            try {
+
+                const data =
+                    JSON.parse(savedOCRData);
+
+
+                const nameInput =
+                    document.getElementById("name");
+
+
+                const phoneInput =
+                    document.getElementById("phone");
+
+
+                const areaInput =
+                    document.getElementById("area");
+
+
+                const cityInput =
+                    document.getElementById("city");
+
+
+
+                if (nameInput && data.name) {
+
+                    nameInput.value = data.name;
+
+                }
+
+
+
+                if (phoneInput && data.phone) {
+
+                    phoneInput.value = data.phone;
+
+                }
+
+
+
+                if (areaInput && data.area) {
+
+                    areaInput.value = data.area;
+
+                }
+
+
+
+                if (cityInput && data.city) {
+
+                    cityInput.value = data.city;
+
+                }
+
+
+
+                // Remove temporary OCR data after loading it
+
+                sessionStorage.removeItem(
+                    "luckyDrawOCRData"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to load OCR data:",
+                    error
+                );
+
             }
 
+        });
 
-            if (areaInput && data.area) {
-                areaInput.value = data.area;
-            }
-
-
-            if (cityInput && data.city) {
-                cityInput.value = data.city;
-            }
-
-
-            // Remove the temporary OCR data
-            sessionStorage.removeItem(
-                "luckyDrawOCRData"
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Unable to load OCR data:",
-                error
-            );
-
-        }
-
-    });
-
-</script>
-
-
-</body>
-
-</html>
-
-
-
-
-
-
-    
+    </script>
 
 
 </body>
