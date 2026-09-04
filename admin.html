@@ -111,11 +111,115 @@
 
         }
 
+
+        /* ============================================================
+           DATE-WISE DRAW SCOPE SECTION
+           Added BELOW the existing dashboard summary.
+           The participant and winner cards above are untouched.
+           ============================================================ */
+
+        .draw-scope-section {
+            width: 100%;
+            margin: 0 0 30px;
+            padding: 28px 30px;
+            background: #ffffff;
+            border-radius: 25px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.07);
+            box-sizing: border-box;
+        }
+
+        .draw-scope-header {
+            margin-bottom: 20px;
+        }
+
+        .draw-scope-header h2 {
+            margin: 0 0 7px;
+            font-size: 28px;
+            color: #172554;
+        }
+
+        .draw-scope-header p {
+            margin: 0;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .draw-scope-tabs {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .draw-scope-tab {
+            border: 1px solid #d7dce5;
+            background: #ffffff;
+            color: #172554;
+            padding: 13px 20px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .draw-scope-tab:hover {
+            transform: translateY(-1px);
+            border-color: #ff405b;
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .draw-scope-tab.active {
+            color: #ffffff;
+            border-color: transparent;
+            background: linear-gradient(135deg, #2563eb, #ec4899);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.20);
+        }
+
+        .selected-draw-scope {
+            margin-top: 18px;
+            padding: 13px 16px;
+            border-radius: 12px;
+            background: #f7f8fc;
+            color: #172554;
+            font-size: 16px;
+            font-weight: 700;
+            border: 1px solid #eceef4;
+        }
+
+        @media (max-width: 700px) {
+
+            .draw-scope-section {
+                padding: 23px;
+            }
+
+            .draw-scope-header h2 {
+                font-size: 24px;
+            }
+
+            .draw-scope-tabs {
+                gap: 9px;
+            }
+
+            .draw-scope-tab {
+                padding: 11px 15px;
+                font-size: 14px;
+            }
+
+        }
+
     </style>
 
 </head>
 
 <body>
+
 
     <!-- ========================= -->
     <!-- NAVBAR -->
@@ -394,6 +498,57 @@
 
                         </div>
 
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- DATE-WISE DRAW SELECTION                         -->
+                <!-- THIS IS INTENTIONALLY AFTER THE TWO BOXES ABOVE  -->
+                <!-- ================================================= -->
+
+                <div class="draw-scope-section">
+
+                    <div class="draw-scope-header">
+
+                        <h2>
+                            Select Registration Date
+                        </h2>
+
+                        <p>
+                            Choose which participants should be used for the lucky draw.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="drawScopeTabs"
+                        class="draw-scope-tabs"
+                        role="tablist"
+                        aria-label="Registration dates"
+                    >
+
+                        <!--
+                            admin.js automatically creates:
+
+                            Draw All Dates
+                            10 September 2026
+                            13 September 2026
+                            15 September 2026
+                            etc.
+                        -->
+
+                    </div>
+
+
+                    <div
+                        id="selectedDrawScope"
+                        class="selected-draw-scope"
+                        aria-live="polite"
+                    >
+                        Selected: Draw All Dates
                     </div>
 
                 </div>
@@ -826,8 +981,8 @@
         /*
          * This updates the two source counters.
          *
-         * Total Participants is already handled by admin.js.
-         * The source counters are calculated from the same
+         * Total Participants is handled by admin.js.
+         * The source counters are calculated from the
          * Participants table.
          */
 
@@ -1019,8 +1174,7 @@
 
 
                     /*
-                     * Keep the source counts current when
-                     * participants are added or changed.
+                     * Keep source counts current.
                      */
 
                     setInterval(
