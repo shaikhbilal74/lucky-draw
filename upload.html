@@ -67,15 +67,10 @@
             <!-- PHOTO UPLOAD -->
             <!-- ================================= -->
 
-            <div
+            <label
+                for="registrationImage"
                 class="compact-upload"
                 id="photoUploadButton"
-                style="
-                    position: relative;
-                    cursor: pointer;
-                    overflow: hidden;
-                    touch-action: manipulation;
-                "
             >
 
                 <div
@@ -106,35 +101,32 @@
                     No file selected
                 </div>
 
+            </label>
 
-                <!-- ================================= -->
-                <!-- REAL MOBILE-SAFE FILE INPUT -->
-                <!-- ================================= -->
 
-                <input
-                    type="file"
-                    id="registrationImage"
-                    name="registrationImage"
-                    accept="image/jpeg,image/png,image/webp,image/*"
-                    style="
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        margin: 0;
-                        padding: 0;
-                        opacity: 0.01;
-                        cursor: pointer;
-                        z-index: 999;
-                        display: block;
-                        border: 0;
-                        touch-action: manipulation;
-                        -webkit-appearance: none;
-                    "
-                >
+            <!-- ================================= -->
+            <!-- REAL FILE INPUT -->
+            <!-- ================================= -->
 
-            </div>
+            <input
+                type="file"
+                id="registrationImage"
+                name="registrationImage"
+                accept="image/*"
+                style="
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    padding: 0;
+                    margin: -1px;
+                    overflow: hidden;
+                    clip: rect(0, 0, 0, 0);
+                    clip-path: inset(50%);
+                    white-space: nowrap;
+                    border: 0;
+                    opacity: 0;
+                "
+            >
 
 
             <!-- ================================= -->
