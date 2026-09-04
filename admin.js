@@ -2723,14 +2723,19 @@ async function confirmResetDraw() {
         await loadDrawHistory();
 
 
-        // Reset completed successfully.
-        // No success popup is shown.
-        console.log(
-            "Draw reset successfully. History preserved.",
-            {
-                draw_scope:
+        const scopeText =
+            currentDrawScope ===
+                "all"
+
+                ? "Draw All Dates"
+
+                : formatDateForDisplay(
                     currentDrawScope
-            }
+                );
+
+
+        alert(
+            `The draw for ${scopeText} has been reset successfully. Draw history was preserved.`
         );
 
 
