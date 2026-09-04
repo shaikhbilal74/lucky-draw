@@ -3215,3 +3215,166 @@ footer {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   PARTICIPANT STAT CARD - ENHANCED STYLING
+   ========================================================= */
+
+.dashboard-summary .stat-card {
+    position: relative;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #fff8fa
+        );
+
+    border: 1px solid #f1dce2;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.08),
+        0 4px 10px rgba(244, 63, 94, 0.05);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* TOP ACCENT */
+
+.dashboard-summary .stat-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f43f5e,
+            #f97316
+        );
+}
+
+
+/* CARD TITLE */
+
+.dashboard-summary .stat-card h3 {
+    margin: 0;
+
+    color: #17233d;
+
+    font-size: 19px;
+
+    font-weight: 700;
+
+    text-align: center;
+}
+
+
+/* PARTICIPANT NUMBER */
+
+.dashboard-summary .stat-card p {
+    margin-top: 12px;
+
+    color: #f43f5e;
+
+    font-size: 52px;
+
+    font-weight: 800;
+
+    line-height: 1;
+
+    text-align: center;
+
+    text-shadow:
+        0 3px 8px rgba(244, 63, 94, 0.12);
+}
+
+
+/* HOVER */
+
+.dashboard-summary .stat-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 16px 35px rgba(0, 0, 0, 0.10),
+        0 6px 14px rgba(244, 63, 94, 0.08);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .dashboard-summary .stat-card {
+        border-radius: 19px;
+
+        padding: 23px;
+    }
+
+    .dashboard-summary .stat-card h3 {
+        font-size: 19px;
+    }
+
+    .dashboard-summary .stat-card p {
+        font-size: 43px;
+    }
+}
+
+
+/* VERY SMALL PHONES */
+
+@media (max-width: 400px) {
+
+    .dashboard-summary .stat-card {
+        border-radius: 18px;
+
+        padding: 19px;
+    }
+
+    .dashboard-summary .stat-card h3 {
+        font-size: 18px;
+    }
+
+    .dashboard-summary .stat-card p {
+        font-size: 38px;
+    }
+}
