@@ -74,168 +74,26 @@
 
 
             <!-- ================================= -->
+            <!-- UPLOAD FORM BUTTON -->
+            <!-- ================================= -->
+
+            <button
+                type="button"
+                class="back-btn"
+                onclick="window.location.href='upload.html'"
+            >
+
+                📄 Upload Filled Form
+
+            </button>
+
+
+
+            <!-- ================================= -->
             <!-- REGISTRATION FORM -->
             <!-- ================================= -->
 
             <form id="registrationForm">
-
-
-                <!-- ================================= -->
-                <!-- PHOTO UPLOAD / OCR -->
-                <!-- ================================= -->
-
-                <div class="ocr-section">
-
-
-                    <div class="ocr-heading">
-
-                        <div class="ocr-icon">
-
-                            📄
-
-                        </div>
-
-
-                        <div class="ocr-heading-text">
-
-                            <h2>
-
-                                Upload Registration Form
-
-                            </h2>
-
-
-                            <p>
-
-                                Already have a filled registration form?
-                                Upload its photo and we'll automatically
-                                read the details for you.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- ================================= -->
-                    <!-- MOBILE-SAFE NATIVE FILE UPLOAD -->
-                    <!-- ================================= -->
-
-                    <label
-                        for="registrationImage"
-                        class="compact-upload"
-                        id="photoUploadButton"
-                    >
-
-                        <div
-                            class="compact-upload-icon"
-                            aria-hidden="true"
-                        >
-
-                            ☁️
-
-                        </div>
-
-
-                        <div class="compact-upload-main">
-
-                            <strong>
-
-                                Choose Photo
-
-                            </strong>
-
-
-                            <span>
-
-                                JPG, PNG or other image
-
-                            </span>
-
-                        </div>
-
-
-                        <div
-                            id="selectedFileName"
-                            class="selected-file-name"
-                        >
-
-                            No file selected
-
-                        </div>
-
-
-                        <!--
-                            IMPORTANT:
-
-                            This is the real native file input.
-
-                            The label above is directly connected to it
-                            using for="registrationImage".
-
-                            No JavaScript click() is required.
-                        -->
-
-                        <input
-                            type="file"
-                            id="registrationImage"
-                            name="registrationImage"
-                            accept="image/*"
-                        >
-
-                    </label>
-
-
-
-                    <!-- ================================= -->
-                    <!-- OCR STATUS -->
-                    <!-- ================================= -->
-
-                    <div
-                        id="ocrStatus"
-                        class="ocr-status"
-                        style="display: none;"
-                    >
-
-                        <div
-                            id="ocrStatusIcon"
-                            class="status-icon"
-                        >
-
-                            ⏳
-
-                        </div>
-
-
-                        <div class="ocr-status-content">
-
-                            <strong
-                                id="ocrStatusTitle"
-                            >
-
-                                Reading your form...
-
-                            </strong>
-
-
-                            <p
-                                id="ocrStatusText"
-                            >
-
-                                Please wait while we read the details
-                                from your photo.
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                </div>
-
 
 
                 <!-- ================================= -->
