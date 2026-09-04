@@ -1270,3 +1270,105 @@ function registerAnother() {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================================================
+// INPUT RESTRICTIONS
+// ============================================================
+
+// FULL NAME
+const nameInput =
+    document.getElementById("name");
+
+if (nameInput) {
+
+    nameInput.addEventListener(
+        "input",
+        function () {
+
+            // Allow letters and spaces only
+            this.value =
+                this.value.replace(
+                    /[^A-Za-z ]/g,
+                    ""
+                );
+
+        }
+    );
+
+}
+
+
+// PHONE NUMBER
+const phoneInput =
+    document.getElementById("phone");
+
+if (phoneInput) {
+
+    phoneInput.addEventListener(
+        "input",
+        function () {
+
+            // Allow numbers only
+            this.value =
+                this.value.replace(
+                    /[^0-9]/g,
+                    ""
+                );
+
+            // Maximum 10 digits
+            if (
+                this.value.length > 10
+            ) {
+
+                this.value =
+                    this.value.substring(
+                        0,
+                        10
+                    );
+
+            }
+
+        }
+    );
+
+}
