@@ -943,8 +943,6 @@ body {
     box-sizing: border-box;
 
     align-self: start !important;
-
-    height: fit-content !important;
 }
 
 
@@ -963,7 +961,7 @@ body {
 
     align-self: start !important;
 
-    height: fit-content !important;
+    height: fit-content;
 }
 
 .stat-card h3 {
@@ -985,14 +983,21 @@ body {
 
 /* =========================================================
    WINNER CARD
+   FIXED SIZE - DOES NOT STRETCH AFTER DRAW
    ========================================================= */
 
 .top-winner-card {
-    min-height: 220px;
+    height: 371px;
 
-    height: fit-content !important;
+    min-height: 371px;
+
+    max-height: 371px;
 
     align-self: start !important;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
 }
 
 .top-winner-card h2 {
@@ -1003,7 +1008,7 @@ body {
 
 
 /* =========================================================
-   WINNERS - THREE PARALLEL COLUMNS
+   WINNER RESULT
    ========================================================= */
 
 #winnerResult {
@@ -1013,25 +1018,37 @@ body {
 
     grid-template-columns: repeat(3, minmax(0, 1fr));
 
-    gap: 20px;
+    gap: 16px;
 
     align-items: start;
+
+    box-sizing: border-box;
 }
+
+
+/* =========================================================
+   CONGRATULATIONS MESSAGE
+   ========================================================= */
 
 #winnerResult > h3 {
     grid-column: 1 / -1;
 
-    margin-bottom: 5px;
+    margin: 0 0 5px;
 
     color: #f43f5e;
 
     font-size: 24px;
 }
 
+
+/* =========================================================
+   WINNER CARDS
+   ========================================================= */
+
 #winnerResult > div {
     min-width: 0;
 
-    padding: 20px;
+    padding: 18px;
 
     border: 1px solid #e5e7eb;
 
@@ -1042,26 +1059,59 @@ body {
     box-sizing: border-box;
 
     align-self: start;
+
+    overflow: hidden;
 }
 
 #winnerResult > div h3 {
-    margin-bottom: 15px;
+    margin: 0 0 14px;
 
     color: #f43f5e;
 
-    font-size: 24px;
+    font-size: 23px;
+
+    line-height: 1.2;
 }
 
 #winnerResult p {
-    margin: 8px 0;
+    margin: 7px 0;
 
-    font-size: 16px;
+    font-size: 15px;
 
-    line-height: 1.5;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
 }
 
 #winnerResult strong {
     color: #172554;
+}
+
+
+/* =========================================================
+   AFTER WINNERS ARE DRAWN
+   HIDE THE LARGE HEADINGS
+   ========================================================= */
+
+.top-winner-card:has(#winnerResult > div) h2 {
+    display: none;
+}
+
+.top-winner-card:has(#winnerResult > div) #winnerResult > h3 {
+    display: none;
+}
+
+
+/* =========================================================
+   AFTER DRAW - USE THE FULL CARD HEIGHT
+   ========================================================= */
+
+.top-winner-card:has(#winnerResult > div) #winnerResult {
+    margin-top: 0;
+
+    height: 100%;
+
+    align-items: start;
 }
 
 
@@ -1079,11 +1129,28 @@ body {
         grid-auto-rows: max-content;
     }
 
-    .dashboard-summary > .stat-card,
-    .dashboard-summary > .top-winner-card {
+    .dashboard-summary > .stat-card {
         width: 100%;
 
         height: fit-content !important;
+
+        min-height: 220px;
+
+        max-height: none;
+
+        align-self: start !important;
+    }
+
+    .dashboard-summary > .top-winner-card {
+        width: 100%;
+
+        height: auto;
+
+        min-height: 220px;
+
+        max-height: none;
+
+        overflow: visible;
 
         align-self: start !important;
     }
@@ -1112,6 +1179,14 @@ body {
 
     #winnerResult > div {
         padding: 17px;
+    }
+
+    #winnerResult > div h3 {
+        font-size: 21px;
+    }
+
+    #winnerResult p {
+        font-size: 14px;
     }
 }
 /* =========================================================
