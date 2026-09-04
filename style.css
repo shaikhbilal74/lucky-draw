@@ -903,7 +903,44 @@ body {
 
 /* =========================================================
    DASHBOARD SUMMARY
-   ========================================================= */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* =========================================================
    DASHBOARD SUMMARY
    ========================================================= */
@@ -998,6 +1035,18 @@ body {
     overflow: hidden;
 
     box-sizing: border-box;
+
+    border: 5px solid transparent;
+
+    background:
+        linear-gradient(#ffffff, #ffffff) padding-box,
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #7c3aed,
+            #ec4899,
+            #f43f5e
+        ) border-box;
 }
 
 .top-winner-card h2 {
