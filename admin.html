@@ -193,6 +193,65 @@
             border: 1px solid #eceef4;
         }
 
+
+        /* ============================================================
+           DRAW HISTORY DATE TABS
+           ============================================================ */
+
+        .history-date-tabs-section {
+            padding: 22px 30px 0;
+        }
+
+        .history-date-tabs {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .history-date-tab {
+            border: 1px solid #d7dce5;
+            background: #ffffff;
+            color: #172554;
+            padding: 12px 18px;
+            border-radius: 13px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .history-date-tab:hover {
+            transform: translateY(-1px);
+            border-color: #ff405b;
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .history-date-tab.active {
+            color: #ffffff;
+            border-color: transparent;
+            background: linear-gradient(135deg, #2563eb, #ec4899);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.20);
+        }
+
+        .selected-history-date {
+            margin-top: 14px;
+            padding: 12px 15px;
+            border-radius: 11px;
+            background: #f7f8fc;
+            color: #172554;
+            font-size: 15px;
+            font-weight: 700;
+            border: 1px solid #eceef4;
+        }
+
+
         @media (max-width: 700px) {
 
             .draw-scope-section {
@@ -209,6 +268,23 @@
 
             .draw-scope-tab {
                 padding: 11px 15px;
+                font-size: 14px;
+            }
+
+            .history-date-tabs-section {
+                padding: 20px 23px 0;
+            }
+
+            .history-date-tabs {
+                gap: 8px;
+            }
+
+            .history-date-tab {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+
+            .selected-history-date {
                 font-size: 14px;
             }
 
@@ -753,6 +829,39 @@
                         >
                             ⬇ Download Excel
                         </button>
+
+                    </div>
+
+
+                    <!-- ========================= -->
+                    <!-- HISTORY DATE TABS -->
+                    <!-- ========================= -->
+
+                    <div class="history-date-tabs-section">
+
+                        <div
+                            id="historyDateTabs"
+                            class="history-date-tabs"
+                            role="tablist"
+                            aria-label="Draw history dates"
+                        >
+
+                            <!--
+                                admin.js automatically creates
+                                one tab for each date on which
+                                a draw was completed.
+                            -->
+
+                        </div>
+
+
+                        <div
+                            id="selectedHistoryDate"
+                            class="selected-history-date"
+                            aria-live="polite"
+                        >
+                            No draw date selected.
+                        </div>
 
                     </div>
 
