@@ -977,7 +977,48 @@ body {
     font-size: 30px;
 }
 
-#winnerResult h3 {
+
+/* =========================================================
+   WINNERS - THREE PARALLEL COLUMNS
+   ========================================================= */
+
+#winnerResult {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+
+    align-items: start;
+}
+
+#winnerResult > h3 {
+    grid-column: 1 / -1;
+
+    margin-bottom: 5px;
+
+    color: #f43f5e;
+
+    font-size: 24px;
+}
+
+#winnerResult > div {
+    min-width: 0;
+
+    padding: 20px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    box-sizing: border-box;
+}
+
+#winnerResult > div h3 {
     margin-bottom: 15px;
 
     color: #f43f5e;
@@ -995,6 +1036,46 @@ body {
 
 #winnerResult strong {
     color: #172554;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+
+        align-items: start;
+    }
+
+    #winnerResult {
+        grid-template-columns: 1fr;
+
+        gap: 15px;
+    }
+
+    #winnerResult > h3 {
+        grid-column: 1;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+    .top-winner-card {
+        padding: 23px;
+    }
+
+    #winnerResult > div {
+        padding: 17px;
+    }
 }
 
 /* =========================================================
