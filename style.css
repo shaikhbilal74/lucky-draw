@@ -905,6 +905,10 @@ body {
    DASHBOARD SUMMARY
    ========================================================= */
 
+/* =========================================================
+   DASHBOARD SUMMARY
+   ========================================================= */
+
 .dashboard-summary {
     width: 100%;
 
@@ -915,6 +919,8 @@ body {
     gap: 30px;
 
     margin-bottom: 35px;
+
+    align-items: start;
 }
 
 .stat-card,
@@ -937,6 +943,8 @@ body {
     flex-direction: column;
 
     justify-content: center;
+
+    align-self: start;
 }
 
 .stat-card h3 {
@@ -957,6 +965,10 @@ body {
 
 .top-winner-card {
     min-height: 220px;
+
+    height: auto;
+
+    align-self: start;
 }
 
 .top-winner-card h2 {
@@ -984,7 +996,6 @@ body {
 #winnerResult strong {
     color: #172554;
 }
-
 
 /* =========================================================
    ADMIN BUTTONS
