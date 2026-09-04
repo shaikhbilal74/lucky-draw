@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +16,43 @@
         rel="stylesheet"
         href="style.css"
     >
+
+    <style>
+
+        /* ================================= */
+        /* MOBILE-SAFE FILE INPUT */
+        /* ================================= */
+
+        .mobile-file-input {
+
+            position: absolute;
+
+            width: 1px;
+
+            height: 1px;
+
+            padding: 0;
+
+            margin: -1px;
+
+            overflow: hidden;
+
+            clip: rect(0, 0, 0, 0);
+
+            clip-path: inset(50%);
+
+            white-space: nowrap;
+
+            border: 0;
+
+        }
+
+        .compact-upload {
+            cursor: pointer;
+            position: relative;
+        }
+
+    </style>
 
 </head>
 
@@ -104,9 +140,9 @@
             <input
                 type="file"
                 id="registrationImage"
+                class="mobile-file-input"
                 accept="image/jpeg,image/png,image/webp"
                 capture="environment"
-                hidden
             >
 
 
