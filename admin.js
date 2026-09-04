@@ -1,6 +1,7 @@
 // ============================================================
 // LUCKY DRAW ADMIN DASHBOARD
 // SECURE SUPABASE AUTH + ADMIN AUTHORIZATION + REALTIME
+// THREE-WINNER LUCKY DRAW
 // ============================================================
 
 const SUPABASE_URL = "https://mvwaanrbqjozxbncogzf.supabase.co";
@@ -51,17 +52,22 @@ function getElement(id) {
 
 async function verifyAdminAccess() {
     try {
+
         const {
             data: { user },
             error: userError
-        } = await supabaseClient.auth.getUser();
+        } =
+            await supabaseClient.auth.getUser();
 
         if (userError || !user) {
+
             if (userError) {
+
                 console.error(
                     "Unable to get authenticated user:",
                     userError
                 );
+
             }
 
             return false;
@@ -70,13 +76,15 @@ async function verifyAdminAccess() {
         const {
             data,
             error
-        } = await supabaseClient
-            .from("admin_users")
-            .select("user_id")
-            .eq("user_id", user.id)
-            .maybeSingle();
+        } =
+            await supabaseClient
+                .from("admin_users")
+                .select("user_id")
+                .eq("user_id", user.id)
+                .maybeSingle();
 
         if (error) {
+
             console.error(
                 "Admin authorization check failed:",
                 error
@@ -930,14 +938,14 @@ function openDrawModal(
         if (message) {
 
             message.textContent =
-                "Are you sure you want to draw a winner?";
+                "Are you sure you want to draw 3 winners?";
 
         }
 
         if (confirmButton) {
 
             confirmButton.textContent =
-                "🎉 Draw Winner";
+                "🎉 Draw 3 Winners";
 
         }
 
@@ -946,14 +954,14 @@ function openDrawModal(
         if (message) {
 
             message.textContent =
-                "A winner has already been selected. Do you want to replace the current winner?";
+                "Three winners have already been selected. Do you want to replace the current winners?";
 
         }
 
         if (confirmButton) {
 
             confirmButton.textContent =
-                "🔄 Draw New Winner";
+                "🔄 Draw 3 New Winners";
 
         }
 
@@ -990,10 +998,10 @@ async function drawWinner() {
     currentParticipants =
         participants;
 
-    if (!participants.length) {
+    if (participants.length < 3) {
 
         alert(
-            "No participants available for the Lucky Draw!"
+            "At least 3 participants are required to conduct a 3-winner lucky draw."
         );
 
         return;
@@ -1025,10 +1033,13 @@ async function selectNewWinner() {
     const participants =
         await getParticipants();
 
-    if (!participants.length) {
+    currentParticipants =
+        participants;
+
+    if (participants.length < 3) {
 
         alert(
-            "No participants available for the Lucky Draw!"
+            "At least 3 participants are required to conduct a 3-winner lucky draw."
         );
 
         return;
@@ -1056,7 +1067,7 @@ async function selectNewWinner() {
         );
 
         alert(
-            "Unable to draw winner. Please try again."
+            "Unable to draw winners. Please try again."
         );
 
         return;
@@ -1066,12 +1077,13 @@ async function selectNewWinner() {
     if (
         !data ||
         !data.success ||
-        !data.winner
+        !Array.isArray(data.winners) ||
+        data.winners.length !== 3
     ) {
 
         alert(
             data?.error ||
-            "Unable to draw winner."
+            "Unable to draw 3 winners."
         );
 
         return;
@@ -1081,17 +1093,21 @@ async function selectNewWinner() {
     localStorage.setItem(
         "luckyDrawWinner",
         JSON.stringify(
-            data.winner
+            data.winners
         )
     );
 
     displayWinner(
-        data.winner
+        data.winners
     );
 }
 
+// ============================================================
+// DISPLAY THREE WINNERS
+// ============================================================
+
 function displayWinner(
-    winner
+    winners
 ) {
 
     const winnerResult =
@@ -1099,89 +1115,140 @@ function displayWinner(
 
     if (
         !winnerResult ||
-        !winner
+        !Array.isArray(winners) ||
+        winners.length === 0
     ) {
 
         return;
 
     }
 
-    const registrationId =
-        winner.registration_id ||
-        winner.id ||
-        "-";
+    const winnerList =
+        winners.slice(
+            0,
+            3
+        );
 
-    winnerResult.innerHTML = `
+    const positions = [
+        "🥇 WINNER 1",
+        "🥈 WINNER 2",
+        "🥉 WINNER 3"
+    ];
+
+    let html = `
 
         <h3>
             🎉 Congratulations!
         </h3>
 
-        <p>
-
-            <strong>
-                Registration ID:
-            </strong>
-
-            ${escapeHTML(
-                registrationId
-            )}
-
-        </p>
-
-        <p>
-
-            <strong>
-                Name:
-            </strong>
-
-            ${escapeHTML(
-                winner.name ||
-                "-"
-            )}
-
-        </p>
-
-        <p>
-
-            <strong>
-                Phone:
-            </strong>
-
-            ${escapeHTML(
-                winner.phone ||
-                "-"
-            )}
-
-        </p>
-
-        <p>
-
-            <strong>
-                Area:
-            </strong>
-
-            ${escapeHTML(
-                winner.area ||
-                "-"
-            )}
-
-        </p>
-
-        <p>
-
-            <strong>
-                City:
-            </strong>
-
-            ${escapeHTML(
-                winner.city ||
-                "-"
-            )}
-
-        </p>
-
     `;
+
+    winnerList.forEach(
+        function(
+            winner,
+            index
+        ) {
+
+            const registrationId =
+                winner.registration_id ||
+                winner.id ||
+                "-";
+
+            html += `
+
+                <div
+                    class="draw-winner-item"
+                    style="
+                        margin-top: 24px;
+                        padding-top: 20px;
+                        border-top: 1px solid #e5e7eb;
+                    "
+                >
+
+                    <h4
+                        style="
+                            margin: 0 0 14px;
+                            color: #f43f5e;
+                            font-size: 22px;
+                            font-weight: 800;
+                        "
+                    >
+                        ${positions[index]}
+                    </h4>
+
+                    <p>
+
+                        <strong>
+                            Registration ID:
+                        </strong>
+
+                        ${escapeHTML(
+                            registrationId
+                        )}
+
+                    </p>
+
+                    <p>
+
+                        <strong>
+                            Name:
+                        </strong>
+
+                        ${escapeHTML(
+                            winner.name ||
+                            "-"
+                        )}
+
+                    </p>
+
+                    <p>
+
+                        <strong>
+                            Phone:
+                        </strong>
+
+                        ${escapeHTML(
+                            winner.phone ||
+                            "-"
+                        )}
+
+                    </p>
+
+                    <p>
+
+                        <strong>
+                            Area:
+                        </strong>
+
+                        ${escapeHTML(
+                            winner.area ||
+                            "-"
+                        )}
+
+                    </p>
+
+                    <p>
+
+                        <strong>
+                            City:
+                        </strong>
+
+                        ${escapeHTML(
+                            winner.city ||
+                            "-"
+                        )}
+
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+    winnerResult.innerHTML =
+        html;
 }
 
 // ============================================================
@@ -1274,7 +1341,7 @@ async function confirmResetDraw() {
         winnerResult.innerHTML = `
 
             <p>
-                No winner selected yet.
+                No winners selected yet.
             </p>
 
         `;
@@ -1285,6 +1352,10 @@ async function confirmResetDraw() {
         "Lucky draw reset successfully."
     );
 }
+
+// ============================================================
+// RESTORE THREE WINNERS
+// ============================================================
 
 async function restoreWinner() {
 
@@ -1347,13 +1418,14 @@ async function restoreWinner() {
 
         if (
             data.completed !== true ||
-            !data.winner
+            !Array.isArray(data.winners) ||
+            data.winners.length === 0
         ) {
 
             winnerResult.innerHTML = `
 
                 <p>
-                    No winner selected yet.
+                    No winners selected yet.
                 </p>
 
             `;
@@ -1365,12 +1437,12 @@ async function restoreWinner() {
         localStorage.setItem(
             "luckyDrawWinner",
             JSON.stringify(
-                data.winner
+                data.winners
             )
         );
 
         displayWinner(
-            data.winner
+            data.winners
         );
 
     } catch (error) {
