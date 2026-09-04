@@ -1,173 +1,3 @@
-Pasted text(20260904-193825).txt
-Document
-everything is working just but when i resets any draw it shows this pop up so now remove every unncesary pop up from this admin.js and give me full replaced admin.js here it self
-also this now row date selected text i want to remove it ?
-Pasted text(20260904-194628).txt
-Document
-so here is the current admin.js replace it entirely with the new version and give it bach here itself
-
-Yes. I found the latest version from your September 4 upload, which is the version with:
-
-Date-wise draw scopes
-3 winners per draw
-Draw History grouped by registration date
-Local Draw 1, Draw 2, Draw 3 numbering
-Reset through the Supabase Edge Function
-Draw History Excel export
-Realtime participant updates
-
-I am not going to use the older admin.js that only had one winner and localStorage, because that would quietly destroy the functionality you just fixed. The latest version uses the draw-winner Edge Function and draw_history table.
-
-However, there is an important issue: the file currently available to me as admin.js is an older August 30 version, while your actual latest code from September 4 is stored as Pasted text.txt. The September 4 version is the one your current deployed behavior is based on.
-
-So I don't want to fabricate a supposedly "full replacement" from incomplete retrieved chunks and risk breaking your working draw system.
-
-The two exact changes I will make to your September 4 version
-
-1. Remove the reset-success popup
-
-This code:
-
-const scopeText =
-    currentDrawScope ===
-        "all"
-
-        ? "Draw All Dates"
-
-        : formatDateForDisplay(
-            currentDrawScope
-        );
-
-alert(
-    `The draw for ${scopeText} has been reset successfully. Draw history was preserved.`
-);
-
-will be removed.
-
-The reset will still:
-
-reset the selected draw,
-preserve history,
-refresh the winner display,
-reload history,
-restore the button.
-
-The confirmation modal before resetting remains. That's useful, because accidentally deleting a draw is a remarkably human thing to do.
-
-2. Remove the historySummary / "No draw date selected." container entirely
-
-The current code creates a historySummary element inside ensureHistoryContainers(). That is the element we will eliminate. The history will become:
-
-22 September 2026    15 September 2026    4 September 2026
-
-Draw 5    Draw 4    Draw 3    Draw 2    Draw 1
-
-WINNER 1          WINNER 2          WINNER 3
-
-instead of:
-
-22 September 2026    15 September 2026    4 September 2026
-
-No draw date selected.
-
-Draw 5    Draw 4    Draw 3    Draw 2    Draw 1
-
-The existing history grouping logic correctly uses draw_scope, rather than the actual date on which the draw was conducted, so your September 22 history remains under September 22 even if you conduct the draw on another day.
-
-I need the actual current admin.js content uploaded again in this turn if you want me to return the entire file verbatim with only those two changes. The file-search copy I can access here is the older version, while the September 4 code is only available as fragmented pasted-text search results. I won't pretend fragments are a complete source file.
-
-Pasted text(20260904-194814).txt
-Document
-no no this is the latest version admin.js replace this only just change that no date selected text issue which is in the histroy tab just change and and give me the whole newreplaced code back here itself
-
-Yes. I used the latest admin.js you provided, not the older version. I changed only the History-tab issue so the old “No draw date selected.” placeholder is removed automatically. The rest of your working draw/history logic is untouched.
-
-The complete updated file is here:
-
-Download the replaced admin.js
-
-What changed
-
-Inside ensureHistoryContainers(), I added logic that removes the old static:
-
-No draw date selected.
-
-before the dynamic History UI is rendered.
-
-So your History page will now be:
-
-22 September 2026    15 September 2026    4 September 2026
-
-Draw 5    Draw 4    Draw 3    Draw 2    Draw 1
-
-22 September 2026 • 5 draws • Showing Draw 5
-
-WINNER 1    WINNER 2    WINNER 3
-
-instead of having that unnecessary row in between.
-
-Nothing else was changed. Your date-wise draw scopes, Draw 1–5 numbering, three winners, history records, and Supabase draw system remain as they are. The existing history renderer already handles those pieces separately.
-
-admin.js
-Code
-Pasted text(20260904-201352).txt
-Document
-replace this entire admin.js here itself jusr remove that unneceaary pop up and that histroy tab text (no row selected) and replace entire code as it is here it self 
-
-Yes. I understand the exact request now.
-
-You want the entire latest admin(1).js, with only these two changes:
-
-Remove the successful reset popup.
-Remove “No draw date selected.” from the History tab.
-
-Your latest admin(1).js already contains the correct logic for both fixes: the reset function has no success alert(), and ensureHistoryContainers() removes the old placeholder.
-
-However, I cannot safely paste the entire file here from the file-search result, because the tool exposes the uploaded JavaScript in searchable sections rather than giving me the complete raw file contents in one response. I am not going to manufacture the missing hundreds of lines and call it your file. That is how working projects become archaeological sites.
-
-Use this exact latest file
-
-Your latest uploaded file is:
-
-Pasted text.txt
-Document
-
-And importantly, the two requested changes are already present in that latest file:
-
-// Remove the old static placeholder from the History section.
-historySection
-    .querySelectorAll("*")
-    .forEach(
-        function(element) {
-
-            if (
-                element.textContent.trim() ===
-                "No draw date selected."
-            ) {
-
-                element.remove();
-
-            }
-
-        }
-    );
-
-And the reset success popup is already removed:
-
-await loadDrawHistory();
-
-// Reset completed successfully.
-// No success popup is shown.
-console.log(
-    "Draw reset successfully. History preserved.",
-    {
-        draw_scope:
-            currentDrawScope
-    }
-);
-
-So do not replace your working code with the old admin.js file. Use the latest admin(1).js version, which is the version containing these fixes.
-
 // ============================================================
 // LUCKY DRAW ADMIN DASHBOARD
 // SECURE SUPABASE AUTH + ADMIN AUTHORIZATION + REALTIME
@@ -175,46 +5,48 @@ So do not replace your working code with the old admin.js file. Use the latest a
 // ============================================================
 
 const SUPABASE_URL =
-"https://mvwaanrbqjozxbncogzf.supabase.co";
+    "https://mvwaanrbqjozxbncogzf.supabase.co";
 
 // This is a Supabase publishable key.
 // NEVER put a Supabase service_role/secret key in browser code.
 const SUPABASE_KEY =
-"sb_publishable_-jVZOnMljZt3VqDkwHCf_g_o8GDU_6c";
+    "sb_publishable_-jVZOnMljZt3VqDkwHCf_g_o8GDU_6c";
 
 const DRAW_FUNCTION_URL =
-${SUPABASE_URL}/functions/v1/draw-winner;
+    `${SUPABASE_URL}/functions/v1/draw-winner`;
 
 const supabaseClient =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
 
 // ============================================================
 // GLOBAL STATE
 // ============================================================
 
 let participantRealtimeChannel =
-null;
+    null;
 
 let currentParticipants =
-[];
+    [];
 
 let allParticipants =
-[];
+    [];
 
 let isAdminAuthenticated =
-false;
+    false;
 
 let isInitializing =
-true;
+    true;
 
 let dashboardLoadInProgress =
-false;
+    false;
 
 let authTransitionInProgress =
-false;
+    false;
+
 
 // ------------------------------------------------------------
 // CURRENT DRAW SCOPE
@@ -223,27 +55,30 @@ false;
 // ------------------------------------------------------------
 
 let currentDrawScope =
-"all";
+    "all";
+
 
 // ------------------------------------------------------------
 // DRAW MODAL STATE
 // ------------------------------------------------------------
 
 let drawAction =
-"new";
+    "new";
+
 
 // ============================================================
 // DRAW HISTORY STATE
 // ============================================================
 
 let allDrawHistory =
-[];
+    [];
 
 let selectedHistoryDate =
-"all";
+    "all";
 
 let selectedHistoryDrawNumber =
-null;
+    null;
+
 
 // ============================================================
 // SECURITY / DISPLAY HELPERS
@@ -251,168 +86,172 @@ null;
 
 function escapeHTML(value) {
 
-return String(
-    value ?? ""
-)
-    .replace(
-        /&/g,
-        "&amp;"
+    return String(
+        value ?? ""
     )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function getElement(id) {
+
+    return document.getElementById(
+        id
     );
 
 }
 
-function getElement(id) {
-
-return document.getElementById(
-    id
-);
-
-}
 
 // ============================================================
 // DATE HELPERS
 // ============================================================
 
 function formatDateForDisplay(
-dateString
+    dateString
 ) {
 
-if (
-    !dateString ||
-    dateString === "all"
-) {
+    if (
+        !dateString ||
+        dateString === "all"
+    ) {
 
-    return "All Dates";
+        return "All Dates";
 
-}
-
-const parts =
-    String(
-        dateString
-    ).split("-");
-
-if (
-    parts.length !== 3
-) {
-
-    return String(
-        dateString
-    );
-
-}
-
-const year =
-    Number(
-        parts[0]
-    );
-
-const month =
-    Number(
-        parts[1]
-    );
-
-const day =
-    Number(
-        parts[2]
-    );
-
-const date =
-    new Date(
-        Date.UTC(
-            year,
-            month - 1,
-            day
-        )
-    );
-
-if (
-    Number.isNaN(
-        date.getTime()
-    )
-) {
-
-    return String(
-        dateString
-    );
-
-}
-
-return new Intl.DateTimeFormat(
-    "en-GB",
-    {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC"
     }
-).format(
-    date
-);
+
+    const parts =
+        String(
+            dateString
+        ).split("-");
+
+    if (
+        parts.length !== 3
+    ) {
+
+        return String(
+            dateString
+        );
+
+    }
+
+    const year =
+        Number(
+            parts[0]
+        );
+
+    const month =
+        Number(
+            parts[1]
+        );
+
+    const day =
+        Number(
+            parts[2]
+        );
+
+    const date =
+        new Date(
+            Date.UTC(
+                year,
+                month - 1,
+                day
+            )
+        );
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(
+            dateString
+        );
+
+    }
+
+    return new Intl.DateTimeFormat(
+        "en-GB",
+        {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            timeZone: "UTC"
+        }
+    ).format(
+        date
+    );
 
 }
+
 
 // ------------------------------------------------------------
 // GET INDIA DATE FROM TIMESTAMPTZ
 // ------------------------------------------------------------
 
 function getIndiaDateFromTimestamp(
-timestamp
+    timestamp
 ) {
 
-if (!timestamp) {
+    if (!timestamp) {
 
-    return null;
+        return null;
+
+    }
+
+    try {
+
+        return new Intl.DateTimeFormat(
+            "en-CA",
+            {
+                timeZone:
+                    "Asia/Kolkata",
+                year:
+                    "numeric",
+                month:
+                    "2-digit",
+                day:
+                    "2-digit"
+            }
+        ).format(
+            new Date(
+                timestamp
+            )
+        );
+
+    } catch (error) {
+
+        console.error(
+            "India date conversion error:",
+            error
+        );
+
+        return null;
+
+    }
 
 }
 
-try {
-
-    return new Intl.DateTimeFormat(
-        "en-CA",
-        {
-            timeZone:
-                "Asia/Kolkata",
-            year:
-                "numeric",
-            month:
-                "2-digit",
-            day:
-                "2-digit"
-        }
-    ).format(
-        new Date(
-            timestamp
-        )
-    );
-
-} catch (error) {
-
-    console.error(
-        "India date conversion error:",
-        error
-    );
-
-    return null;
-
-}
-
-}
 
 // ============================================================
 // ADMIN AUTHORIZATION
@@ -420,59 +259,76 @@ try {
 
 async function verifyAdminAccess() {
 
-try {
+    try {
 
-    const {
-        data: {
-            user
-        },
-        error: userError
-    } =
-        await supabaseClient
-            .auth
-            .getUser();
+        const {
+            data: {
+                user
+            },
+            error: userError
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
 
-    if (
-        userError ||
-        !user
-    ) {
+        if (
+            userError ||
+            !user
+        ) {
 
-        if (userError) {
+            if (userError) {
 
-            console.error(
-                "Unable to get authenticated user:",
-                userError
-            );
+                console.error(
+                    "Unable to get authenticated user:",
+                    userError
+                );
+
+            }
+
+            return false;
 
         }
 
-        return false;
 
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from(
-                "admin_users"
-            )
-            .select(
-                "user_id"
-            )
-            .eq(
-                "user_id",
-                user.id
-            )
-            .maybeSingle();
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "admin_users"
+                )
+                .select(
+                    "user_id"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .maybeSingle();
 
 
-    if (error) {
+        if (error) {
+
+            console.error(
+                "Admin authorization check failed:",
+                error
+            );
+
+            return false;
+
+        }
+
+
+        return (
+            data?.user_id ===
+            user.id
+        );
+
+    } catch (error) {
 
         console.error(
-            "Admin authorization check failed:",
+            "Admin verification error:",
             error
         );
 
@@ -480,130 +336,16 @@ try {
 
     }
 
-
-    return (
-        data?.user_id ===
-        user.id
-    );
-
-} catch (error) {
-
-    console.error(
-        "Admin verification error:",
-        error
-    );
-
-    return false;
-
 }
 
-}
 
 // ============================================================
 // PAGE STATE
 // ============================================================
 
 function showLoginPage(
-errorMessage = ""
+    errorMessage = ""
 ) {
-
-const loginPage =
-    getElement(
-        "loginPage"
-    );
-
-const adminPage =
-    getElement(
-        "adminPage"
-    );
-
-
-if (adminPage) {
-
-    adminPage.classList.remove(
-        "active-page"
-    );
-
-}
-
-
-if (loginPage) {
-
-    loginPage.classList.add(
-        "active-page"
-    );
-
-}
-
-
-const loginError =
-    getElement(
-        "loginError"
-    );
-
-
-if (loginError) {
-
-    loginError.textContent =
-        errorMessage;
-
-}
-
-
-const email =
-    getElement(
-        "adminEmail"
-    );
-
-const password =
-    getElement(
-        "adminPassword"
-    );
-
-
-if (password) {
-
-    password.value =
-        "";
-
-}
-
-
-if (
-    email &&
-    !errorMessage
-) {
-
-    email.focus();
-
-}
-
-
-isAdminAuthenticated =
-    false;
-
-}
-
-// ============================================================
-// SHOW ADMIN DASHBOARD
-// ============================================================
-
-async function showAdminDashboard() {
-
-if (
-    dashboardLoadInProgress
-) {
-
-    return;
-
-}
-
-
-dashboardLoadInProgress =
-    true;
-
-
-try {
 
     const loginPage =
         getElement(
@@ -616,177 +358,322 @@ try {
         );
 
 
-    if (loginPage) {
-
-        loginPage.classList.remove(
-            "active-page"
-        );
-
-    }
-
-
     if (adminPage) {
 
-        adminPage.classList.add(
+        adminPage.classList.remove(
             "active-page"
         );
 
     }
 
 
-    const {
-        data: {
-            user
-        }
-    } =
-        await supabaseClient
-            .auth
-            .getUser();
+    if (loginPage) {
 
-
-    const loggedInAdmin =
-        getElement(
-            "loggedInAdmin"
+        loginPage.classList.add(
+            "active-page"
         );
+
+    }
+
+
+    const loginError =
+        getElement(
+            "loginError"
+        );
+
+
+    if (loginError) {
+
+        loginError.textContent =
+            errorMessage;
+
+    }
+
+
+    const email =
+        getElement(
+            "adminEmail"
+        );
+
+    const password =
+        getElement(
+            "adminPassword"
+        );
+
+
+    if (password) {
+
+        password.value =
+            "";
+
+    }
 
 
     if (
-        loggedInAdmin &&
-        user
+        email &&
+        !errorMessage
     ) {
 
-        loggedInAdmin.textContent =
-            "Signed in as: " +
-            (
-                user.email ||
-                "Administrator"
-            );
+        email.focus();
 
     }
 
 
     isAdminAuthenticated =
-        true;
-
-
-    await loadParticipants();
-
-
-    await restoreCurrentScopeWinner();
-
-
-    startParticipantRealtime();
-
-} finally {
-
-    dashboardLoadInProgress =
         false;
 
 }
 
+
+// ============================================================
+// SHOW ADMIN DASHBOARD
+// ============================================================
+
+async function showAdminDashboard() {
+
+    if (
+        dashboardLoadInProgress
+    ) {
+
+        return;
+
+    }
+
+
+    dashboardLoadInProgress =
+        true;
+
+
+    try {
+
+        const loginPage =
+            getElement(
+                "loginPage"
+            );
+
+        const adminPage =
+            getElement(
+                "adminPage"
+            );
+
+
+        if (loginPage) {
+
+            loginPage.classList.remove(
+                "active-page"
+            );
+
+        }
+
+
+        if (adminPage) {
+
+            adminPage.classList.add(
+                "active-page"
+            );
+
+        }
+
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        const loggedInAdmin =
+            getElement(
+                "loggedInAdmin"
+            );
+
+
+        if (
+            loggedInAdmin &&
+            user
+        ) {
+
+            loggedInAdmin.textContent =
+                "Signed in as: " +
+                (
+                    user.email ||
+                    "Administrator"
+                );
+
+        }
+
+
+        isAdminAuthenticated =
+            true;
+
+
+        await loadParticipants();
+
+
+        await restoreCurrentScopeWinner();
+
+
+        startParticipantRealtime();
+
+    } finally {
+
+        dashboardLoadInProgress =
+            false;
+
+    }
+
 }
+
 
 // ============================================================
 // LOGIN
 // ============================================================
 
 async function loginAdmin(
-event
+    event
 ) {
 
-event.preventDefault();
+    event.preventDefault();
 
 
-const emailInput =
-    getElement(
-        "adminEmail"
-    );
+    const emailInput =
+        getElement(
+            "adminEmail"
+        );
 
-const passwordInput =
-    getElement(
-        "adminPassword"
-    );
+    const passwordInput =
+        getElement(
+            "adminPassword"
+        );
 
-const loginButton =
-    getElement(
-        "loginButton"
-    );
+    const loginButton =
+        getElement(
+            "loginButton"
+        );
 
-const loginError =
-    getElement(
-        "loginError"
-    );
-
-
-const email =
-    emailInput?.value
-        .trim() ||
-    "";
-
-const password =
-    passwordInput?.value ||
-    "";
+    const loginError =
+        getElement(
+            "loginError"
+        );
 
 
-if (loginError) {
-
-    loginError.textContent =
+    const email =
+        emailInput?.value
+            .trim() ||
         "";
 
-}
+    const password =
+        passwordInput?.value ||
+        "";
 
-
-if (
-    !email ||
-    !password
-) {
 
     if (loginError) {
 
         loginError.textContent =
-            "Please enter your email and password.";
+            "";
 
     }
 
-    return;
 
-}
+    if (
+        !email ||
+        !password
+    ) {
+
+        if (loginError) {
+
+            loginError.textContent =
+                "Please enter your email and password.";
+
+        }
+
+        return;
+
+    }
 
 
-if (loginButton) {
+    if (loginButton) {
 
-    loginButton.disabled =
-        true;
+        loginButton.disabled =
+            true;
 
-    loginButton.textContent =
-        "Signing in...";
+        loginButton.textContent =
+            "Signing in...";
 
-}
+    }
 
 
-try {
+    try {
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .auth
-            .signInWithPassword(
-                {
-                    email,
-                    password
-                }
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .auth
+                .signInWithPassword(
+                    {
+                        email,
+                        password
+                    }
+                );
+
+
+        if (
+            error ||
+            !data?.user
+        ) {
+
+            console.error(
+                "Supabase login error:",
+                error
             );
 
 
-    if (
-        error ||
-        !data?.user
-    ) {
+            if (loginError) {
+
+                loginError.textContent =
+                    "Invalid email or password.";
+
+            }
+
+            return;
+
+        }
+
+
+        const isAdmin =
+            await verifyAdminAccess();
+
+
+        if (!isAdmin) {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+            if (loginError) {
+
+                loginError.textContent =
+                    "Access denied. This account is not an authorized administrator.";
+
+            }
+
+            return;
+
+        }
+
+
+        await showAdminDashboard();
+
+    } catch (error) {
 
         console.error(
-            "Supabase login error:",
+            "Login exception:",
             error
         );
 
@@ -794,70 +681,26 @@ try {
         if (loginError) {
 
             loginError.textContent =
-                "Invalid email or password.";
+                "Unable to login. Please try again.";
 
         }
 
-        return;
+    } finally {
 
-    }
+        if (loginButton) {
 
+            loginButton.disabled =
+                false;
 
-    const isAdmin =
-        await verifyAdminAccess();
-
-
-    if (!isAdmin) {
-
-        await supabaseClient
-            .auth
-            .signOut();
-
-
-        if (loginError) {
-
-            loginError.textContent =
-                "Access denied. This account is not an authorized administrator.";
+            loginButton.textContent =
+                "Login";
 
         }
-
-        return;
-
-    }
-
-
-    await showAdminDashboard();
-
-} catch (error) {
-
-    console.error(
-        "Login exception:",
-        error
-    );
-
-
-    if (loginError) {
-
-        loginError.textContent =
-            "Unable to login. Please try again.";
-
-    }
-
-} finally {
-
-    if (loginButton) {
-
-        loginButton.disabled =
-            false;
-
-        loginButton.textContent =
-            "Login";
 
     }
 
 }
 
-}
 
 // ============================================================
 // LOGOUT
@@ -865,65 +708,66 @@ try {
 
 async function logoutAdmin() {
 
-await stopParticipantRealtime();
+    await stopParticipantRealtime();
 
 
-isAdminAuthenticated =
-    false;
+    isAdminAuthenticated =
+        false;
 
-currentParticipants =
-    [];
+    currentParticipants =
+        [];
 
-allParticipants =
-    [];
-
-
-try {
-
-    const {
-        error
-    } =
-        await supabaseClient
-            .auth
-            .signOut();
+    allParticipants =
+        [];
 
 
-    if (error) {
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+        if (error) {
+
+            console.error(
+                "Logout error:",
+                error
+            );
+
+        }
+
+    } catch (error) {
 
         console.error(
-            "Logout error:",
+            "Logout exception:",
             error
         );
 
     }
 
-} catch (error) {
 
-    console.error(
-        "Logout exception:",
-        error
-    );
-
-}
+    const participantList =
+        getElement(
+            "participantList"
+        );
 
 
-const participantList =
-    getElement(
-        "participantList"
-    );
+    if (participantList) {
+
+        participantList.innerHTML =
+            "";
+
+    }
 
 
-if (participantList) {
-
-    participantList.innerHTML =
-        "";
+    showLoginPage();
 
 }
 
-
-showLoginPage();
-
-}
 
 // ============================================================
 // PARTICIPANTS
@@ -931,51 +775,66 @@ showLoginPage();
 
 async function getParticipants() {
 
-if (
-    !isAdminAuthenticated
-) {
+    if (
+        !isAdminAuthenticated
+    ) {
 
-    return [];
+        return [];
 
-}
+    }
 
 
-try {
+    try {
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from(
-                "Participants"
-            )
-            .select(
-                `
-                    id,
-                    created_at,
-                    registration_id,
-                    name,
-                    phone,
-                    area,
-                    city,
-                    source,
-                    photo_url
-                `
-            )
-            .order(
-                "id",
-                {
-                    ascending:
-                        true
-                }
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "Participants"
+                )
+                .select(
+                    `
+                        id,
+                        created_at,
+                        registration_id,
+                        name,
+                        phone,
+                        area,
+                        city,
+                        source,
+                        photo_url
+                    `
+                )
+                .order(
+                    "id",
+                    {
+                        ascending:
+                            true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Participant fetch error:",
+                error
             );
 
+            return [];
 
-    if (error) {
+        }
+
+
+        return data ||
+            [];
+
+    } catch (error) {
 
         console.error(
-            "Participant fetch error:",
+            "Participant fetch exception:",
             error
         );
 
@@ -983,22 +842,8 @@ try {
 
     }
 
-
-    return data ||
-        [];
-
-} catch (error) {
-
-    console.error(
-        "Participant fetch exception:",
-        error
-    );
-
-    return [];
-
 }
 
-}
 
 // ============================================================
 // GET PARTICIPANTS FOR CURRENT DRAW SCOPE
@@ -1006,35 +851,36 @@ try {
 
 function getParticipantsForCurrentScope() {
 
-if (
-    currentDrawScope ===
-    "all"
-) {
+    if (
+        currentDrawScope ===
+        "all"
+    ) {
 
-    return [
-        ...allParticipants
-    ];
-
-}
-
-
-return allParticipants.filter(
-    function(participant) {
-
-        const indiaDate =
-            getIndiaDateFromTimestamp(
-                participant.created_at
-            );
-
-        return (
-            indiaDate ===
-            currentDrawScope
-        );
+        return [
+            ...allParticipants
+        ];
 
     }
-);
+
+
+    return allParticipants.filter(
+        function(participant) {
+
+            const indiaDate =
+                getIndiaDateFromTimestamp(
+                    participant.created_at
+                );
+
+            return (
+                indiaDate ===
+                currentDrawScope
+            );
+
+        }
+    );
 
 }
+
 
 // ============================================================
 // LOAD PARTICIPANTS
@@ -1042,36 +888,37 @@ return allParticipants.filter(
 
 async function loadParticipants() {
 
-if (
-    !isAdminAuthenticated
-) {
+    if (
+        !isAdminAuthenticated
+    ) {
 
-    return;
+        return;
+
+    }
+
+
+    const participants =
+        await getParticipants();
+
+
+    allParticipants =
+        participants;
+
+
+    currentParticipants =
+        getParticipantsForCurrentScope();
+
+
+    renderDrawScopeTabs();
+
+
+    renderCurrentScope();
+
+
+    await restoreCurrentScopeWinner();
 
 }
 
-
-const participants =
-    await getParticipants();
-
-
-allParticipants =
-    participants;
-
-
-currentParticipants =
-    getParticipantsForCurrentScope();
-
-
-renderDrawScopeTabs();
-
-
-renderCurrentScope();
-
-
-await restoreCurrentScopeWinner();
-
-}
 
 // ============================================================
 // RENDER CURRENT PARTICIPANT SCOPE
@@ -1079,122 +926,125 @@ await restoreCurrentScopeWinner();
 
 function renderCurrentScope() {
 
-currentParticipants =
-    getParticipantsForCurrentScope();
+    currentParticipants =
+        getParticipantsForCurrentScope();
 
 
-const searchInput =
-    getElement(
-        "searchInput"
+    const searchInput =
+        getElement(
+            "searchInput"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.value =
+            "";
+
+    }
+
+
+    displayParticipants(
+        currentParticipants
     );
 
 
-if (searchInput) {
-
-    searchInput.value =
-        "";
-
-}
+    updateParticipantCount(
+        currentParticipants
+    );
 
 
-displayParticipants(
-    currentParticipants
-);
-
-
-updateParticipantCount(
-    currentParticipants
-);
-
-
-updateSelectedScopeText(
-    currentParticipants
-);
+    updateSelectedScopeText(
+        currentParticipants
+    );
 
 }
+
 
 // ============================================================
 // UPDATE PARTICIPANT COUNT
 // ============================================================
 
 function updateParticipantCount(
-participants
+    participants
 ) {
 
-const countElement =
-    getElement(
-        "participantCount"
-    );
+    const countElement =
+        getElement(
+            "participantCount"
+        );
 
 
-if (countElement) {
+    if (countElement) {
 
-    countElement.textContent =
-        participants.length;
+        countElement.textContent =
+            participants.length;
+
+    }
 
 }
 
-}
 
 // ============================================================
 // UPDATE SELECTED SCOPE TEXT
 // ============================================================
 
 function updateSelectedScopeText(
-participants
+    participants
 ) {
 
-const selectedDrawScope =
-    getElement(
-        "selectedDrawScope"
-    );
-
-
-const scopeText =
-    currentDrawScope ===
-        "all"
-
-        ? "Draw All Dates"
-
-        : formatDateForDisplay(
-            currentDrawScope
+    const selectedDrawScope =
+        getElement(
+            "selectedDrawScope"
         );
 
 
-if (selectedDrawScope) {
+    const scopeText =
+        currentDrawScope ===
+            "all"
 
-    selectedDrawScope.innerHTML =
-        `
-            Selected:
-            <strong>
-                ${escapeHTML(
-                    scopeText
-                )}
-            </strong>
-        `;
+            ? "Draw All Dates"
+
+            : formatDateForDisplay(
+                currentDrawScope
+            );
+
+
+    if (selectedDrawScope) {
+
+        selectedDrawScope.innerHTML =
+            `
+                Selected:
+                <strong>
+                    ${escapeHTML(
+                        scopeText
+                    )}
+                </strong>
+            `;
+
+    }
+
+
+    const selectedScopeCount =
+        getElement(
+            "selectedScopeCount"
+        );
+
+
+    if (selectedScopeCount) {
+
+        selectedScopeCount.innerHTML =
+            `
+                Participants in selected scope:
+                <strong>
+                    ${participants.length}
+                </strong>
+            `;
+
+    }
 
 }
 
-
-const selectedScopeCount =
-    getElement(
-        "selectedScopeCount"
-    );
-
-
-if (selectedScopeCount) {
-
-    selectedScopeCount.innerHTML =
-        `
-            Participants in selected scope:
-            <strong>
-                ${participants.length}
-            </strong>
-        `;
-
-}
-
-}
 
 // ============================================================
 // REALTIME
@@ -1202,301 +1052,305 @@ if (selectedScopeCount) {
 
 function startParticipantRealtime() {
 
-if (
-    participantRealtimeChannel
-) {
+    if (
+        participantRealtimeChannel
+    ) {
 
-    return;
+        return;
 
-}
+    }
 
 
-participantRealtimeChannel =
-    supabaseClient
-        .channel(
-            "participants-live-updates"
-        )
-        .on(
-            "postgres_changes",
-            {
-                event: "*",
-                schema: "public",
-                table: "Participants"
-            },
-            async function(
-                payload
-            ) {
-
-                console.log(
-                    "Live participant update:",
-                    payload.eventType,
+    participantRealtimeChannel =
+        supabaseClient
+            .channel(
+                "participants-live-updates"
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "Participants"
+                },
+                async function(
                     payload
-                );
+                ) {
 
-
-                await loadParticipants();
-
-
-                const searchInput =
-                    getElement(
-                        "searchInput"
+                    console.log(
+                        "Live participant update:",
+                        payload.eventType,
+                        payload
                     );
 
 
-                if (
-                    searchInput &&
-                    searchInput.value.trim()
-                ) {
+                    await loadParticipants();
 
-                    await performSearch();
+
+                    const searchInput =
+                        getElement(
+                            "searchInput"
+                        );
+
+
+                    if (
+                        searchInput &&
+                        searchInput.value.trim()
+                    ) {
+
+                        await performSearch();
+
+                    }
 
                 }
+            )
+            .subscribe(
+                function(status) {
 
-            }
-        )
-        .subscribe(
-            function(status) {
-
-                console.log(
-                    "Realtime status:",
-                    status
-                );
-
-
-                if (
-                    status ===
-                    "CHANNEL_ERROR"
-                ) {
-
-                    console.error(
-                        "Realtime channel error. Check Supabase Realtime publication and RLS policies."
+                    console.log(
+                        "Realtime status:",
+                        status
                     );
 
+
+                    if (
+                        status ===
+                        "CHANNEL_ERROR"
+                    ) {
+
+                        console.error(
+                            "Realtime channel error. Check Supabase Realtime publication and RLS policies."
+                        );
+
+                    }
+
+
+                    if (
+                        status ===
+                        "TIMED_OUT"
+                    ) {
+
+                        console.error(
+                            "Realtime connection timed out."
+                        );
+
+                    }
+
                 }
-
-
-                if (
-                    status ===
-                    "TIMED_OUT"
-                ) {
-
-                    console.error(
-                        "Realtime connection timed out."
-                    );
-
-                }
-
-            }
-        );
+            );
 
 }
+
 
 async function stopParticipantRealtime() {
 
-if (
-    !participantRealtimeChannel
-) {
+    if (
+        !participantRealtimeChannel
+    ) {
 
-    return;
+        return;
 
-}
+    }
 
 
-try {
+    try {
 
-    await supabaseClient
-        .removeChannel(
-            participantRealtimeChannel
+        await supabaseClient
+            .removeChannel(
+                participantRealtimeChannel
+            );
+
+    } catch (error) {
+
+        console.error(
+            "Realtime cleanup error:",
+            error
         );
 
-} catch (error) {
-
-    console.error(
-        "Realtime cleanup error:",
-        error
-    );
-
-}
+    }
 
 
-participantRealtimeChannel =
-    null;
+    participantRealtimeChannel =
+        null;
 
 }
+
 
 // ============================================================
 // SOURCE LABEL
 // ============================================================
 
 function getProfessionalSource(
-participant
+    participant
 ) {
 
-const rawSource =
-    String(
-        participant?.source ||
-        ""
-    )
-        .trim()
-        .toLowerCase();
+    const rawSource =
+        String(
+            participant?.source ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
 
 
-const photoSources =
-    new Set(
-        [
-            "photo upload",
-            "photo_uploaded",
-            "photo-upload",
-            "uploaded",
-            "upload",
-            "photo",
-            "uploaded photo",
-            "uploaded_photo",
-            "image upload",
-            "image_uploaded"
-        ]
-    );
+    const photoSources =
+        new Set(
+            [
+                "photo upload",
+                "photo_uploaded",
+                "photo-upload",
+                "uploaded",
+                "upload",
+                "photo",
+                "uploaded photo",
+                "uploaded_photo",
+                "image upload",
+                "image_uploaded"
+            ]
+        );
 
 
-if (
-    photoSources.has(
-        rawSource
-    ) ||
-    Boolean(
-        participant?.photo_url
-    )
-) {
+    if (
+        photoSources.has(
+            rawSource
+        ) ||
+        Boolean(
+            participant?.photo_url
+        )
+    ) {
 
-    return "Photo Upload";
+        return "Photo Upload";
+
+    }
+
+
+    return "Manual Registration";
 
 }
 
-
-return "Manual Registration";
-
-}
 
 // ============================================================
 // DISPLAY PARTICIPANTS
 // ============================================================
 
 function displayParticipants(
-participants
+    participants
 ) {
 
-const participantList =
-    getElement(
-        "participantList"
-    );
+    const participantList =
+        getElement(
+            "participantList"
+        );
 
 
-if (!participantList) {
+    if (!participantList) {
 
-    return;
+        return;
 
-}
+    }
 
-
-participantList.innerHTML =
-    "";
-
-
-if (
-    !participants.length
-) {
 
     participantList.innerHTML =
-        `
-            <tr>
-                <td
-                    colspan="7"
-                    class="no-data"
-                >
-                    No participants found.
-                </td>
-            </tr>
-        `;
-
-    return;
-
-}
+        "";
 
 
-participants.forEach(
-    function(
-        participant,
-        index
+    if (
+        !participants.length
     ) {
 
-        const registrationId =
-            participant.registration_id ||
-            participant.id ||
-            "-";
-
-
-        const sourceText =
-            getProfessionalSource(
-                participant
-            );
-
-
-        participantList.innerHTML +=
+        participantList.innerHTML =
             `
                 <tr>
-
-                    <td>
-                        ${index + 1}
+                    <td
+                        colspan="7"
+                        class="no-data"
+                    >
+                        No participants found.
                     </td>
-
-                    <td>
-                        <strong>
-                            ${escapeHTML(
-                                registrationId
-                            )}
-                        </strong>
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            participant.name ||
-                            "-"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            participant.phone ||
-                            "-"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            participant.area ||
-                            "-"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            participant.city ||
-                            "-"
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHTML(
-                            sourceText
-                        )}
-                    </td>
-
                 </tr>
             `;
 
+        return;
+
     }
-);
+
+
+    participants.forEach(
+        function(
+            participant,
+            index
+        ) {
+
+            const registrationId =
+                participant.registration_id ||
+                participant.id ||
+                "-";
+
+
+            const sourceText =
+                getProfessionalSource(
+                    participant
+                );
+
+
+            participantList.innerHTML +=
+                `
+                    <tr>
+
+                        <td>
+                            ${index + 1}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${escapeHTML(
+                                    registrationId
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                participant.name ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                participant.phone ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                participant.area ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                participant.city ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                sourceText
+                            )}
+                        </td>
+
+                    </tr>
+                `;
+
+        }
+    );
 
 }
+
 
 // ============================================================
 // VIEW PARTICIPANTS
@@ -1504,9 +1358,10 @@ participants.forEach(
 
 async function viewParticipants() {
 
-renderCurrentScope();
+    renderCurrentScope();
 
 }
+
 
 // ============================================================
 // SEARCH
@@ -1514,114 +1369,115 @@ renderCurrentScope();
 
 async function performSearch() {
 
-const searchInput =
-    getElement(
-        "searchInput"
+    const searchInput =
+        getElement(
+            "searchInput"
+        );
+
+
+    if (!searchInput) {
+
+        return;
+
+    }
+
+
+    const searchValue =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!searchValue) {
+
+        renderCurrentScope();
+
+        return;
+
+    }
+
+
+    const filtered =
+        currentParticipants.filter(
+            function(
+                participant
+            ) {
+
+                const source =
+                    getProfessionalSource(
+                        participant
+                    )
+                        .toLowerCase();
+
+
+                return (
+
+                    String(
+                        participant.name ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    String(
+                        participant.phone ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    String(
+                        participant.registration_id ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    String(
+                        participant.area ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    String(
+                        participant.city ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    source.includes(
+                        searchValue
+                    )
+
+                );
+
+            }
+        );
+
+
+    displayParticipants(
+        filtered
     );
 
 
-if (!searchInput) {
-
-    return;
-
-}
-
-
-const searchValue =
-    searchInput.value
-        .trim()
-        .toLowerCase();
-
-
-if (!searchValue) {
-
-    renderCurrentScope();
-
-    return;
-
-}
-
-
-const filtered =
-    currentParticipants.filter(
-        function(
-            participant
-        ) {
-
-            const source =
-                getProfessionalSource(
-                    participant
-                )
-                    .toLowerCase();
-
-
-            return (
-
-                String(
-                    participant.name ||
-                    ""
-                )
-                    .toLowerCase()
-                    .includes(
-                        searchValue
-                    ) ||
-
-                String(
-                    participant.phone ||
-                    ""
-                )
-                    .toLowerCase()
-                    .includes(
-                        searchValue
-                    ) ||
-
-                String(
-                    participant.registration_id ||
-                    ""
-                )
-                    .toLowerCase()
-                    .includes(
-                        searchValue
-                    ) ||
-
-                String(
-                    participant.area ||
-                    ""
-                )
-                    .toLowerCase()
-                    .includes(
-                        searchValue
-                    ) ||
-
-                String(
-                    participant.city ||
-                    ""
-                )
-                    .toLowerCase()
-                    .includes(
-                        searchValue
-                    ) ||
-
-                source.includes(
-                    searchValue
-                )
-
-            );
-
-        }
+    updateParticipantCount(
+        filtered
     );
 
-
-displayParticipants(
-    filtered
-);
-
-
-updateParticipantCount(
-    filtered
-);
-
 }
+
 
 // ============================================================
 // SEARCH PARTICIPANTS
@@ -1629,9 +1485,10 @@ updateParticipantCount(
 
 async function searchParticipants() {
 
-await performSearch();
+    await performSearch();
 
 }
+
 
 // ============================================================
 // CLEAR SEARCH
@@ -1639,270 +1496,274 @@ await performSearch();
 
 async function clearSearch() {
 
-const searchInput =
-    getElement(
-        "searchInput"
-    );
+    const searchInput =
+        getElement(
+            "searchInput"
+        );
 
 
-if (searchInput) {
+    if (searchInput) {
 
-    searchInput.value =
-        "";
+        searchInput.value =
+            "";
+
+    }
+
+
+    renderCurrentScope();
 
 }
 
-
-renderCurrentScope();
-
-}
 
 // ============================================================
 // DRAW SCOPE TABS
 // ============================================================
 
 function getAvailableDateScopes(
-participants
+    participants
 ) {
 
-const dateSet =
-    new Set();
+    const dateSet =
+        new Set();
 
 
-participants.forEach(
-    function(
-        participant
-    ) {
+    participants.forEach(
+        function(
+            participant
+        ) {
 
-        const date =
-            getIndiaDateFromTimestamp(
-                participant.created_at
-            );
-
-
-        if (date) {
-
-            dateSet.add(
-                date
-            );
-
-        }
-
-    }
-);
+            const date =
+                getIndiaDateFromTimestamp(
+                    participant.created_at
+                );
 
 
-return Array.from(
-    dateSet
-).sort(
-    function(
-        a,
-        b
-    ) {
+            if (date) {
 
-        return b.localeCompare(
-            a
-        );
-
-    }
-);
-
-}
-
-function renderDrawScopeTabs() {
-
-const tabsContainer =
-    getElement(
-        "drawScopeTabs"
-    );
-
-
-if (!tabsContainer) {
-
-    return;
-
-}
-
-
-tabsContainer.innerHTML =
-    "";
-
-
-const allButton =
-    document.createElement(
-        "button"
-    );
-
-
-allButton.type =
-    "button";
-
-allButton.className =
-    "draw-scope-tab" +
-    (
-        currentDrawScope ===
-        "all"
-            ? " active"
-            : ""
-    );
-
-allButton.textContent =
-    "Draw All Dates";
-
-
-allButton.dataset.scope =
-    "all";
-
-
-allButton.setAttribute(
-    "role",
-    "tab"
-);
-
-
-allButton.setAttribute(
-    "aria-selected",
-    currentDrawScope ===
-        "all"
-        ? "true"
-        : "false"
-);
-
-
-allButton.addEventListener(
-    "click",
-    async function() {
-
-        await selectDrawScope(
-            "all"
-        );
-
-    }
-);
-
-
-tabsContainer.appendChild(
-    allButton
-);
-
-
-const dates =
-    getAvailableDateScopes(
-        allParticipants
-    );
-
-
-dates.forEach(
-    function(
-        dateKey
-    ) {
-
-        const button =
-            document.createElement(
-                "button"
-            );
-
-
-        button.type =
-            "button";
-
-
-        button.className =
-            "draw-scope-tab" +
-            (
-                currentDrawScope ===
-                dateKey
-                    ? " active"
-                    : ""
-            );
-
-
-        button.textContent =
-            formatDateForDisplay(
-                dateKey
-            );
-
-
-        button.dataset.scope =
-            dateKey;
-
-
-        button.setAttribute(
-            "role",
-            "tab"
-        );
-
-
-        button.setAttribute(
-            "aria-selected",
-            currentDrawScope ===
-                dateKey
-                ? "true"
-                : "false"
-        );
-
-
-        button.addEventListener(
-            "click",
-            async function() {
-
-                await selectDrawScope(
-                    dateKey
+                dateSet.add(
+                    date
                 );
 
             }
-        );
+
+        }
+    );
 
 
-        tabsContainer.appendChild(
-            button
-        );
+    return Array.from(
+        dateSet
+    ).sort(
+        function(
+            a,
+            b
+        ) {
 
-    }
-);
+            return b.localeCompare(
+                a
+            );
+
+        }
+    );
 
 }
+
+
+function renderDrawScopeTabs() {
+
+    const tabsContainer =
+        getElement(
+            "drawScopeTabs"
+        );
+
+
+    if (!tabsContainer) {
+
+        return;
+
+    }
+
+
+    tabsContainer.innerHTML =
+        "";
+
+
+    const allButton =
+        document.createElement(
+            "button"
+        );
+
+
+    allButton.type =
+        "button";
+
+    allButton.className =
+        "draw-scope-tab" +
+        (
+            currentDrawScope ===
+            "all"
+                ? " active"
+                : ""
+        );
+
+    allButton.textContent =
+        "Draw All Dates";
+
+
+    allButton.dataset.scope =
+        "all";
+
+
+    allButton.setAttribute(
+        "role",
+        "tab"
+    );
+
+
+    allButton.setAttribute(
+        "aria-selected",
+        currentDrawScope ===
+            "all"
+            ? "true"
+            : "false"
+    );
+
+
+    allButton.addEventListener(
+        "click",
+        async function() {
+
+            await selectDrawScope(
+                "all"
+            );
+
+        }
+    );
+
+
+    tabsContainer.appendChild(
+        allButton
+    );
+
+
+    const dates =
+        getAvailableDateScopes(
+            allParticipants
+        );
+
+
+    dates.forEach(
+        function(
+            dateKey
+        ) {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "draw-scope-tab" +
+                (
+                    currentDrawScope ===
+                    dateKey
+                        ? " active"
+                        : ""
+                );
+
+
+            button.textContent =
+                formatDateForDisplay(
+                    dateKey
+                );
+
+
+            button.dataset.scope =
+                dateKey;
+
+
+            button.setAttribute(
+                "role",
+                "tab"
+            );
+
+
+            button.setAttribute(
+                "aria-selected",
+                currentDrawScope ===
+                    dateKey
+                    ? "true"
+                    : "false"
+            );
+
+
+            button.addEventListener(
+                "click",
+                async function() {
+
+                    await selectDrawScope(
+                        dateKey
+                    );
+
+                }
+            );
+
+
+            tabsContainer.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
 
 // ============================================================
 // SELECT DRAW SCOPE
 // ============================================================
 
 async function selectDrawScope(
-scope
+    scope
 ) {
 
-currentDrawScope =
-    scope ||
-    "all";
+    currentDrawScope =
+        scope ||
+        "all";
 
 
-const searchInput =
-    getElement(
-        "searchInput"
-    );
+    const searchInput =
+        getElement(
+            "searchInput"
+        );
 
 
-if (searchInput) {
+    if (searchInput) {
 
-    searchInput.value =
-        "";
+        searchInput.value =
+            "";
+
+    }
+
+
+    currentParticipants =
+        getParticipantsForCurrentScope();
+
+
+    updateDrawScopeTabActiveState();
+
+
+    renderCurrentScope();
+
+
+    await restoreCurrentScopeWinner();
 
 }
 
-
-currentParticipants =
-    getParticipantsForCurrentScope();
-
-
-updateDrawScopeTabActiveState();
-
-
-renderCurrentScope();
-
-
-await restoreCurrentScopeWinner();
-
-}
 
 // ============================================================
 // UPDATE DRAW SCOPE ACTIVE TAB
@@ -1910,181 +1771,210 @@ await restoreCurrentScopeWinner();
 
 function updateDrawScopeTabActiveState() {
 
-const tabsContainer =
-    getElement(
-        "drawScopeTabs"
-    );
-
-
-if (!tabsContainer) {
-
-    return;
-
-}
-
-
-const buttons =
-    tabsContainer.querySelectorAll(
-        ".draw-scope-tab"
-    );
-
-
-buttons.forEach(
-    function(
-        button
-    ) {
-
-        const isActive =
-            button.dataset.scope ===
-            currentDrawScope;
-
-
-        button.classList.toggle(
-            "active",
-            isActive
+    const tabsContainer =
+        getElement(
+            "drawScopeTabs"
         );
 
 
-        button.setAttribute(
-            "aria-selected",
-            isActive
-                ? "true"
-                : "false"
-        );
+    if (!tabsContainer) {
+
+        return;
 
     }
-);
+
+
+    const buttons =
+        tabsContainer.querySelectorAll(
+            ".draw-scope-tab"
+        );
+
+
+    buttons.forEach(
+        function(
+            button
+        ) {
+
+            const isActive =
+                button.dataset.scope ===
+                currentDrawScope;
+
+
+            button.classList.toggle(
+                "active",
+                isActive
+            );
+
+
+            button.setAttribute(
+                "aria-selected",
+                isActive
+                    ? "true"
+                    : "false"
+            );
+
+        }
+    );
 
 }
+
 
 // ============================================================
 // DRAW EDGE FUNCTION
 // ============================================================
 
 async function callDrawFunction(
-action
+    action
 ) {
-
-if (
-    !isAdminAuthenticated
-) {
-
-    return {
-        success:
-            false,
-        error:
-            "Administrator authentication is required."
-    };
-
-}
-
-
-try {
-
-    const {
-        data: {
-            session
-        }
-    } =
-        await supabaseClient
-            .auth
-            .getSession();
-
 
     if (
-        !session ||
-        !session.access_token
+        !isAdminAuthenticated
     ) {
 
         return {
             success:
                 false,
             error:
-                "Your admin session has expired. Please log in again."
+                "Administrator authentication is required."
         };
 
     }
-
-
-    console.log(
-        "Calling draw-winner function:",
-        {
-            action:
-                action,
-            draw_scope:
-                currentDrawScope
-        }
-    );
-
-
-    const response =
-        await fetch(
-            DRAW_FUNCTION_URL,
-            {
-                method:
-                    "POST",
-
-                headers:
-                    {
-                        "Content-Type":
-                            "application/json",
-
-                        "Authorization":
-                            `Bearer ${session.access_token}`,
-
-                        "apikey":
-                            SUPABASE_KEY
-                    },
-
-                body:
-                    JSON.stringify(
-                        {
-                            action:
-                                action,
-
-                            draw_scope:
-                                currentDrawScope
-                        }
-                    )
-            }
-        );
-
-
-    const responseText =
-        await response.text();
-
-
-    let result;
 
 
     try {
 
-        result =
-            JSON.parse(
-                responseText
+        const {
+            data: {
+                session
+            }
+        } =
+            await supabaseClient
+                .auth
+                .getSession();
+
+
+        if (
+            !session ||
+            !session.access_token
+        ) {
+
+            return {
+                success:
+                    false,
+                error:
+                    "Your admin session has expired. Please log in again."
+            };
+
+        }
+
+
+        console.log(
+            "Calling draw-winner function:",
+            {
+                action:
+                    action,
+                draw_scope:
+                    currentDrawScope
+            }
+        );
+
+
+        const response =
+            await fetch(
+                DRAW_FUNCTION_URL,
+                {
+                    method:
+                        "POST",
+
+                    headers:
+                        {
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${session.access_token}`,
+
+                            "apikey":
+                                SUPABASE_KEY
+                        },
+
+                    body:
+                        JSON.stringify(
+                            {
+                                action:
+                                    action,
+
+                                draw_scope:
+                                    currentDrawScope
+                            }
+                        )
+                }
             );
 
-    } catch {
 
-        result = {
-            success:
-                false,
-            error:
-                responseText ||
-                "The draw service returned an invalid response."
-        };
-
-    }
+        const responseText =
+            await response.text();
 
 
-    if (
-        !response.ok
-    ) {
+        let result;
+
+
+        try {
+
+            result =
+                JSON.parse(
+                    responseText
+                );
+
+        } catch {
+
+            result = {
+                success:
+                    false,
+                error:
+                    responseText ||
+                    "The draw service returned an invalid response."
+            };
+
+        }
+
+
+        if (
+            !response.ok
+        ) {
+
+            console.error(
+                "Draw Edge Function returned non-2xx:",
+                response.status,
+                result
+            );
+
+
+            return {
+                success:
+                    false,
+                error:
+                    result?.error ||
+                    `Draw service returned HTTP ${response.status}.`
+            };
+
+        }
+
+
+        return (
+            result || {
+                success:
+                    false,
+                error:
+                    "Empty response from draw service."
+            }
+        );
+
+    } catch (error) {
 
         console.error(
-            "Draw Edge Function returned non-2xx:",
-            response.status,
-            result
+            "Draw function exception:",
+            error
         );
 
 
@@ -2092,40 +1982,13 @@ try {
             success:
                 false,
             error:
-                result?.error ||
-                `Draw service returned HTTP ${response.status}.`
+                "Unable to communicate with the draw service."
         };
 
     }
 
-
-    return (
-        result || {
-            success:
-                false,
-            error:
-                "Empty response from draw service."
-        }
-    );
-
-} catch (error) {
-
-    console.error(
-        "Draw function exception:",
-        error
-    );
-
-
-    return {
-        success:
-            false,
-        error:
-            "Unable to communicate with the draw service."
-    };
-
 }
 
-}
 
 // ============================================================
 // CURRENT DRAW STATUS
@@ -2133,11 +1996,12 @@ try {
 
 async function getCurrentDrawStatus() {
 
-return await callDrawFunction(
-    "status"
-);
+    return await callDrawFunction(
+        "status"
+    );
 
 }
+
 
 // ============================================================
 // RESTORE CURRENT SCOPE WINNER
@@ -2145,51 +2009,52 @@ return await callDrawFunction(
 
 async function restoreCurrentScopeWinner() {
 
-if (
-    !isAdminAuthenticated
-) {
-
-    return;
-
-}
-
-
-try {
-
-    const result =
-        await getCurrentDrawStatus();
-
-
     if (
-        result &&
-        result.success &&
-        result.completed &&
-        Array.isArray(
-            result.winners
-        ) &&
-        result.winners.length
+        !isAdminAuthenticated
     ) {
 
-        displayWinners(
-            result.winners
-        );
-
-    } else {
-
-        showNoWinner();
+        return;
 
     }
 
-} catch (error) {
 
-    console.error(
-        "Restore current scope winner error:",
-        error
-    );
+    try {
+
+        const result =
+            await getCurrentDrawStatus();
+
+
+        if (
+            result &&
+            result.success &&
+            result.completed &&
+            Array.isArray(
+                result.winners
+            ) &&
+            result.winners.length
+        ) {
+
+            displayWinners(
+                result.winners
+            );
+
+        } else {
+
+            showNoWinner();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Restore current scope winner error:",
+            error
+        );
+
+    }
 
 }
 
-}
 
 // ============================================================
 // DRAW MODAL
@@ -2197,64 +2062,65 @@ try {
 
 function openDrawModal() {
 
-const modal =
-    getElement(
-        "drawModal"
-    );
-
-
-const message =
-    getElement(
-        "drawModalMessage"
-    );
-
-
-const confirmButton =
-    getElement(
-        "confirmDrawButton"
-    );
-
-
-drawAction =
-    "new";
-
-
-const scopeText =
-    currentDrawScope ===
-        "all"
-
-        ? "Draw All Dates"
-
-        : formatDateForDisplay(
-            currentDrawScope
+    const modal =
+        getElement(
+            "drawModal"
         );
 
 
-if (message) {
+    const message =
+        getElement(
+            "drawModalMessage"
+        );
 
-    message.textContent =
-        `Are you sure you want to draw 3 winners for ${scopeText}?`;
+
+    const confirmButton =
+        getElement(
+            "confirmDrawButton"
+        );
+
+
+    drawAction =
+        "new";
+
+
+    const scopeText =
+        currentDrawScope ===
+            "all"
+
+            ? "Draw All Dates"
+
+            : formatDateForDisplay(
+                currentDrawScope
+            );
+
+
+    if (message) {
+
+        message.textContent =
+            `Are you sure you want to draw 3 winners for ${scopeText}?`;
+
+    }
+
+
+    if (confirmButton) {
+
+        confirmButton.textContent =
+            "🎉 Draw Winner";
+
+    }
+
+
+    if (modal) {
+
+        modal.classList.add(
+            "show"
+        );
+
+    }
 
 }
 
-
-if (confirmButton) {
-
-    confirmButton.textContent =
-        "🎉 Draw Winner";
-
-}
-
-
-if (modal) {
-
-    modal.classList.add(
-        "show"
-    );
-
-}
-
-}
 
 // ============================================================
 // CLOSE DRAW MODAL
@@ -2262,21 +2128,22 @@ if (modal) {
 
 function closeDrawModal() {
 
-const modal =
-    getElement(
-        "drawModal"
-    );
+    const modal =
+        getElement(
+            "drawModal"
+        );
 
 
-if (modal) {
+    if (modal) {
 
-    modal.classList.remove(
-        "show"
-    );
+        modal.classList.remove(
+            "show"
+        );
+
+    }
 
 }
 
-}
 
 // ============================================================
 // DRAW WINNER
@@ -2284,89 +2151,90 @@ if (modal) {
 
 async function drawWinner() {
 
-if (
-    !isAdminAuthenticated
-) {
+    if (
+        !isAdminAuthenticated
+    ) {
 
-    alert(
-        "Administrator authentication is required."
-    );
+        alert(
+            "Administrator authentication is required."
+        );
 
-    return;
+        return;
 
-}
-
-
-const participants =
-    getParticipantsForCurrentScope();
+    }
 
 
-currentParticipants =
-    participants;
+    const participants =
+        getParticipantsForCurrentScope();
 
 
-updateParticipantCount(
-    participants
-);
+    currentParticipants =
+        participants;
 
 
-if (
-    participants.length <
-    3
-) {
-
-    const scopeText =
-        currentDrawScope ===
-            "all"
-
-            ? "all dates"
-
-            : formatDateForDisplay(
-                currentDrawScope
-            );
-
-
-    alert(
-        `At least 3 participants are required for the selected draw scope (${scopeText}).`
+    updateParticipantCount(
+        participants
     );
 
 
-    return;
+    if (
+        participants.length <
+        3
+    ) {
+
+        const scopeText =
+            currentDrawScope ===
+                "all"
+
+                ? "all dates"
+
+                : formatDateForDisplay(
+                    currentDrawScope
+                );
+
+
+        alert(
+            `At least 3 participants are required for the selected draw scope (${scopeText}).`
+        );
+
+
+        return;
+
+    }
+
+
+    const status =
+        await getCurrentDrawStatus();
+
+
+    if (
+        status &&
+        status.success &&
+        status.completed
+    ) {
+
+        alert(
+            currentDrawScope ===
+                "all"
+
+                ? "The All Dates draw has already been completed. Reset it before selecting new winners."
+
+                : `The draw for ${formatDateForDisplay(currentDrawScope)} has already been completed. Reset it before selecting new winners.`
+        );
+
+
+        await restoreCurrentScopeWinner();
+
+
+        return;
+
+    }
+
+
+    openDrawModal();
 
 }
 
-
-const status =
-    await getCurrentDrawStatus();
-
-
-if (
-    status &&
-    status.success &&
-    status.completed
-) {
-
-    alert(
-        currentDrawScope ===
-            "all"
-
-            ? "The All Dates draw has already been completed. Reset it before selecting new winners."
-
-            : `The draw for ${formatDateForDisplay(currentDrawScope)} has already been completed. Reset it before selecting new winners.`
-    );
-
-
-    await restoreCurrentScopeWinner();
-
-
-    return;
-
-}
-
-
-openDrawModal();
-
-}
 
 // ============================================================
 // CONFIRM DRAW
@@ -2374,298 +2242,300 @@ openDrawModal();
 
 async function confirmDraw() {
 
-closeDrawModal();
+    closeDrawModal();
 
 
-const confirmButton =
-    getElement(
-        "confirmDrawButton"
-    );
-
-
-if (confirmButton) {
-
-    confirmButton.disabled =
-        true;
-
-    confirmButton.textContent =
-        "🎉 Drawing...";
-
-}
-
-
-try {
-
-    const result =
-        await callDrawFunction(
-            "draw"
+    const confirmButton =
+        getElement(
+            "confirmDrawButton"
         );
 
-
-    if (
-        !result ||
-        !result.success
-    ) {
-
-        alert(
-            result?.error ||
-            "Unable to complete the lucky draw."
-        );
-
-
-        return;
-
-    }
-
-
-    displayWinners(
-        result.winners ||
-        []
-    );
-
-
-    await loadDrawHistory();
-
-
-    console.log(
-        "Draw completed:",
-        result
-    );
-
-
-} catch (error) {
-
-    console.error(
-        "Draw exception:",
-        error
-    );
-
-
-    alert(
-        "An error occurred while conducting the draw."
-    );
-
-} finally {
 
     if (confirmButton) {
 
         confirmButton.disabled =
-            false;
+            true;
 
         confirmButton.textContent =
-            "🎉 Draw Winner";
+            "🎉 Drawing...";
+
+    }
+
+
+    try {
+
+        const result =
+            await callDrawFunction(
+                "draw"
+            );
+
+
+        if (
+            !result ||
+            !result.success
+        ) {
+
+            alert(
+                result?.error ||
+                "Unable to complete the lucky draw."
+            );
+
+
+            return;
+
+        }
+
+
+        displayWinners(
+            result.winners ||
+            []
+        );
+
+
+        await loadDrawHistory();
+
+
+        console.log(
+            "Draw completed:",
+            result
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Draw exception:",
+            error
+        );
+
+
+        alert(
+            "An error occurred while conducting the draw."
+        );
+
+    } finally {
+
+        if (confirmButton) {
+
+            confirmButton.disabled =
+                false;
+
+            confirmButton.textContent =
+                "🎉 Draw Winner";
+
+        }
 
     }
 
 }
 
-}
 
 // ============================================================
 // DISPLAY WINNERS
 // ============================================================
 
 function displayWinners(
-winners
+    winners
 ) {
 
-const winnerResult =
-    getElement(
-        "winnerResult"
-    );
-
-
-if (!winnerResult) {
-
-    return;
-
-}
-
-
-winnerResult.innerHTML =
-    "";
-
-
-if (
-    !winners ||
-    !winners.length
-) {
-
-    showNoWinner();
-
-    return;
-
-}
-
-
-const winnerList =
-    winners.slice(
-        0,
-        3
-    );
-
-
-winnerList.forEach(
-    function(
-        winner,
-        index
-    ) {
-
-        const card =
-            document.createElement(
-                "div"
-            );
-
-
-        const winnerNumber =
-            index + 1;
-
-
-        const registrationId =
-            winner.registration_id ||
-            winner.winner_registration_id ||
-            winner.id ||
-            "-";
-
-
-        card.innerHTML =
-            `
-                <h3>
-                    ${winnerNumber === 1
-                        ? "🥇"
-                        : winnerNumber === 2
-                            ? "🥈"
-                            : "🥉"
-                    }
-                    WINNER ${winnerNumber}
-                </h3>
-
-
-                <p
-                    style="
-                        margin:7px 0;
-                        font-size:15px;
-                        line-height:1.4;
-                        overflow-wrap:anywhere;
-                    "
-                >
-                    <strong
-                        style="
-                            color:#172554;
-                        "
-                    >
-                        Registration ID:
-                    </strong>
-
-                    ${escapeHTML(
-                        registrationId
-                    )}
-                </p>
-
-
-                <p
-                    style="
-                        margin:7px 0;
-                        font-size:15px;
-                        line-height:1.4;
-                        overflow-wrap:anywhere;
-                    "
-                >
-                    <strong
-                        style="
-                            color:#172554;
-                        "
-                    >
-                        Name:
-                    </strong>
-
-                    ${escapeHTML(
-                        winner.name ||
-                        winner.winner_name ||
-                        "-"
-                    )}
-                </p>
-
-
-                <p
-                    style="
-                        margin:7px 0;
-                        font-size:15px;
-                        line-height:1.4;
-                        overflow-wrap:anywhere;
-                    "
-                >
-                    <strong
-                        style="
-                            color:#172554;
-                        "
-                    >
-                        Phone:
-                    </strong>
-
-                    ${escapeHTML(
-                        winner.phone ||
-                        winner.winner_phone ||
-                        "-"
-                    )}
-                </p>
-
-
-                <p
-                    style="
-                        margin:7px 0;
-                        font-size:15px;
-                        line-height:1.4;
-                        overflow-wrap:anywhere;
-                    "
-                >
-                    <strong
-                        style="
-                            color:#172554;
-                        "
-                    >
-                        Area:
-                    </strong>
-
-                    ${escapeHTML(
-                        winner.area ||
-                        "-"
-                    )}
-                </p>
-
-
-                <p
-                    style="
-                        margin:7px 0;
-                        font-size:15px;
-                        line-height:1.4;
-                        overflow-wrap:anywhere;
-                    "
-                >
-                    <strong
-                        style="
-                            color:#172554;
-                        "
-                    >
-                        City:
-                    </strong>
-
-                    ${escapeHTML(
-                        winner.city ||
-                        "-"
-                    )}
-                </p>
-            `;
-
-
-        winnerResult.appendChild(
-            card
+    const winnerResult =
+        getElement(
+            "winnerResult"
         );
 
+
+    if (!winnerResult) {
+
+        return;
+
     }
-);
+
+
+    winnerResult.innerHTML =
+        "";
+
+
+    if (
+        !winners ||
+        !winners.length
+    ) {
+
+        showNoWinner();
+
+        return;
+
+    }
+
+
+    const winnerList =
+        winners.slice(
+            0,
+            3
+        );
+
+
+    winnerList.forEach(
+        function(
+            winner,
+            index
+        ) {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            const winnerNumber =
+                index + 1;
+
+
+            const registrationId =
+                winner.registration_id ||
+                winner.winner_registration_id ||
+                winner.id ||
+                "-";
+
+
+            card.innerHTML =
+                `
+                    <h3>
+                        ${winnerNumber === 1
+                            ? "🥇"
+                            : winnerNumber === 2
+                                ? "🥈"
+                                : "🥉"
+                        }
+                        WINNER ${winnerNumber}
+                    </h3>
+
+
+                    <p
+                        style="
+                            margin:7px 0;
+                            font-size:15px;
+                            line-height:1.4;
+                            overflow-wrap:anywhere;
+                        "
+                    >
+                        <strong
+                            style="
+                                color:#172554;
+                            "
+                        >
+                            Registration ID:
+                        </strong>
+
+                        ${escapeHTML(
+                            registrationId
+                        )}
+                    </p>
+
+
+                    <p
+                        style="
+                            margin:7px 0;
+                            font-size:15px;
+                            line-height:1.4;
+                            overflow-wrap:anywhere;
+                        "
+                    >
+                        <strong
+                            style="
+                                color:#172554;
+                            "
+                        >
+                            Name:
+                        </strong>
+
+                        ${escapeHTML(
+                            winner.name ||
+                            winner.winner_name ||
+                            "-"
+                        )}
+                    </p>
+
+
+                    <p
+                        style="
+                            margin:7px 0;
+                            font-size:15px;
+                            line-height:1.4;
+                            overflow-wrap:anywhere;
+                        "
+                    >
+                        <strong
+                            style="
+                                color:#172554;
+                            "
+                        >
+                            Phone:
+                        </strong>
+
+                        ${escapeHTML(
+                            winner.phone ||
+                            winner.winner_phone ||
+                            "-"
+                        )}
+                    </p>
+
+
+                    <p
+                        style="
+                            margin:7px 0;
+                            font-size:15px;
+                            line-height:1.4;
+                            overflow-wrap:anywhere;
+                        "
+                    >
+                        <strong
+                            style="
+                                color:#172554;
+                            "
+                        >
+                            Area:
+                        </strong>
+
+                        ${escapeHTML(
+                            winner.area ||
+                            "-"
+                        )}
+                    </p>
+
+
+                    <p
+                        style="
+                            margin:7px 0;
+                            font-size:15px;
+                            line-height:1.4;
+                            overflow-wrap:anywhere;
+                        "
+                    >
+                        <strong
+                            style="
+                                color:#172554;
+                            "
+                        >
+                            City:
+                        </strong>
+
+                        ${escapeHTML(
+                            winner.city ||
+                            "-"
+                        )}
+                    </p>
+                `;
+
+
+            winnerResult.appendChild(
+                card
+            );
+
+        }
+    );
 
 }
+
 
 // ============================================================
 // SHOW NO WINNER
@@ -2673,27 +2543,28 @@ winnerList.forEach(
 
 function showNoWinner() {
 
-const winnerResult =
-    getElement(
-        "winnerResult"
-    );
+    const winnerResult =
+        getElement(
+            "winnerResult"
+        );
 
 
-if (!winnerResult) {
+    if (!winnerResult) {
 
-    return;
+        return;
+
+    }
+
+
+    winnerResult.innerHTML =
+        `
+            <p>
+                No winner selected yet.
+            </p>
+        `;
 
 }
 
-
-winnerResult.innerHTML =
-    `
-        <p>
-            No winner selected yet.
-        </p>
-    `;
-
-}
 
 // ============================================================
 // RESET DRAW
@@ -2701,138 +2572,31 @@ winnerResult.innerHTML =
 
 async function resetDraw() {
 
-if (
-    !isAdminAuthenticated
-) {
-
-    alert(
-        "Administrator authentication is required."
-    );
-
-    return;
-
-}
-
-
-const status =
-    await getCurrentDrawStatus();
-
-
-if (
-    !status ||
-    !status.success
-) {
-
-    alert(
-        status?.error ||
-        "Unable to check the current draw."
-    );
-
-
-    return;
-
-}
-
-
-if (
-    !status.completed
-) {
-
-    alert(
-        currentDrawScope ===
-            "all"
-
-            ? "There is no completed All Dates draw to reset."
-
-            : `There is no completed draw for ${formatDateForDisplay(currentDrawScope)} to reset.`
-    );
-
-
-    return;
-
-}
-
-
-const modal =
-    getElement(
-        "resetModal"
-    );
-
-
-if (modal) {
-
-    modal.classList.add(
-        "show"
-    );
-
-}
-
-}
-
-// ============================================================
-// CLOSE RESET MODAL
-// ============================================================
-
-function closeResetModal() {
-
-const modal =
-    getElement(
-        "resetModal"
-    );
-
-
-if (modal) {
-
-    modal.classList.remove(
-        "show"
-    );
-
-}
-
-}
-
-// ============================================================
-// CONFIRM RESET
-// ============================================================
-
-async function confirmResetDraw() {
-
-closeResetModal();
-
-
-const resetButton =
-    getElement(
-        "confirmResetButton"
-    );
-
-
-if (resetButton) {
-
-    resetButton.disabled =
-        true;
-
-    resetButton.textContent =
-        "🔄 Resetting...";
-
-}
-
-
-try {
-
-    const result =
-        await callDrawFunction(
-            "reset"
-        );
-
-
     if (
-        !result ||
-        !result.success
+        !isAdminAuthenticated
     ) {
 
         alert(
-            result?.error ||
-            "Unable to reset the lucky draw."
+            "Administrator authentication is required."
+        );
+
+        return;
+
+    }
+
+
+    const status =
+        await getCurrentDrawStatus();
+
+
+    if (
+        !status ||
+        !status.success
+    ) {
+
+        alert(
+            status?.error ||
+            "Unable to check the current draw."
         );
 
 
@@ -2841,53 +2605,168 @@ try {
     }
 
 
-    showNoWinner();
+    if (
+        !status.completed
+    ) {
+
+        alert(
+            currentDrawScope ===
+                "all"
+
+                ? "There is no completed All Dates draw to reset."
+
+                : `There is no completed draw for ${formatDateForDisplay(currentDrawScope)} to reset.`
+        );
 
 
-    await restoreCurrentScopeWinner();
+        return;
+
+    }
 
 
-    await loadDrawHistory();
+    const modal =
+        getElement(
+            "resetModal"
+        );
 
 
-    // Reset completed successfully.
-    // No success popup is shown.
-    console.log(
-        "Draw reset successfully. History preserved.",
-        {
-            draw_scope:
-                currentDrawScope
-        }
-    );
+    if (modal) {
 
-
-} catch (error) {
-
-    console.error(
-        "Reset draw exception:",
-        error
-    );
-
-
-    alert(
-        "An error occurred while resetting the draw."
-    );
-
-} finally {
-
-    if (resetButton) {
-
-        resetButton.disabled =
-            false;
-
-        resetButton.textContent =
-            "🔄 Reset Draw";
+        modal.classList.add(
+            "show"
+        );
 
     }
 
 }
 
+
+// ============================================================
+// CLOSE RESET MODAL
+// ============================================================
+
+function closeResetModal() {
+
+    const modal =
+        getElement(
+            "resetModal"
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            "show"
+        );
+
+    }
+
 }
+
+
+// ============================================================
+// CONFIRM RESET
+// ============================================================
+
+async function confirmResetDraw() {
+
+    closeResetModal();
+
+
+    const resetButton =
+        getElement(
+            "confirmResetButton"
+        );
+
+
+    if (resetButton) {
+
+        resetButton.disabled =
+            true;
+
+        resetButton.textContent =
+            "🔄 Resetting...";
+
+    }
+
+
+    try {
+
+        const result =
+            await callDrawFunction(
+                "reset"
+            );
+
+
+        if (
+            !result ||
+            !result.success
+        ) {
+
+            alert(
+                result?.error ||
+                "Unable to reset the lucky draw."
+            );
+
+
+            return;
+
+        }
+
+
+        showNoWinner();
+
+
+        await restoreCurrentScopeWinner();
+
+
+        await loadDrawHistory();
+
+
+        const scopeText =
+            currentDrawScope ===
+                "all"
+
+                ? "Draw All Dates"
+
+                : formatDateForDisplay(
+                    currentDrawScope
+                );
+
+
+        alert(
+            `The draw for ${scopeText} has been reset successfully. Draw history was preserved.`
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Reset draw exception:",
+            error
+        );
+
+
+        alert(
+            "An error occurred while resetting the draw."
+        );
+
+    } finally {
+
+        if (resetButton) {
+
+            resetButton.disabled =
+                false;
+
+            resetButton.textContent =
+                "🔄 Reset Draw";
+
+        }
+
+    }
+
+}
+
 
 // ============================================================
 // EXCEL - PARTICIPANTS
@@ -2895,129 +2774,130 @@ try {
 
 async function downloadParticipants() {
 
-const participants =
-    await getParticipants();
+    const participants =
+        await getParticipants();
 
 
-if (
-    !participants.length
-) {
+    if (
+        !participants.length
+    ) {
 
-    alert(
-        "No participants available to download!"
+        alert(
+            "No participants available to download!"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof XLSX ===
+        "undefined"
+    ) {
+
+        alert(
+            "Excel export library is unavailable. Please try again."
+        );
+
+        return;
+
+    }
+
+
+    const excelData =
+        participants.map(
+            function(
+                participant,
+                index
+            ) {
+
+                return {
+
+                    "No.":
+                        index + 1,
+
+                    "Registration ID":
+                        participant.registration_id ||
+                        participant.id,
+
+                    "Name":
+                        participant.name ||
+                        "",
+
+                    "Phone":
+                        participant.phone ||
+                        "",
+
+                    "Area":
+                        participant.area ||
+                        "",
+
+                    "City":
+                        participant.city ||
+                        "",
+
+                    "Source":
+                        getProfessionalSource(
+                            participant
+                        )
+
+                };
+
+            }
+        );
+
+
+    const worksheet =
+        XLSX.utils.json_to_sheet(
+            excelData
+        );
+
+
+    worksheet["!cols"] =
+        [
+            {
+                wch: 8
+            },
+            {
+                wch: 20
+            },
+            {
+                wch: 25
+            },
+            {
+                wch: 18
+            },
+            {
+                wch: 30
+            },
+            {
+                wch: 25
+            },
+            {
+                wch: 22
+            }
+        ];
+
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Participants"
     );
 
-    return;
+
+    XLSX.writeFile(
+        workbook,
+        "Lucky_Draw_Participants.xlsx"
+    );
 
 }
 
-
-if (
-    typeof XLSX ===
-    "undefined"
-) {
-
-    alert(
-        "Excel export library is unavailable. Please try again."
-    );
-
-    return;
-
-}
-
-
-const excelData =
-    participants.map(
-        function(
-            participant,
-            index
-        ) {
-
-            return {
-
-                "No.":
-                    index + 1,
-
-                "Registration ID":
-                    participant.registration_id ||
-                    participant.id,
-
-                "Name":
-                    participant.name ||
-                    "",
-
-                "Phone":
-                    participant.phone ||
-                    "",
-
-                "Area":
-                    participant.area ||
-                    "",
-
-                "City":
-                    participant.city ||
-                    "",
-
-                "Source":
-                    getProfessionalSource(
-                        participant
-                    )
-
-            };
-
-        }
-    );
-
-
-const worksheet =
-    XLSX.utils.json_to_sheet(
-        excelData
-    );
-
-
-worksheet["!cols"] =
-    [
-        {
-            wch: 8
-        },
-        {
-            wch: 20
-        },
-        {
-            wch: 25
-        },
-        {
-            wch: 18
-        },
-        {
-            wch: 30
-        },
-        {
-            wch: 25
-        },
-        {
-            wch: 22
-        }
-    ];
-
-
-const workbook =
-    XLSX.utils.book_new();
-
-
-XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "Participants"
-);
-
-
-XLSX.writeFile(
-    workbook,
-    "Lucky_Draw_Participants.xlsx"
-);
-
-}
 
 // ============================================================
 // DRAW HISTORY
@@ -3038,55 +2918,58 @@ XLSX.writeFile(
 // The History UI creates LOCAL draw numbers per scope.
 // ============================================================
 
+
 // ------------------------------------------------------------
 // GET HISTORY SCOPE
 // ------------------------------------------------------------
 
 function getHistoryScope(
-record
+    record
 ) {
 
-if (
-    record &&
-    record.draw_scope
-) {
-
-    return String(
+    if (
+        record &&
         record.draw_scope
-    );
+    ) {
+
+        return String(
+            record.draw_scope
+        );
+
+    }
+
+
+    // Legacy records without draw_scope.
+    // These are treated as All Dates.
+    return "all";
 
 }
 
-
-// Legacy records without draw_scope.
-// These are treated as All Dates.
-return "all";
-
-}
 
 // ------------------------------------------------------------
 // GET HISTORY DATE LABEL
 // ------------------------------------------------------------
 
 function getHistoryDateLabel(
-scope
-) {
-
-if (
-    scope ===
-    "all"
-) {
-
-    return "All Dates";
-
-}
-
-
-return formatDateForDisplay(
     scope
-);
+) {
+
+    if (
+        scope ===
+        "all"
+    ) {
+
+        return "All Dates";
+
+    }
+
+
+    return formatDateForDisplay(
+        scope
+    );
 
 }
+
 
 // ------------------------------------------------------------
 // GET HISTORY DATE SCOPES
@@ -3094,86 +2977,88 @@ return formatDateForDisplay(
 
 function getHistoryDateScopes() {
 
-const scopes =
-    new Set();
+    const scopes =
+        new Set();
 
 
-allDrawHistory.forEach(
-    function(
-        record
-    ) {
-
-        scopes.add(
-            getHistoryScope(
-                record
-            )
-        );
-
-    }
-);
-
-
-return Array.from(
-    scopes
-).sort(
-    function(
-        a,
-        b
-    ) {
-
-        if (
-            a ===
-            "all"
+    allDrawHistory.forEach(
+        function(
+            record
         ) {
 
-            return -1;
+            scopes.add(
+                getHistoryScope(
+                    record
+                )
+            );
 
         }
+    );
 
 
-        if (
-            b ===
-            "all"
+    return Array.from(
+        scopes
+    ).sort(
+        function(
+            a,
+            b
         ) {
 
-            return 1;
+            if (
+                a ===
+                "all"
+            ) {
+
+                return -1;
+
+            }
+
+
+            if (
+                b ===
+                "all"
+            ) {
+
+                return 1;
+
+            }
+
+
+            return b.localeCompare(
+                a
+            );
 
         }
-
-
-        return b.localeCompare(
-            a
-        );
-
-    }
-);
+    );
 
 }
+
 
 // ------------------------------------------------------------
 // GET HISTORY RECORDS FOR DATE
 // ------------------------------------------------------------
 
 function getHistoryRecordsForDate(
-scope
+    scope
 ) {
 
-return allDrawHistory.filter(
-    function(
-        record
-    ) {
+    return allDrawHistory.filter(
+        function(
+            record
+        ) {
 
-        return (
-            getHistoryScope(
-                record
-            ) ===
-            scope
-        );
+            return (
+                getHistoryScope(
+                    record
+                ) ===
+                scope
+            );
 
-    }
-);
+        }
+    );
 
 }
+
 
 // ------------------------------------------------------------
 // GET UNIQUE GLOBAL DRAWS FOR A SCOPE
@@ -3191,178 +3076,180 @@ return allDrawHistory.filter(
 // ------------------------------------------------------------
 
 function getHistoryDrawGroups(
-scope
+    scope
 ) {
 
-const records =
-    getHistoryRecordsForDate(
-        scope
-    );
-
-
-const grouped =
-    new Map();
-
-
-records.forEach(
-    function(
-        record
-    ) {
-
-        const globalNumber =
-            String(
-                record.draw_number ??
-                ""
-            );
-
-
-        if (
-            !grouped.has(
-                globalNumber
-            )
-        ) {
-
-            grouped.set(
-                globalNumber,
-                []
-            );
-
-        }
-
-
-        grouped
-            .get(
-                globalNumber
-            )
-            .push(
-                record
-            );
-
-    }
-);
-
-
-const groups =
-    Array.from(
-        grouped.entries()
-    ).map(
-        function(
-            entry
-        ) {
-
-            return {
-
-                globalDrawNumber:
-                    entry[0],
-
-                records:
-                    entry[1]
-
-            };
-
-        }
-    );
-
-
-groups.sort(
-    function(
-        a,
-        b
-    ) {
-
-        const aRecord =
-            a.records[0];
-
-        const bRecord =
-            b.records[0];
-
-
-        const aId =
-            Number(
-                aRecord?.id ||
-                0
-            );
-
-        const bId =
-            Number(
-                bRecord?.id ||
-                0
-            );
-
-
-        if (
-            aId !==
-            bId
-        ) {
-
-            return bId -
-                aId;
-
-        }
-
-
-        return Number(
-            b.globalDrawNumber
-        ) -
-        Number(
-            a.globalDrawNumber
+    const records =
+        getHistoryRecordsForDate(
+            scope
         );
 
-    }
-);
+
+    const grouped =
+        new Map();
 
 
-// Newest draw first.
-// Add local numbering.
-groups.forEach(
-    function(
-        group,
-        index
-    ) {
+    records.forEach(
+        function(
+            record
+        ) {
 
-        group.localDrawNumber =
-            groups.length -
-            index;
-
-    }
-);
+            const globalNumber =
+                String(
+                    record.draw_number ??
+                    ""
+                );
 
 
-return groups;
+            if (
+                !grouped.has(
+                    globalNumber
+                )
+            ) {
+
+                grouped.set(
+                    globalNumber,
+                    []
+                );
+
+            }
+
+
+            grouped
+                .get(
+                    globalNumber
+                )
+                .push(
+                    record
+                );
+
+        }
+    );
+
+
+    const groups =
+        Array.from(
+            grouped.entries()
+        ).map(
+            function(
+                entry
+            ) {
+
+                return {
+
+                    globalDrawNumber:
+                        entry[0],
+
+                    records:
+                        entry[1]
+
+                };
+
+            }
+        );
+
+
+    groups.sort(
+        function(
+            a,
+            b
+        ) {
+
+            const aRecord =
+                a.records[0];
+
+            const bRecord =
+                b.records[0];
+
+
+            const aId =
+                Number(
+                    aRecord?.id ||
+                    0
+                );
+
+            const bId =
+                Number(
+                    bRecord?.id ||
+                    0
+                );
+
+
+            if (
+                aId !==
+                bId
+            ) {
+
+                return bId -
+                    aId;
+
+            }
+
+
+            return Number(
+                b.globalDrawNumber
+            ) -
+            Number(
+                a.globalDrawNumber
+            );
+
+        }
+    );
+
+
+    // Newest draw first.
+    // Add local numbering.
+    groups.forEach(
+        function(
+            group,
+            index
+        ) {
+
+            group.localDrawNumber =
+                groups.length -
+                index;
+
+        }
+    );
+
+
+    return groups;
 
 }
+
 
 // ------------------------------------------------------------
 // FIND HISTORY GROUP BY LOCAL DRAW NUMBER
 // ------------------------------------------------------------
 
 function getHistoryGroupByLocalNumber(
-scope,
-localNumber
+    scope,
+    localNumber
 ) {
 
-const groups =
-    getHistoryDrawGroups(
-        scope
-    );
-
-
-return groups.find(
-    function(
-        group
-    ) {
-
-        return (
-            group.localDrawNumber ===
-            Number(
-                localNumber
-            )
+    const groups =
+        getHistoryDrawGroups(
+            scope
         );
 
-    }
-) || null;
+
+    return groups.find(
+        function(
+            group
+        ) {
+
+            return (
+                group.localDrawNumber ===
+                Number(
+                    localNumber
+                )
+            );
+
+        }
+    ) || null;
 
 }
+
 
 // ------------------------------------------------------------
 // ENSURE HISTORY CONTAINERS
@@ -3370,43 +3257,1064 @@ return groups.find(
 
 function ensureHistoryContainers() {
 
-const historySection =
-    getElement(
-        "drawHistorySection"
-    );
+    const historySection =
+        getElement(
+            "drawHistorySection"
+        );
 
 
-if (!historySection) {
+    if (!historySection) {
 
-    return null;
+        return null;
+
+    }
+
+
+    let historyNavigation =
+        getElement(
+            "drawHistoryNavigation"
+        );
+
+
+    if (!historyNavigation) {
+
+        historyNavigation =
+            document.createElement(
+                "div"
+            );
+
+
+        historyNavigation.id =
+            "drawHistoryNavigation";
+
+
+        historyNavigation.style.cssText =
+            `
+                width:100%;
+                box-sizing:border-box;
+                margin-bottom:25px;
+            `;
+
+
+        const historyList =
+            getElement(
+                "drawHistoryList"
+            ) ||
+            getElement(
+                "historyList"
+            );
+
+
+        if (
+            historyList &&
+            historyList.closest(
+                "table"
+            )
+        ) {
+
+            const table =
+                historyList.closest(
+                    "table"
+                );
+
+
+            if (
+                table.parentElement
+            ) {
+
+                table.parentElement.insertBefore(
+                    historyNavigation,
+                    table
+                );
+
+            }
+
+        } else {
+
+            historySection.appendChild(
+                historyNavigation
+            );
+
+        }
+
+    }
+
+
+    let dateTabs =
+        getElement(
+            "historyDateTabs"
+        );
+
+
+    if (!dateTabs) {
+
+        dateTabs =
+            document.createElement(
+                "div"
+            );
+
+
+        dateTabs.id =
+            "historyDateTabs";
+
+
+        dateTabs.style.cssText =
+            `
+                display:flex;
+                flex-wrap:wrap;
+                gap:12px;
+                margin-bottom:18px;
+            `;
+
+
+        historyNavigation.appendChild(
+            dateTabs
+        );
+
+    }
+
+
+    let drawTabs =
+        getElement(
+            "historyDrawTabs"
+        );
+
+
+    if (!drawTabs) {
+
+        drawTabs =
+            document.createElement(
+                "div"
+            );
+
+
+        drawTabs.id =
+            "historyDrawTabs";
+
+
+        drawTabs.style.cssText =
+            `
+                display:flex;
+                flex-wrap:wrap;
+                gap:12px;
+                margin-bottom:20px;
+            `;
+
+
+        historyNavigation.appendChild(
+            drawTabs
+        );
+
+    }
+
+
+    let summary =
+        getElement(
+            "historySummary"
+        );
+
+
+    if (!summary) {
+
+        summary =
+            document.createElement(
+                "div"
+            );
+
+
+        summary.id =
+            "historySummary";
+
+
+        summary.style.cssText =
+            `
+                width:100%;
+                box-sizing:border-box;
+                padding:16px 20px;
+                margin-bottom:22px;
+                border:1px solid #e5e7eb;
+                border-radius:18px;
+                background:#f8fafc;
+                color:#172554;
+                font-size:18px;
+                font-weight:700;
+            `;
+
+
+        historyNavigation.appendChild(
+            summary
+        );
+
+    }
+
+
+    let winnersContainer =
+        getElement(
+            "historyWinners"
+        );
+
+
+    if (!winnersContainer) {
+
+        winnersContainer =
+            document.createElement(
+                "div"
+            );
+
+
+        winnersContainer.id =
+            "historyWinners";
+
+
+        winnersContainer.style.cssText =
+            `
+                width:100%;
+                display:grid;
+                grid-template-columns:repeat(3,minmax(0,1fr));
+                gap:20px;
+                margin-bottom:25px;
+            `;
+
+
+        const table =
+            (
+                getElement(
+                    "drawHistoryList"
+                ) ||
+                getElement(
+                    "historyList"
+                )
+            )?.closest(
+                "table"
+            );
+
+
+        if (
+            table &&
+            table.parentElement
+        ) {
+
+            table.parentElement.insertBefore(
+                winnersContainer,
+                table
+            );
+
+        } else {
+
+            historySection.appendChild(
+                winnersContainer
+            );
+
+        }
+
+    }
+
+
+    return {
+
+        historyNavigation,
+        dateTabs,
+        drawTabs,
+        summary,
+        winnersContainer
+
+    };
 
 }
 
 
-let historyNavigation =
-    getElement(
-        "drawHistoryNavigation"
+// ------------------------------------------------------------
+// RENDER HISTORY DATE TABS
+// ------------------------------------------------------------
+
+function renderHistoryDateTabs() {
+
+    const containers =
+        ensureHistoryContainers();
+
+
+    if (!containers) {
+
+        return;
+
+    }
+
+
+    const dateTabs =
+        containers.dateTabs;
+
+
+    dateTabs.innerHTML =
+        "";
+
+
+    const scopes =
+        getHistoryDateScopes();
+
+
+    if (
+        !scopes.length
+    ) {
+
+        dateTabs.innerHTML =
+            `
+                <div
+                    style="
+                        padding:14px 18px;
+                        border:1px solid #e5e7eb;
+                        border-radius:14px;
+                        background:#f8fafc;
+                        color:#172554;
+                        font-weight:600;
+                    "
+                >
+                    No draw dates available yet.
+                </div>
+            `;
+
+        return;
+
+    }
+
+
+    scopes.forEach(
+        function(
+            scope
+        ) {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.textContent =
+                getHistoryDateLabel(
+                    scope
+                );
+
+
+            button.dataset.scope =
+                scope;
+
+
+            button.style.cssText =
+                `
+                    padding:13px 22px;
+                    border:1px solid #d7deea;
+                    border-radius:15px;
+                    background:#ffffff;
+                    color:#172554;
+                    font-size:17px;
+                    font-weight:700;
+                    cursor:pointer;
+                    transition:0.2s ease;
+                `;
+
+
+            if (
+                selectedHistoryDate ===
+                scope
+            ) {
+
+                button.style.background =
+                    "linear-gradient(135deg,#2563eb,#ec4899)";
+
+                button.style.color =
+                    "#ffffff";
+
+                button.style.borderColor =
+                    "#2563eb";
+
+                button.style.boxShadow =
+                    "0 8px 18px rgba(37,99,235,0.22)";
+
+            }
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    selectHistoryDate(
+                        scope
+                    );
+
+                }
+            );
+
+
+            dateTabs.appendChild(
+                button
+            );
+
+        }
     );
 
+}
 
-if (!historyNavigation) {
 
-    historyNavigation =
-        document.createElement(
-            "div"
+// ------------------------------------------------------------
+// SELECT HISTORY DATE
+// ------------------------------------------------------------
+
+function selectHistoryDate(
+    scope
+) {
+
+    selectedHistoryDate =
+        scope;
+
+
+    const groups =
+        getHistoryDrawGroups(
+            selectedHistoryDate
         );
 
 
-    historyNavigation.id =
-        "drawHistoryNavigation";
+    if (
+        groups.length
+    ) {
+
+        selectedHistoryDrawNumber =
+            groups[0].localDrawNumber;
+
+    } else {
+
+        selectedHistoryDrawNumber =
+            null;
+
+    }
 
 
-    historyNavigation.style.cssText =
+    renderHistoryView();
+
+}
+
+
+// ------------------------------------------------------------
+// RENDER HISTORY DRAW TABS
+// ------------------------------------------------------------
+
+function renderHistoryDrawTabs() {
+
+    const containers =
+        ensureHistoryContainers();
+
+
+    if (!containers) {
+
+        return;
+
+    }
+
+
+    const drawTabs =
+        containers.drawTabs;
+
+
+    drawTabs.innerHTML =
+        "";
+
+
+    const groups =
+        getHistoryDrawGroups(
+            selectedHistoryDate
+        );
+
+
+    if (
+        !groups.length
+    ) {
+
+        return;
+
+    }
+
+
+    // Newest first
+    groups.forEach(
+        function(
+            group
+        ) {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.textContent =
+                `Draw ${group.localDrawNumber}`;
+
+
+            button.dataset.drawNumber =
+                group.localDrawNumber;
+
+
+            button.style.cssText =
+                `
+                    padding:12px 24px;
+                    border:1px solid #d7deea;
+                    border-radius:14px;
+                    background:#ffffff;
+                    color:#172554;
+                    font-size:17px;
+                    font-weight:700;
+                    cursor:pointer;
+                    transition:0.2s ease;
+                `;
+
+
+            if (
+                selectedHistoryDrawNumber ===
+                group.localDrawNumber
+            ) {
+
+                button.style.background =
+                    "linear-gradient(135deg,#2563eb,#ec4899)";
+
+                button.style.color =
+                    "#ffffff";
+
+                button.style.borderColor =
+                    "#2563eb";
+
+                button.style.boxShadow =
+                    "0 8px 18px rgba(37,99,235,0.22)";
+
+            }
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    selectedHistoryDrawNumber =
+                        group.localDrawNumber;
+
+                    renderHistoryView();
+
+                }
+            );
+
+
+            drawTabs.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
+
+// ------------------------------------------------------------
+// UPDATE HISTORY SUMMARY
+// ------------------------------------------------------------
+
+function updateHistorySummary() {
+
+    const containers =
+        ensureHistoryContainers();
+
+
+    if (!containers) {
+
+        return;
+
+    }
+
+
+    const summary =
+        containers.summary;
+
+
+    const groups =
+        getHistoryDrawGroups(
+            selectedHistoryDate
+        );
+
+
+    const dateText =
+        getHistoryDateLabel(
+            selectedHistoryDate
+        );
+
+
+    if (
+        !groups.length
+    ) {
+
+        summary.textContent =
+            `${dateText} • No draws have been conducted yet.`;
+
+        return;
+
+    }
+
+
+    const selectedGroup =
+        getHistoryGroupByLocalNumber(
+            selectedHistoryDate,
+            selectedHistoryDrawNumber
+        );
+
+
+    summary.innerHTML =
         `
-            width:100%;
-            box-sizing:border-box;
-            margin-bottom:25px;
+            <strong>
+                ${escapeHTML(
+                    dateText
+                )}
+            </strong>
+
+            <span
+                style="
+                    margin:0 8px;
+                "
+            >
+                •
+            </span>
+
+            <strong>
+                ${groups.length}
+            </strong>
+
+            draws
+
+            ${
+                selectedGroup
+                    ? `
+                        <span
+                            style="
+                                margin:0 8px;
+                            "
+                        >
+                            •
+                        </span>
+
+                        Showing
+                        <strong>
+                            Draw ${selectedGroup.localDrawNumber}
+                        </strong>
+                    `
+                    : ""
+            }
         `;
+
+}
+
+
+// ------------------------------------------------------------
+// RENDER HISTORY WINNERS
+// ------------------------------------------------------------
+
+function renderHistoryWinners() {
+
+    const containers =
+        ensureHistoryContainers();
+
+
+    if (!containers) {
+
+        return;
+
+    }
+
+
+    const winnersContainer =
+        containers.winnersContainer;
+
+
+    winnersContainer.innerHTML =
+        "";
+
+
+    const selectedGroup =
+        getHistoryGroupByLocalNumber(
+            selectedHistoryDate,
+            selectedHistoryDrawNumber
+        );
+
+
+    if (
+        !selectedGroup
+    ) {
+
+        winnersContainer.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    winnersContainer.style.display =
+        "grid";
+
+
+    const records =
+        [...selectedGroup.records]
+            .sort(
+                function(
+                    a,
+                    b
+                ) {
+
+                    return Number(
+                        a.id ||
+                        0
+                    ) -
+                    Number(
+                        b.id ||
+                        0
+                    );
+
+                }
+            );
+
+
+    records
+        .slice(
+            0,
+            3
+        )
+        .forEach(
+            function(
+                winner,
+                index
+            ) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.style.cssText =
+                    `
+                        background:#ffffff;
+                        border:1px solid #e5e7eb;
+                        border-radius:24px;
+                        padding:26px;
+                        box-sizing:border-box;
+                        box-shadow:0 10px 25px rgba(0,0,0,0.05);
+                        min-width:0;
+                    `;
+
+
+                const winnerNumber =
+                    index + 1;
+
+
+                const medal =
+                    winnerNumber === 1
+                        ? "🥇"
+                        : winnerNumber === 2
+                            ? "🥈"
+                            : "🥉";
+
+
+                card.innerHTML =
+                    `
+                        <h3
+                            style="
+                                margin:0 0 20px;
+                                color:#f43f5e;
+                                font-size:28px;
+                            "
+                        >
+                            ${medal}
+                            WINNER ${winnerNumber}
+                        </h3>
+
+
+                        <p
+                            style="
+                                margin:9px 0;
+                                font-size:16px;
+                                line-height:1.5;
+                                overflow-wrap:anywhere;
+                            "
+                        >
+                            <strong
+                                style="
+                                    color:#172554;
+                                "
+                            >
+                                Registration ID:
+                            </strong>
+
+                            ${escapeHTML(
+                                winner.winner_registration_id ||
+                                "-"
+                            )}
+                        </p>
+
+
+                        <p
+                            style="
+                                margin:9px 0;
+                                font-size:16px;
+                                line-height:1.5;
+                                overflow-wrap:anywhere;
+                            "
+                        >
+                            <strong
+                                style="
+                                    color:#172554;
+                                "
+                            >
+                                Name:
+                            </strong>
+
+                            ${escapeHTML(
+                                winner.winner_name ||
+                                "-"
+                            )}
+                        </p>
+
+
+                        <p
+                            style="
+                                margin:9px 0;
+                                font-size:16px;
+                                line-height:1.5;
+                                overflow-wrap:anywhere;
+                            "
+                        >
+                            <strong
+                                style="
+                                    color:#172554;
+                                "
+                            >
+                                Phone:
+                            </strong>
+
+                            ${escapeHTML(
+                                winner.winner_phone ||
+                                "-"
+                            )}
+                        </p>
+                    `;
+
+
+                winnersContainer.appendChild(
+                    card
+                );
+
+            }
+        );
+
+}
+
+
+// ------------------------------------------------------------
+// RENDER HISTORY TABLE
+// ------------------------------------------------------------
+
+function renderHistoryTable() {
+
+    const historyList =
+        getElement(
+            "drawHistoryList"
+        ) ||
+        getElement(
+            "historyList"
+        );
+
+
+    if (!historyList) {
+
+        return;
+
+    }
+
+
+    const selectedGroup =
+        getHistoryGroupByLocalNumber(
+            selectedHistoryDate,
+            selectedHistoryDrawNumber
+        );
+
+
+    if (
+        !selectedGroup
+    ) {
+
+        historyList.innerHTML =
+            `
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="no-data"
+                    >
+                        Select a draw above to view its winners.
+                    </td>
+
+                </tr>
+            `;
+
+        return;
+
+    }
+
+
+    const records =
+        [...selectedGroup.records]
+            .sort(
+                function(
+                    a,
+                    b
+                ) {
+
+                    return Number(
+                        a.id ||
+                        0
+                    ) -
+                    Number(
+                        b.id ||
+                        0
+                    );
+
+                }
+            );
+
+
+    historyList.innerHTML =
+        "";
+
+
+    records
+        .slice(
+            0,
+            3
+        )
+        .forEach(
+            function(
+                draw
+            ) {
+
+                historyList.innerHTML +=
+                    `
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    ${escapeHTML(
+                                        selectedGroup.localDrawNumber
+                                    )}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+                                ${escapeHTML(
+                                    draw.draw_date ||
+                                    "-"
+                                )}
+                            </td>
+
+
+                            <td>
+                                ${escapeHTML(
+                                    draw.draw_time ||
+                                    "-"
+                                )}
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    ${escapeHTML(
+                                        draw.winner_name ||
+                                        "-"
+                                    )}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    ${escapeHTML(
+                                        draw.winner_registration_id ||
+                                        "-"
+                                    )}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+                                ${escapeHTML(
+                                    draw.winner_phone ||
+                                    "-"
+                                )}
+                            </td>
+
+                        </tr>
+                    `;
+
+            }
+        );
+
+}
+
+
+// ------------------------------------------------------------
+// RENDER COMPLETE HISTORY VIEW
+// ------------------------------------------------------------
+
+function renderHistoryView() {
+
+    ensureHistoryContainers();
+
+
+    renderHistoryDateTabs();
+
+
+    renderHistoryDrawTabs();
+
+
+    updateHistorySummary();
+
+
+    renderHistoryWinners();
+
+
+    renderHistoryTable();
+
+}
+
+
+// ------------------------------------------------------------
+// LOAD DRAW HISTORY
+// ------------------------------------------------------------
+
+async function loadDrawHistory() {
+
+    if (
+        !isAdminAuthenticated
+    ) {
+
+        return;
+
+    }
 
 
     const historyList =
@@ -3418,845 +4326,19 @@ if (!historyNavigation) {
         );
 
 
-    if (
-        historyList &&
-        historyList.closest(
-            "table"
-        )
-    ) {
+    if (!historyList) {
 
-        const table =
-            historyList.closest(
-                "table"
-            );
-
-
-        if (
-            table.parentElement
-        ) {
-
-            table.parentElement.insertBefore(
-                historyNavigation,
-                table
-            );
-
-        }
-
-    } else {
-
-        historySection.appendChild(
-            historyNavigation
+        console.error(
+            "Draw history table body was not found."
         );
+
+        return;
 
     }
 
-}
 
-
-let dateTabs =
-    getElement(
-        "historyDateTabs"
-    );
-
-
-if (!dateTabs) {
-
-    dateTabs =
-        document.createElement(
-            "div"
-        );
-
-
-    dateTabs.id =
-        "historyDateTabs";
-
-
-    dateTabs.style.cssText =
-        `
-            display:flex;
-            flex-wrap:wrap;
-            gap:12px;
-            margin-bottom:18px;
-        `;
-
-
-    historyNavigation.appendChild(
-        dateTabs
-    );
-
-}
-
-
-let drawTabs =
-    getElement(
-        "historyDrawTabs"
-    );
-
-
-if (!drawTabs) {
-
-    drawTabs =
-        document.createElement(
-            "div"
-        );
-
-
-    drawTabs.id =
-        "historyDrawTabs";
-
-
-    drawTabs.style.cssText =
-        `
-            display:flex;
-            flex-wrap:wrap;
-            gap:12px;
-            margin-bottom:20px;
-        `;
-
-
-    historyNavigation.appendChild(
-        drawTabs
-    );
-
-}
-
-
-let summary =
-    getElement(
-        "historySummary"
-    );
-
-
-if (!summary) {
-
-    summary =
-        document.createElement(
-            "div"
-        );
-
-
-    summary.id =
-        "historySummary";
-
-
-    summary.style.cssText =
-        `
-            width:100%;
-            box-sizing:border-box;
-            padding:16px 20px;
-            margin-bottom:22px;
-            border:1px solid #e5e7eb;
-            border-radius:18px;
-            background:#f8fafc;
-            color:#172554;
-            font-size:18px;
-            font-weight:700;
-        `;
-
-
-    historyNavigation.appendChild(
-        summary
-    );
-
-}
-
-
-let winnersContainer =
-    getElement(
-        "historyWinners"
-    );
-
-
-if (!winnersContainer) {
-
-    winnersContainer =
-        document.createElement(
-            "div"
-        );
-
-
-    winnersContainer.id =
-        "historyWinners";
-
-
-    winnersContainer.style.cssText =
-        `
-            width:100%;
-            display:grid;
-            grid-template-columns:repeat(3,minmax(0,1fr));
-            gap:20px;
-            margin-bottom:25px;
-        `;
-
-
-    const table =
-        (
-            getElement(
-                "drawHistoryList"
-            ) ||
-            getElement(
-                "historyList"
-            )
-        )?.closest(
-            "table"
-        );
-
-
-    if (
-        table &&
-        table.parentElement
-    ) {
-
-        table.parentElement.insertBefore(
-            winnersContainer,
-            table
-        );
-
-    } else {
-
-        historySection.appendChild(
-            winnersContainer
-        );
-
-    }
-
-}
-
-
-return {
-
-    historyNavigation,
-    dateTabs,
-    drawTabs,
-    summary,
-    winnersContainer
-
-};
-
-}
-
-// ------------------------------------------------------------
-// RENDER HISTORY DATE TABS
-// ------------------------------------------------------------
-
-function renderHistoryDateTabs() {
-
-const containers =
     ensureHistoryContainers();
 
-
-if (!containers) {
-
-    return;
-
-}
-
-
-const dateTabs =
-    containers.dateTabs;
-
-
-dateTabs.innerHTML =
-    "";
-
-
-const scopes =
-    getHistoryDateScopes();
-
-
-if (
-    !scopes.length
-) {
-
-    dateTabs.innerHTML =
-        `
-            <div
-                style="
-                    padding:14px 18px;
-                    border:1px solid #e5e7eb;
-                    border-radius:14px;
-                    background:#f8fafc;
-                    color:#172554;
-                    font-weight:600;
-                "
-            >
-                No draw dates available yet.
-            </div>
-        `;
-
-    return;
-
-}
-
-
-scopes.forEach(
-    function(
-        scope
-    ) {
-
-        const button =
-            document.createElement(
-                "button"
-            );
-
-
-        button.type =
-            "button";
-
-
-        button.textContent =
-            getHistoryDateLabel(
-                scope
-            );
-
-
-        button.dataset.scope =
-            scope;
-
-
-        button.style.cssText =
-            `
-                padding:13px 22px;
-                border:1px solid #d7deea;
-                border-radius:15px;
-                background:#ffffff;
-                color:#172554;
-                font-size:17px;
-                font-weight:700;
-                cursor:pointer;
-                transition:0.2s ease;
-            `;
-
-
-        if (
-            selectedHistoryDate ===
-            scope
-        ) {
-
-            button.style.background =
-                "linear-gradient(135deg,#2563eb,#ec4899)";
-
-            button.style.color =
-                "#ffffff";
-
-            button.style.borderColor =
-                "#2563eb";
-
-            button.style.boxShadow =
-                "0 8px 18px rgba(37,99,235,0.22)";
-
-        }
-
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                selectHistoryDate(
-                    scope
-                );
-
-            }
-        );
-
-
-        dateTabs.appendChild(
-            button
-        );
-
-    }
-);
-
-}
-
-// ------------------------------------------------------------
-// SELECT HISTORY DATE
-// ------------------------------------------------------------
-
-function selectHistoryDate(
-scope
-) {
-
-selectedHistoryDate =
-    scope;
-
-
-const groups =
-    getHistoryDrawGroups(
-        selectedHistoryDate
-    );
-
-
-if (
-    groups.length
-) {
-
-    selectedHistoryDrawNumber =
-        groups[0].localDrawNumber;
-
-} else {
-
-    selectedHistoryDrawNumber =
-        null;
-
-}
-
-
-renderHistoryView();
-
-}
-
-// ------------------------------------------------------------
-// RENDER HISTORY DRAW TABS
-// ------------------------------------------------------------
-
-function renderHistoryDrawTabs() {
-
-const containers =
-    ensureHistoryContainers();
-
-
-if (!containers) {
-
-    return;
-
-}
-
-
-const drawTabs =
-    containers.drawTabs;
-
-
-drawTabs.innerHTML =
-    "";
-
-
-const groups =
-    getHistoryDrawGroups(
-        selectedHistoryDate
-    );
-
-
-if (
-    !groups.length
-) {
-
-    return;
-
-}
-
-
-// Newest first
-groups.forEach(
-    function(
-        group
-    ) {
-
-        const button =
-            document.createElement(
-                "button"
-            );
-
-
-        button.type =
-            "button";
-
-
-        button.textContent =
-            `Draw ${group.localDrawNumber}`;
-
-
-        button.dataset.drawNumber =
-            group.localDrawNumber;
-
-
-        button.style.cssText =
-            `
-                padding:12px 24px;
-                border:1px solid #d7deea;
-                border-radius:14px;
-                background:#ffffff;
-                color:#172554;
-                font-size:17px;
-                font-weight:700;
-                cursor:pointer;
-                transition:0.2s ease;
-            `;
-
-
-        if (
-            selectedHistoryDrawNumber ===
-            group.localDrawNumber
-        ) {
-
-            button.style.background =
-                "linear-gradient(135deg,#2563eb,#ec4899)";
-
-            button.style.color =
-                "#ffffff";
-
-            button.style.borderColor =
-                "#2563eb";
-
-            button.style.boxShadow =
-                "0 8px 18px rgba(37,99,235,0.22)";
-
-        }
-
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                selectedHistoryDrawNumber =
-                    group.localDrawNumber;
-
-                renderHistoryView();
-
-            }
-        );
-
-
-        drawTabs.appendChild(
-            button
-        );
-
-    }
-);
-
-}
-
-// ------------------------------------------------------------
-// UPDATE HISTORY SUMMARY
-// ------------------------------------------------------------
-
-function updateHistorySummary() {
-
-const containers =
-    ensureHistoryContainers();
-
-
-if (!containers) {
-
-    return;
-
-}
-
-
-const summary =
-    containers.summary;
-
-
-const groups =
-    getHistoryDrawGroups(
-        selectedHistoryDate
-    );
-
-
-const dateText =
-    getHistoryDateLabel(
-        selectedHistoryDate
-    );
-
-
-if (
-    !groups.length
-) {
-
-    summary.textContent =
-        `${dateText} • No draws have been conducted yet.`;
-
-    return;
-
-}
-
-
-const selectedGroup =
-    getHistoryGroupByLocalNumber(
-        selectedHistoryDate,
-        selectedHistoryDrawNumber
-    );
-
-
-summary.innerHTML =
-    `
-        <strong>
-            ${escapeHTML(
-                dateText
-            )}
-        </strong>
-
-        <span
-            style="
-                margin:0 8px;
-            "
-        >
-            •
-        </span>
-
-        <strong>
-            ${groups.length}
-        </strong>
-
-        draws
-
-        ${
-            selectedGroup
-                ? `
-                    <span
-                        style="
-                            margin:0 8px;
-                        "
-                    >
-                        •
-                    </span>
-
-                    Showing
-                    <strong>
-                        Draw ${selectedGroup.localDrawNumber}
-                    </strong>
-                `
-                : ""
-        }
-    `;
-
-}
-
-// ------------------------------------------------------------
-// RENDER HISTORY WINNERS
-// ------------------------------------------------------------
-
-function renderHistoryWinners() {
-
-const containers =
-    ensureHistoryContainers();
-
-
-if (!containers) {
-
-    return;
-
-}
-
-
-const winnersContainer =
-    containers.winnersContainer;
-
-
-winnersContainer.innerHTML =
-    "";
-
-
-const selectedGroup =
-    getHistoryGroupByLocalNumber(
-        selectedHistoryDate,
-        selectedHistoryDrawNumber
-    );
-
-
-if (
-    !selectedGroup
-) {
-
-    winnersContainer.style.display =
-        "none";
-
-    return;
-
-}
-
-
-winnersContainer.style.display =
-    "grid";
-
-
-const records =
-    [...selectedGroup.records]
-        .sort(
-            function(
-                a,
-                b
-            ) {
-
-                return Number(
-                    a.id ||
-                    0
-                ) -
-                Number(
-                    b.id ||
-                    0
-                );
-
-            }
-        );
-
-
-records
-    .slice(
-        0,
-        3
-    )
-    .forEach(
-        function(
-            winner,
-            index
-        ) {
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.style.cssText =
-                `
-                    background:#ffffff;
-                    border:1px solid #e5e7eb;
-                    border-radius:24px;
-                    padding:26px;
-                    box-sizing:border-box;
-                    box-shadow:0 10px 25px rgba(0,0,0,0.05);
-                    min-width:0;
-                `;
-
-
-            const winnerNumber =
-                index + 1;
-
-
-            const medal =
-                winnerNumber === 1
-                    ? "🥇"
-                    : winnerNumber === 2
-                        ? "🥈"
-                        : "🥉";
-
-
-            card.innerHTML =
-                `
-                    <h3
-                        style="
-                            margin:0 0 20px;
-                            color:#f43f5e;
-                            font-size:28px;
-                        "
-                    >
-                        ${medal}
-                        WINNER ${winnerNumber}
-                    </h3>
-
-
-                    <p
-                        style="
-                            margin:9px 0;
-                            font-size:16px;
-                            line-height:1.5;
-                            overflow-wrap:anywhere;
-                        "
-                    >
-                        <strong
-                            style="
-                                color:#172554;
-                            "
-                        >
-                            Registration ID:
-                        </strong>
-
-                        ${escapeHTML(
-                            winner.winner_registration_id ||
-                            "-"
-                        )}
-                    </p>
-
-
-                    <p
-                        style="
-                            margin:9px 0;
-                            font-size:16px;
-                            line-height:1.5;
-                            overflow-wrap:anywhere;
-                        "
-                    >
-                        <strong
-                            style="
-                                color:#172554;
-                            "
-                        >
-                            Name:
-                        </strong>
-
-                        ${escapeHTML(
-                            winner.winner_name ||
-                            "-"
-                        )}
-                    </p>
-
-
-                    <p
-                        style="
-                            margin:9px 0;
-                            font-size:16px;
-                            line-height:1.5;
-                            overflow-wrap:anywhere;
-                        "
-                    >
-                        <strong
-                            style="
-                                color:#172554;
-                            "
-                        >
-                            Phone:
-                        </strong>
-
-                        ${escapeHTML(
-                            winner.winner_phone ||
-                            "-"
-                        )}
-                    </p>
-                `;
-
-
-            winnersContainer.appendChild(
-                card
-            );
-
-        }
-    );
-
-}
-
-// ------------------------------------------------------------
-// RENDER HISTORY TABLE
-// ------------------------------------------------------------
-
-function renderHistoryTable() {
-
-const historyList =
-    getElement(
-        "drawHistoryList"
-    ) ||
-    getElement(
-        "historyList"
-    );
-
-
-if (!historyList) {
-
-    return;
-
-}
-
-
-const selectedGroup =
-    getHistoryGroupByLocalNumber(
-        selectedHistoryDate,
-        selectedHistoryDrawNumber
-    );
-
-
-if (
-    !selectedGroup
-) {
 
     historyList.innerHTML =
         `
@@ -4266,235 +4348,198 @@ if (
                     colspan="6"
                     class="no-data"
                 >
-                    Select a draw above to view its winners.
+                    Loading draw history...
                 </td>
 
             </tr>
         `;
 
-    return;
 
-}
+    try {
 
-
-const records =
-    [...selectedGroup.records]
-        .sort(
-            function(
-                a,
-                b
-            ) {
-
-                return Number(
-                    a.id ||
-                    0
-                ) -
-                Number(
-                    b.id ||
-                    0
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "draw_history"
+                )
+                .select(
+                    `
+                        id,
+                        draw_number,
+                        draw_date,
+                        draw_time,
+                        draw_scope,
+                        winner_name,
+                        winner_registration_id,
+                        winner_phone
+                    `
+                )
+                .order(
+                    "id",
+                    {
+                        ascending:
+                            true
+                    }
                 );
 
-            }
-        );
+
+        if (error) {
+
+            console.error(
+                "Draw history error:",
+                error
+            );
 
 
-historyList.innerHTML =
-    "";
+            allDrawHistory =
+                [];
 
 
-records
-    .slice(
-        0,
-        3
-    )
-    .forEach(
-        function(
-            draw
-        ) {
-
-            historyList.innerHTML +=
+            historyList.innerHTML =
                 `
                     <tr>
 
-                        <td>
-
-                            <strong>
-                                ${escapeHTML(
-                                    selectedGroup.localDrawNumber
-                                )}
-                            </strong>
-
-                        </td>
-
-
-                        <td>
-                            ${escapeHTML(
-                                draw.draw_date ||
-                                "-"
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${escapeHTML(
-                                draw.draw_time ||
-                                "-"
-                            )}
-                        </td>
-
-
-                        <td>
-
-                            <strong>
-                                ${escapeHTML(
-                                    draw.winner_name ||
-                                    "-"
-                                )}
-                            </strong>
-
-                        </td>
-
-
-                        <td>
-
-                            <strong>
-                                ${escapeHTML(
-                                    draw.winner_registration_id ||
-                                    "-"
-                                )}
-                            </strong>
-
-                        </td>
-
-
-                        <td>
-                            ${escapeHTML(
-                                draw.winner_phone ||
-                                "-"
-                            )}
+                        <td
+                            colspan="6"
+                            class="no-data"
+                        >
+                            Unable to load draw history.
                         </td>
 
                     </tr>
                 `;
 
+
+            renderHistoryView();
+
+
+            return;
+
         }
-    );
-
-}
-
-// ------------------------------------------------------------
-// RENDER COMPLETE HISTORY VIEW
-// ------------------------------------------------------------
-
-function renderHistoryView() {
-
-ensureHistoryContainers();
 
 
-renderHistoryDateTabs();
+        allDrawHistory =
+            data ||
+            [];
 
 
-renderHistoryDrawTabs();
+        if (
+            !allDrawHistory.length
+        ) {
+
+            selectedHistoryDate =
+                "all";
+
+            selectedHistoryDrawNumber =
+                null;
 
 
-updateHistorySummary();
-
-
-renderHistoryWinners();
-
-
-renderHistoryTable();
-
-}
-
-// ------------------------------------------------------------
-// LOAD DRAW HISTORY
-// ------------------------------------------------------------
-
-async function loadDrawHistory() {
-
-if (
-    !isAdminAuthenticated
-) {
-
-    return;
-
-}
-
-
-const historyList =
-    getElement(
-        "drawHistoryList"
-    ) ||
-    getElement(
-        "historyList"
-    );
-
-
-if (!historyList) {
-
-    console.error(
-        "Draw history table body was not found."
-    );
-
-    return;
-
-}
-
-
-ensureHistoryContainers();
-
-
-historyList.innerHTML =
-    `
-        <tr>
-
-            <td
-                colspan="6"
-                class="no-data"
-            >
-                Loading draw history...
-            </td>
-
-        </tr>
-    `;
-
-
-try {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from(
-                "draw_history"
-            )
-            .select(
+            historyList.innerHTML =
                 `
-                    id,
-                    draw_number,
-                    draw_date,
-                    draw_time,
-                    draw_scope,
-                    winner_name,
-                    winner_registration_id,
-                    winner_phone
-                `
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="no-data"
+                        >
+                            No draws have been conducted yet.
+                        </td>
+
+                    </tr>
+                `;
+
+
+            renderHistoryView();
+
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // If current selected history date no longer exists,
+        // select the newest available scope.
+        // ----------------------------------------------------
+
+        const availableScopes =
+            getHistoryDateScopes();
+
+
+        if (
+            !availableScopes.includes(
+                selectedHistoryDate
             )
-            .order(
-                "id",
-                {
-                    ascending:
-                        true
-                }
+        ) {
+
+            selectedHistoryDate =
+                availableScopes[0];
+
+        }
+
+
+        const groups =
+            getHistoryDrawGroups(
+                selectedHistoryDate
             );
 
 
-    if (error) {
+        if (
+            !groups.length
+        ) {
+
+            selectedHistoryDate =
+                availableScopes[0];
+
+        }
+
+
+        const selectedDateGroups =
+            getHistoryDrawGroups(
+                selectedHistoryDate
+            );
+
+
+        if (
+            !selectedDateGroups.some(
+                function(
+                    group
+                ) {
+
+                    return (
+                        group.localDrawNumber ===
+                        selectedHistoryDrawNumber
+                    );
+
+                }
+            )
+        ) {
+
+            selectedHistoryDrawNumber =
+                selectedDateGroups.length
+                    ? selectedDateGroups[0].localDrawNumber
+                    : null;
+
+        }
+
+
+        renderHistoryView();
+
+
+        console.log(
+            "Draw history loaded successfully:",
+            allDrawHistory.length,
+            "winner records"
+        );
+
+
+    } catch (error) {
 
         console.error(
-            "Draw history error:",
+            "DRAW HISTORY EXCEPTION:",
             error
         );
 
@@ -4517,254 +4562,107 @@ try {
                 </tr>
             `;
 
-
-        renderHistoryView();
-
-
-        return;
-
     }
-
-
-    allDrawHistory =
-        data ||
-        [];
-
-
-    if (
-        !allDrawHistory.length
-    ) {
-
-        selectedHistoryDate =
-            "all";
-
-        selectedHistoryDrawNumber =
-            null;
-
-
-        historyList.innerHTML =
-            `
-                <tr>
-
-                    <td
-                        colspan="6"
-                        class="no-data"
-                    >
-                        No draws have been conducted yet.
-                    </td>
-
-                </tr>
-            `;
-
-
-        renderHistoryView();
-
-
-        return;
-
-    }
-
-
-    // ----------------------------------------------------
-    // If current selected history date no longer exists,
-    // select the newest available scope.
-    // ----------------------------------------------------
-
-    const availableScopes =
-        getHistoryDateScopes();
-
-
-    if (
-        !availableScopes.includes(
-            selectedHistoryDate
-        )
-    ) {
-
-        selectedHistoryDate =
-            availableScopes[0];
-
-    }
-
-
-    const groups =
-        getHistoryDrawGroups(
-            selectedHistoryDate
-        );
-
-
-    if (
-        !groups.length
-    ) {
-
-        selectedHistoryDate =
-            availableScopes[0];
-
-    }
-
-
-    const selectedDateGroups =
-        getHistoryDrawGroups(
-            selectedHistoryDate
-        );
-
-
-    if (
-        !selectedDateGroups.some(
-            function(
-                group
-            ) {
-
-                return (
-                    group.localDrawNumber ===
-                    selectedHistoryDrawNumber
-                );
-
-            }
-        )
-    ) {
-
-        selectedHistoryDrawNumber =
-            selectedDateGroups.length
-                ? selectedDateGroups[0].localDrawNumber
-                : null;
-
-    }
-
-
-    renderHistoryView();
-
-
-    console.log(
-        "Draw history loaded successfully:",
-        allDrawHistory.length,
-        "winner records"
-    );
-
-
-} catch (error) {
-
-    console.error(
-        "DRAW HISTORY EXCEPTION:",
-        error
-    );
-
-
-    allDrawHistory =
-        [];
-
-
-    historyList.innerHTML =
-        `
-            <tr>
-
-                <td
-                    colspan="6"
-                    class="no-data"
-                >
-                    Unable to load draw history.
-                </td>
-
-            </tr>
-        `;
 
 }
 
-}
 
 // ============================================================
 // SHOW ADMIN SECTION
 // ============================================================
 
 function showAdminSection(
-sectionId,
-button
+    sectionId,
+    button
 ) {
 
-const sections =
-    document.querySelectorAll(
-        ".admin-section"
+    const sections =
+        document.querySelectorAll(
+            ".admin-section"
+        );
+
+
+    sections.forEach(
+        function(
+            section
+        ) {
+
+            section.classList.remove(
+                "active-admin-section"
+            );
+
+        }
     );
 
 
-sections.forEach(
-    function(
-        section
-    ) {
+    const menuButtons =
+        document.querySelectorAll(
+            ".menu-btn"
+        );
 
-        section.classList.remove(
+
+    menuButtons.forEach(
+        function(
+            menuButton
+        ) {
+
+            menuButton.classList.remove(
+                "active-menu"
+            );
+
+        }
+    );
+
+
+    const selectedSection =
+        getElement(
+            sectionId
+        );
+
+
+    if (selectedSection) {
+
+        selectedSection.classList.add(
             "active-admin-section"
         );
 
     }
-);
 
 
-const menuButtons =
-    document.querySelectorAll(
-        ".menu-btn"
-    );
+    if (button) {
 
-
-menuButtons.forEach(
-    function(
-        menuButton
-    ) {
-
-        menuButton.classList.remove(
+        button.classList.add(
             "active-menu"
         );
 
     }
-);
 
 
-const selectedSection =
-    getElement(
-        sectionId
-    );
+    if (
+        sectionId ===
+        "drawHistorySection"
+    ) {
 
+        loadDrawHistory();
 
-if (selectedSection) {
-
-    selectedSection.classList.add(
-        "active-admin-section"
-    );
+    }
 
 }
 
-
-if (button) {
-
-    button.classList.add(
-        "active-menu"
-    );
-
-}
-
-
-if (
-    sectionId ===
-    "drawHistorySection"
-) {
-
-    loadDrawHistory();
-
-}
-
-}
 
 // ============================================================
 // INLINE HTML ACCESS
 // ============================================================
 
 window.showAdminSection =
-showAdminSection;
+    showAdminSection;
 
 window.loadDrawHistory =
-loadDrawHistory;
+    loadDrawHistory;
 
 window.selectDrawScope =
-selectDrawScope;
+    selectDrawScope;
+
 
 // ============================================================
 // DOWNLOAD DRAW HISTORY TO EXCEL
@@ -4772,73 +4670,12 @@ selectDrawScope;
 
 async function downloadDrawHistory() {
 
-if (
-    !isAdminAuthenticated
-) {
-
-    alert(
-        "Administrator authentication is required."
-    );
-
-    return;
-
-}
-
-
-if (
-    typeof XLSX ===
-    "undefined"
-) {
-
-    alert(
-        "Excel export library is unavailable. Please try again."
-    );
-
-    return;
-
-}
-
-
-try {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from(
-                "draw_history"
-            )
-            .select(
-                `
-                    draw_number,
-                    draw_date,
-                    draw_time,
-                    draw_scope,
-                    winner_name,
-                    winner_registration_id,
-                    winner_phone
-                `
-            )
-            .order(
-                "id",
-                {
-                    ascending:
-                        true
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "DRAW HISTORY EXCEL FETCH ERROR:",
-            error
-        );
-
+    if (
+        !isAdminAuthenticated
+    ) {
 
         alert(
-            "Unable to load draw history for Excel export."
+            "Administrator authentication is required."
         );
 
         return;
@@ -4847,13 +4684,12 @@ try {
 
 
     if (
-        !data ||
-        data.length ===
-        0
+        typeof XLSX ===
+        "undefined"
     ) {
 
         alert(
-            "There is no draw history available to download."
+            "Excel export library is unavailable. Please try again."
         );
 
         return;
@@ -4861,295 +4697,358 @@ try {
     }
 
 
-    const scopeCounters =
-        new Map();
+    try {
 
-
-    const groupedForExcel =
-        new Map();
-
-
-    data.forEach(
-        function(
-            record
-        ) {
-
-            const scope =
-                getHistoryScope(
-                    record
-                );
-
-
-            const globalNumber =
-                String(
-                    record.draw_number
-                );
-
-
-            const key =
-                `${scope}__${globalNumber}`;
-
-
-            if (
-                !groupedForExcel.has(
-                    key
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "draw_history"
                 )
-            ) {
-
-                groupedForExcel.set(
-                    key,
-                    []
-                );
-
-            }
-
-
-            groupedForExcel
-                .get(
-                    key
+                .select(
+                    `
+                        draw_number,
+                        draw_date,
+                        draw_time,
+                        draw_scope,
+                        winner_name,
+                        winner_registration_id,
+                        winner_phone
+                    `
                 )
-                .push(
-                    record
-                );
-
-        }
-    );
-
-
-    const groupEntries =
-        Array.from(
-            groupedForExcel.entries()
-        );
-
-
-    const scopeGroups =
-        new Map();
-
-
-    groupEntries.forEach(
-        function(
-            entry
-        ) {
-
-            const scope =
-                entry[1][0]
-                    ? getHistoryScope(
-                        entry[1][0]
-                    )
-                    : "all";
-
-
-            if (
-                !scopeGroups.has(
-                    scope
-                )
-            ) {
-
-                scopeGroups.set(
-                    scope,
-                    []
-                );
-
-            }
-
-
-            scopeGroups
-                .get(
-                    scope
-                )
-                .push(
+                .order(
+                    "id",
                     {
-                        key:
-                            entry[0],
-                        records:
-                            entry[1]
+                        ascending:
+                            true
                     }
                 );
 
+
+        if (error) {
+
+            console.error(
+                "DRAW HISTORY EXCEL FETCH ERROR:",
+                error
+            );
+
+
+            alert(
+                "Unable to load draw history for Excel export."
+            );
+
+            return;
+
         }
-    );
 
 
-    scopeGroups.forEach(
-        function(
-            groups
+        if (
+            !data ||
+            data.length ===
+            0
         ) {
 
-            groups.sort(
-                function(
-                    a,
-                    b
-                ) {
-
-                    const aId =
-                        Number(
-                            a.records[0]?.id ||
-                            0
-                        );
-
-                    const bId =
-                        Number(
-                            b.records[0]?.id ||
-                            0
-                        );
-
-
-                    return aId -
-                        bId;
-
-                }
+            alert(
+                "There is no draw history available to download."
             );
 
-
-            groups.forEach(
-                function(
-                    group,
-                    index
-                ) {
-
-                    scopeCounters.set(
-                        group.key,
-                        index + 1
-                    );
-
-                }
-            );
+            return;
 
         }
-    );
 
 
-    const excelData =
-        data.map(
+        const scopeCounters =
+            new Map();
+
+
+        const groupedForExcel =
+            new Map();
+
+
+        data.forEach(
             function(
-                draw
+                record
             ) {
 
                 const scope =
                     getHistoryScope(
-                        draw
+                        record
+                    );
+
+
+                const globalNumber =
+                    String(
+                        record.draw_number
                     );
 
 
                 const key =
-                    `${scope}__${String(
-                        draw.draw_number
-                    )}`;
+                    `${scope}__${globalNumber}`;
 
 
-                return {
+                if (
+                    !groupedForExcel.has(
+                        key
+                    )
+                ) {
 
-                    "Draw No.":
-                        scopeCounters.get(
-                            key
-                        ) ||
-                        "",
+                    groupedForExcel.set(
+                        key,
+                        []
+                    );
 
-                    "Registration Date":
-                        scope ===
-                            "all"
+                }
 
-                            ? "All Dates"
 
-                            : formatDateForDisplay(
-                                scope
-                            ),
-
-                    "Actual Draw Date":
-                        draw.draw_date ||
-                        "",
-
-                    "Time":
-                        draw.draw_time ||
-                        "",
-
-                    "Winner":
-                        draw.winner_name ||
-                        "",
-
-                    "Registration ID":
-                        draw.winner_registration_id ||
-                        "",
-
-                    "Phone":
-                        draw.winner_phone ||
-                        ""
-
-                };
+                groupedForExcel
+                    .get(
+                        key
+                    )
+                    .push(
+                        record
+                    );
 
             }
         );
 
 
-    const worksheet =
-        XLSX.utils.json_to_sheet(
-            excelData
+        const groupEntries =
+            Array.from(
+                groupedForExcel.entries()
+            );
+
+
+        const scopeGroups =
+            new Map();
+
+
+        groupEntries.forEach(
+            function(
+                entry
+            ) {
+
+                const scope =
+                    entry[1][0]
+                        ? getHistoryScope(
+                            entry[1][0]
+                        )
+                        : "all";
+
+
+                if (
+                    !scopeGroups.has(
+                        scope
+                    )
+                ) {
+
+                    scopeGroups.set(
+                        scope,
+                        []
+                    );
+
+                }
+
+
+                scopeGroups
+                    .get(
+                        scope
+                    )
+                    .push(
+                        {
+                            key:
+                                entry[0],
+                            records:
+                                entry[1]
+                        }
+                    );
+
+            }
         );
 
 
-    worksheet["!cols"] =
-        [
-            {
-                wch: 12
-            },
-            {
-                wch: 25
-            },
-            {
-                wch: 18
-            },
-            {
-                wch: 15
-            },
-            {
-                wch: 28
-            },
-            {
-                wch: 22
-            },
-            {
-                wch: 18
+        scopeGroups.forEach(
+            function(
+                groups
+            ) {
+
+                groups.sort(
+                    function(
+                        a,
+                        b
+                    ) {
+
+                        const aId =
+                            Number(
+                                a.records[0]?.id ||
+                                0
+                            );
+
+                        const bId =
+                            Number(
+                                b.records[0]?.id ||
+                                0
+                            );
+
+
+                        return aId -
+                            bId;
+
+                    }
+                );
+
+
+                groups.forEach(
+                    function(
+                        group,
+                        index
+                    ) {
+
+                        scopeCounters.set(
+                            group.key,
+                            index + 1
+                        );
+
+                    }
+                );
+
             }
-        ];
+        );
 
 
-    const workbook =
-        XLSX.utils.book_new();
+        const excelData =
+            data.map(
+                function(
+                    draw
+                ) {
+
+                    const scope =
+                        getHistoryScope(
+                            draw
+                        );
 
 
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        "Draw History"
-    );
+                    const key =
+                        `${scope}__${String(
+                            draw.draw_number
+                        )}`;
 
 
-    XLSX.writeFile(
-        workbook,
-        "Lucky_Draw_History.xlsx"
-    );
+                    return {
+
+                        "Draw No.":
+                            scopeCounters.get(
+                                key
+                            ) ||
+                            "",
+
+                        "Registration Date":
+                            scope ===
+                                "all"
+
+                                ? "All Dates"
+
+                                : formatDateForDisplay(
+                                    scope
+                                ),
+
+                        "Actual Draw Date":
+                            draw.draw_date ||
+                            "",
+
+                        "Time":
+                            draw.draw_time ||
+                            "",
+
+                        "Winner":
+                            draw.winner_name ||
+                            "",
+
+                        "Registration ID":
+                            draw.winner_registration_id ||
+                            "",
+
+                        "Phone":
+                            draw.winner_phone ||
+                            ""
+
+                    };
+
+                }
+            );
 
 
-    console.log(
-        "Draw history Excel downloaded successfully."
-    );
+        const worksheet =
+            XLSX.utils.json_to_sheet(
+                excelData
+            );
 
 
-} catch (error) {
+        worksheet["!cols"] =
+            [
+                {
+                    wch: 12
+                },
+                {
+                    wch: 25
+                },
+                {
+                    wch: 18
+                },
+                {
+                    wch: 15
+                },
+                {
+                    wch: 28
+                },
+                {
+                    wch: 22
+                },
+                {
+                    wch: 18
+                }
+            ];
 
-    console.error(
-        "Draw history Excel exception:",
-        error
-    );
+
+        const workbook =
+            XLSX.utils.book_new();
 
 
-    alert(
-        "Unable to download draw history."
-    );
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Draw History"
+        );
+
+
+        XLSX.writeFile(
+            workbook,
+            "Lucky_Draw_History.xlsx"
+        );
+
+
+        console.log(
+            "Draw history Excel downloaded successfully."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Draw history Excel exception:",
+            error
+        );
+
+
+        alert(
+            "Unable to download draw history."
+        );
+
+    }
 
 }
 
-}
 
 // ============================================================
 // EVENT LISTENERS
@@ -5157,366 +5056,367 @@ try {
 
 function setupEventListeners() {
 
-const loginForm =
-    getElement(
-        "loginForm"
-    );
-
-
-if (loginForm) {
-
-    loginForm.addEventListener(
-        "submit",
-        loginAdmin
-    );
-
-}
-
-
-const logoutButton =
-    getElement(
-        "logoutButton"
-    );
-
-
-if (logoutButton) {
-
-    logoutButton.addEventListener(
-        "click",
-        logoutAdmin
-    );
-
-}
-
-
-const viewButton =
-    getElement(
-        "viewParticipantsButton"
-    );
-
-
-if (viewButton) {
-
-    viewButton.addEventListener(
-        "click",
-        viewParticipants
-    );
-
-}
-
-
-const drawButton =
-    getElement(
-        "drawWinnerButton"
-    );
-
-
-if (drawButton) {
-
-    drawButton.addEventListener(
-        "click",
-        drawWinner
-    );
-
-}
-
-
-const resetButton =
-    getElement(
-        "resetDrawButton"
-    );
-
-
-if (resetButton) {
-
-    resetButton.addEventListener(
-        "click",
-        resetDraw
-    );
-
-}
-
-
-const downloadButton =
-    getElement(
-        "downloadButton"
-    );
-
-
-if (downloadButton) {
-
-    downloadButton.addEventListener(
-        "click",
-        downloadParticipants
-    );
-
-}
-
-
-// --------------------------------------------------------
-// DRAW HISTORY EXCEL BUTTON
-// --------------------------------------------------------
-
-const downloadHistoryButton =
-    getElement(
-        "downloadHistoryButton"
-    );
-
-
-if (downloadHistoryButton) {
-
-    const cleanHistoryButton =
-        downloadHistoryButton.cloneNode(
-            true
+    const loginForm =
+        getElement(
+            "loginForm"
         );
 
 
-    cleanHistoryButton.removeAttribute(
-        "onclick"
-    );
+    if (loginForm) {
+
+        loginForm.addEventListener(
+            "submit",
+            loginAdmin
+        );
+
+    }
 
 
-    downloadHistoryButton.replaceWith(
-        cleanHistoryButton
-    );
+    const logoutButton =
+        getElement(
+            "logoutButton"
+        );
 
 
-    cleanHistoryButton.addEventListener(
-        "click",
-        downloadDrawHistory
-    );
+    if (logoutButton) {
+
+        logoutButton.addEventListener(
+            "click",
+            logoutAdmin
+        );
+
+    }
+
+
+    const viewButton =
+        getElement(
+            "viewParticipantsButton"
+        );
+
+
+    if (viewButton) {
+
+        viewButton.addEventListener(
+            "click",
+            viewParticipants
+        );
+
+    }
+
+
+    const drawButton =
+        getElement(
+            "drawWinnerButton"
+        );
+
+
+    if (drawButton) {
+
+        drawButton.addEventListener(
+            "click",
+            drawWinner
+        );
+
+    }
+
+
+    const resetButton =
+        getElement(
+            "resetDrawButton"
+        );
+
+
+    if (resetButton) {
+
+        resetButton.addEventListener(
+            "click",
+            resetDraw
+        );
+
+    }
+
+
+    const downloadButton =
+        getElement(
+            "downloadButton"
+        );
+
+
+    if (downloadButton) {
+
+        downloadButton.addEventListener(
+            "click",
+            downloadParticipants
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // DRAW HISTORY EXCEL BUTTON
+    // --------------------------------------------------------
+
+    const downloadHistoryButton =
+        getElement(
+            "downloadHistoryButton"
+        );
+
+
+    if (downloadHistoryButton) {
+
+        const cleanHistoryButton =
+            downloadHistoryButton.cloneNode(
+                true
+            );
+
+
+        cleanHistoryButton.removeAttribute(
+            "onclick"
+        );
+
+
+        downloadHistoryButton.replaceWith(
+            cleanHistoryButton
+        );
+
+
+        cleanHistoryButton.addEventListener(
+            "click",
+            downloadDrawHistory
+        );
+
+    }
+
+
+    const searchButton =
+        getElement(
+            "searchButton"
+        );
+
+
+    if (searchButton) {
+
+        searchButton.addEventListener(
+            "click",
+            searchParticipants
+        );
+
+    }
+
+
+    const clearButton =
+        getElement(
+            "clearSearchButton"
+        );
+
+
+    if (clearButton) {
+
+        clearButton.addEventListener(
+            "click",
+            clearSearch
+        );
+
+    }
+
+
+    const searchInput =
+        getElement(
+            "searchInput"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            performSearch
+        );
+
+    }
+
+
+    const cancelDrawButton =
+        getElement(
+            "cancelDrawButton"
+        );
+
+
+    if (cancelDrawButton) {
+
+        cancelDrawButton.addEventListener(
+            "click",
+            closeDrawModal
+        );
+
+    }
+
+
+    const confirmDrawButton =
+        getElement(
+            "confirmDrawButton"
+        );
+
+
+    if (confirmDrawButton) {
+
+        confirmDrawButton.addEventListener(
+            "click",
+            confirmDraw
+        );
+
+    }
+
+
+    const cancelResetButton =
+        getElement(
+            "cancelResetButton"
+        );
+
+
+    if (cancelResetButton) {
+
+        cancelResetButton.addEventListener(
+            "click",
+            closeResetModal
+        );
+
+    }
+
+
+    const confirmResetButton =
+        getElement(
+            "confirmResetButton"
+        );
+
+
+    if (confirmResetButton) {
+
+        confirmResetButton.addEventListener(
+            "click",
+            confirmResetDraw
+        );
+
+    }
 
 }
 
-
-const searchButton =
-    getElement(
-        "searchButton"
-    );
-
-
-if (searchButton) {
-
-    searchButton.addEventListener(
-        "click",
-        searchParticipants
-    );
-
-}
-
-
-const clearButton =
-    getElement(
-        "clearSearchButton"
-    );
-
-
-if (clearButton) {
-
-    clearButton.addEventListener(
-        "click",
-        clearSearch
-    );
-
-}
-
-
-const searchInput =
-    getElement(
-        "searchInput"
-    );
-
-
-if (searchInput) {
-
-    searchInput.addEventListener(
-        "input",
-        performSearch
-    );
-
-}
-
-
-const cancelDrawButton =
-    getElement(
-        "cancelDrawButton"
-    );
-
-
-if (cancelDrawButton) {
-
-    cancelDrawButton.addEventListener(
-        "click",
-        closeDrawModal
-    );
-
-}
-
-
-const confirmDrawButton =
-    getElement(
-        "confirmDrawButton"
-    );
-
-
-if (confirmDrawButton) {
-
-    confirmDrawButton.addEventListener(
-        "click",
-        confirmDraw
-    );
-
-}
-
-
-const cancelResetButton =
-    getElement(
-        "cancelResetButton"
-    );
-
-
-if (cancelResetButton) {
-
-    cancelResetButton.addEventListener(
-        "click",
-        closeResetModal
-    );
-
-}
-
-
-const confirmResetButton =
-    getElement(
-        "confirmResetButton"
-    );
-
-
-if (confirmResetButton) {
-
-    confirmResetButton.addEventListener(
-        "click",
-        confirmResetDraw
-    );
-
-}
-
-}
 
 // ============================================================
 // AUTH STATE CHANGES
 // ============================================================
 
 supabaseClient.auth.onAuthStateChange(
-async function(
-event,
-session
-) {
-
-    console.log(
-        "Auth state:",
-        event
-    );
-
-
-    if (
-        event ===
-        "INITIAL_SESSION" ||
-        isInitializing
+    async function(
+        event,
+        session
     ) {
 
-        return;
-
-    }
-
-
-    if (
-        authTransitionInProgress
-    ) {
-
-        return;
-
-    }
+        console.log(
+            "Auth state:",
+            event
+        );
 
 
-    if (
-        event ===
-        "SIGNED_OUT" ||
-        !session
-    ) {
+        if (
+            event ===
+            "INITIAL_SESSION" ||
+            isInitializing
+        ) {
 
-        authTransitionInProgress =
-            true;
-
-
-        try {
-
-            await stopParticipantRealtime();
-
-            showLoginPage();
-
-        } finally {
-
-            authTransitionInProgress =
-                false;
+            return;
 
         }
 
 
-        return;
+        if (
+            authTransitionInProgress
+        ) {
 
-    }
+            return;
 
-
-    if (
-        event ===
-        "SIGNED_IN" ||
-        event ===
-        "TOKEN_REFRESHED" ||
-        event ===
-        "USER_UPDATED"
-    ) {
-
-        authTransitionInProgress =
-            true;
+        }
 
 
-        try {
+        if (
+            event ===
+            "SIGNED_OUT" ||
+            !session
+        ) {
 
-            const isAdmin =
-                await verifyAdminAccess();
-
-
-            if (!isAdmin) {
-
-                await supabaseClient
-                    .auth
-                    .signOut();
+            authTransitionInProgress =
+                true;
 
 
-                showLoginPage(
-                    "Access denied. This account is not an authorized administrator."
-                );
+            try {
 
+                await stopParticipantRealtime();
 
-                return;
+                showLoginPage();
+
+            } finally {
+
+                authTransitionInProgress =
+                    false;
 
             }
 
 
-            await showAdminDashboard();
+            return;
 
-        } finally {
+        }
+
+
+        if (
+            event ===
+            "SIGNED_IN" ||
+            event ===
+            "TOKEN_REFRESHED" ||
+            event ===
+            "USER_UPDATED"
+        ) {
 
             authTransitionInProgress =
-                false;
+                true;
+
+
+            try {
+
+                const isAdmin =
+                    await verifyAdminAccess();
+
+
+                if (!isAdmin) {
+
+                    await supabaseClient
+                        .auth
+                        .signOut();
+
+
+                    showLoginPage(
+                        "Access denied. This account is not an authorized administrator."
+                    );
+
+
+                    return;
+
+                }
+
+
+                await showAdminDashboard();
+
+            } finally {
+
+                authTransitionInProgress =
+                    false;
+
+            }
 
         }
 
     }
-
-}
-
 );
+
 
 // ============================================================
 // INITIALIZATION
@@ -5524,79 +5424,78 @@ session
 
 async function initializeAdmin() {
 
-setupEventListeners();
+    setupEventListeners();
 
 
-try {
+    try {
 
-    const {
-        data: {
-            session
+        const {
+            data: {
+                session
+            }
+        } =
+            await supabaseClient
+                .auth
+                .getSession();
+
+
+        if (!session) {
+
+            showLoginPage();
+
+            return;
+
         }
-    } =
-        await supabaseClient
-            .auth
-            .getSession();
 
 
-    if (!session) {
-
-        showLoginPage();
-
-        return;
-
-    }
+        const isAdmin =
+            await verifyAdminAccess();
 
 
-    const isAdmin =
-        await verifyAdminAccess();
+        if (!isAdmin) {
+
+            await supabaseClient
+                .auth
+                .signOut();
 
 
-    if (!isAdmin) {
-
-        await supabaseClient
-            .auth
-            .signOut();
+            showLoginPage(
+                "Access denied. This account is not an authorized administrator."
+            );
 
 
-        showLoginPage(
-            "Access denied. This account is not an authorized administrator."
+            return;
+
+        }
+
+
+        await showAdminDashboard();
+
+
+    } catch (error) {
+
+        console.error(
+            "Admin initialization error:",
+            error
         );
 
 
-        return;
+        await stopParticipantRealtime();
+
+
+        showLoginPage(
+            "Unable to initialize admin access. Please try again."
+        );
+
+
+    } finally {
+
+        isInitializing =
+            false;
 
     }
 
-
-    await showAdminDashboard();
-
-
-} catch (error) {
-
-    console.error(
-        "Admin initialization error:",
-        error
-    );
-
-
-    await stopParticipantRealtime();
-
-
-    showLoginPage(
-        "Unable to initialize admin access. Please try again."
-    );
-
-
-} finally {
-
-    isInitializing =
-        false;
-
 }
 
-}
 
 initializeAdmin();
-
-Close
