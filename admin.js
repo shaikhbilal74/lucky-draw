@@ -1,15 +1,13 @@
 // ============================================================
 // LUCKY DRAW ADMIN DASHBOARD
-// SECURE SUPABASE AUTH + ADMIN AUTHORIZATION
-// DATE-WISE DRAW + SERVER-SIDE DRAW + SECURE RESET
-// REALTIME PARTICIPANTS + DRAW HISTORY
+// SECURE SUPABASE AUTH + DATE-WISE DRAW + DRAW HISTORY
 // ============================================================
-
 
 const SUPABASE_URL =
     "https://mvwaanrbqjozxbncogzf.supabase.co";
 
-
+// This is a Supabase publishable key.
+// NEVER put a Supabase service_role/secret key in browser code.
 const SUPABASE_KEY =
     "sb_publishable_-jVZOnMljZt3VqDkwHCf_g_o8GDU_6c";
 
@@ -25,64 +23,50 @@ const supabaseClient =
 // GLOBAL STATE
 // ============================================================
 
+let participantRealtimeChannel = null;
 
-let participantRealtimeChannel =
-    null;
+let allParticipants = [];
 
+let currentParticipants = [];
 
-let allParticipants =
-    [];
+let isAdminAuthenticated = false;
 
+let isInitializing = true;
 
-let currentParticipants =
-    [];
+let dashboardLoadInProgress = false;
 
-
-let isAdminAuthenticated =
-    false;
+let authTransitionInProgress = false;
 
 
-let isInitializing =
-    true;
+// ------------------------------------------------------------
+// CURRENT DRAW SCOPE
+// "all" OR "YYYY-MM-DD"
+// ------------------------------------------------------------
+
+let currentDrawScope = "all";
 
 
-let dashboardLoadInProgress =
-    false;
+// ------------------------------------------------------------
+// DRAW MODAL STATE
+// ------------------------------------------------------------
 
-
-let authTransitionInProgress =
-    false;
-
-
-let selectedDrawScope =
-    "all";
-
-
-let drawAction =
-    "new";
+let drawAction = "new";
 
 
 // ============================================================
 // DRAW HISTORY STATE
 // ============================================================
 
+let allDrawHistory = [];
 
-let allDrawHistory =
-    [];
+let selectedHistoryDate = "all";
 
-
-let selectedHistoryDate =
-    null;
-
-
-let selectedHistoryDrawNumber =
-    null;
+let selectedHistoryDrawNumber = null;
 
 
 // ============================================================
 // SECURITY / DISPLAY HELPERS
 // ============================================================
-
 
 function escapeHTML(value) {
 
@@ -107,51 +91,28 @@ function getElement(id) {
 // DATE HELPERS
 // ============================================================
 
-
-function getIndiaDateKey(
-    timestamp
-) {
+function getIndiaDateFromTimestamp(timestamp) {
 
     if (!timestamp) {
 
-        return null;
+        return "";
 
     }
 
 
     try {
 
-        const date =
-            new Date(timestamp);
-
-
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
-
-            return null;
-
-        }
-
-
         return new Intl.DateTimeFormat(
             "en-CA",
             {
-                timeZone:
-                    "Asia/Kolkata",
-
-                year:
-                    "numeric",
-
-                month:
-                    "2-digit",
-
-                day:
-                    "2-digit"
+                timeZone: "Asia/Kolkata",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
             }
-        ).format(date);
+        ).format(
+            new Date(timestamp)
+        );
 
     } catch (error) {
 
@@ -160,138 +121,54 @@ function getIndiaDateKey(
             error
         );
 
-        return null;
+        return "";
 
     }
 
 }
 
 
-function formatDateForDisplay(
-    dateKey
-) {
+function formatDrawDate(dateString) {
 
-    if (
-        !dateKey ||
-        dateKey === "all"
-    ) {
+    if (!dateString) {
 
-        return "Draw All Dates";
+        return "-";
 
     }
 
 
     try {
 
-        const parts =
-            dateKey
-                .split("-")
-                .map(Number);
-
-
-        if (
-            parts.length !== 3
-        ) {
-
-            return dateKey;
-
-        }
-
-
         const date =
             new Date(
-                Date.UTC(
-                    parts[0],
-                    parts[1] - 1,
-                    parts[2]
-                )
+                `${dateString}T00:00:00+05:30`
             );
 
 
         return new Intl.DateTimeFormat(
-            "en-GB",
+            "en-IN",
             {
-                day:
-                    "numeric",
-
-                month:
-                    "long",
-
-                year:
-                    "numeric",
-
-                timeZone:
-                    "UTC"
+                timeZone: "Asia/Kolkata",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
             }
         ).format(date);
 
     } catch (error) {
 
-        return dateKey;
+        return dateString;
 
     }
 
 }
 
 
-function formatDrawDate(
-    dateString
-) {
+function formatDateForDisplay(dateString) {
 
-    return formatDateForDisplay(
+    return formatDrawDate(
         dateString
     );
-
-}
-
-
-// ============================================================
-// AVAILABLE PARTICIPANT DATE SCOPES
-// ============================================================
-
-
-function getAvailableDateScopes(
-    participants
-) {
-
-    const dates =
-        new Set();
-
-
-    if (
-        !participants ||
-        !participants.length
-    ) {
-
-        return [];
-
-    }
-
-
-    participants.forEach(
-        function(participant) {
-
-            const dateKey =
-                getIndiaDateKey(
-                    participant.created_at
-                );
-
-
-            if (dateKey) {
-
-                dates.add(
-                    dateKey
-                );
-
-            }
-
-        }
-    );
-
-
-    return Array.from(
-        dates
-    ).sort();
 
 }
 
@@ -300,15 +177,12 @@ function getAvailableDateScopes(
 // ADMIN AUTHORIZATION
 // ============================================================
 
-
 async function verifyAdminAccess() {
 
     try {
 
         const {
-            data: {
-                user
-            },
+            data: { user },
             error: userError
         } =
             await supabaseClient.auth.getUser();
@@ -364,6 +238,7 @@ async function verifyAdminAccess() {
             user.id
         );
 
+
     } catch (error) {
 
         console.error(
@@ -382,21 +257,15 @@ async function verifyAdminAccess() {
 // PAGE STATE
 // ============================================================
 
-
 function showLoginPage(
     errorMessage = ""
 ) {
 
     const loginPage =
-        getElement(
-            "loginPage"
-        );
-
+        getElement("loginPage");
 
     const adminPage =
-        getElement(
-            "adminPage"
-        );
+        getElement("adminPage");
 
 
     if (adminPage) {
@@ -418,9 +287,7 @@ function showLoginPage(
 
 
     const loginError =
-        getElement(
-            "loginError"
-        );
+        getElement("loginError");
 
 
     if (loginError) {
@@ -432,21 +299,15 @@ function showLoginPage(
 
 
     const email =
-        getElement(
-            "adminEmail"
-        );
-
+        getElement("adminEmail");
 
     const password =
-        getElement(
-            "adminPassword"
-        );
+        getElement("adminPassword");
 
 
     if (password) {
 
-        password.value =
-            "";
+        password.value = "";
 
     }
 
@@ -469,9 +330,7 @@ function showLoginPage(
 
 async function showAdminDashboard() {
 
-    if (
-        dashboardLoadInProgress
-    ) {
+    if (dashboardLoadInProgress) {
 
         return;
 
@@ -485,15 +344,10 @@ async function showAdminDashboard() {
     try {
 
         const loginPage =
-            getElement(
-                "loginPage"
-            );
-
+            getElement("loginPage");
 
         const adminPage =
-            getElement(
-                "adminPage"
-            );
+            getElement("adminPage");
 
 
         if (loginPage) {
@@ -515,9 +369,7 @@ async function showAdminDashboard() {
 
 
         const {
-            data: {
-                user
-            }
+            data: { user }
         } =
             await supabaseClient.auth.getUser();
 
@@ -555,6 +407,7 @@ async function showAdminDashboard() {
 
         startParticipantRealtime();
 
+
     } finally {
 
         dashboardLoadInProgress =
@@ -569,43 +422,27 @@ async function showAdminDashboard() {
 // LOGIN
 // ============================================================
 
-
-async function loginAdmin(
-    event
-) {
+async function loginAdmin(event) {
 
     event.preventDefault();
 
 
     const emailInput =
-        getElement(
-            "adminEmail"
-        );
-
+        getElement("adminEmail");
 
     const passwordInput =
-        getElement(
-            "adminPassword"
-        );
-
+        getElement("adminPassword");
 
     const loginButton =
-        getElement(
-            "loginButton"
-        );
-
+        getElement("loginButton");
 
     const loginError =
-        getElement(
-            "loginError"
-        );
+        getElement("loginError");
 
 
     const email =
-        emailInput?.value
-            .trim() ||
+        emailInput?.value.trim() ||
         "";
-
 
     const password =
         passwordInput?.value ||
@@ -654,14 +491,12 @@ async function loginAdmin(
             data,
             error
         } =
-            await supabaseClient.auth
-                .signInWithPassword({
-
+            await supabaseClient.auth.signInWithPassword(
+                {
                     email,
-
                     password
-
-                });
+                }
+            );
 
 
         if (
@@ -710,6 +545,7 @@ async function loginAdmin(
 
         await showAdminDashboard();
 
+
     } catch (error) {
 
         console.error(
@@ -724,6 +560,7 @@ async function loginAdmin(
                 "Unable to login. Please try again.";
 
         }
+
 
     } finally {
 
@@ -746,7 +583,6 @@ async function loginAdmin(
 // LOGOUT
 // ============================================================
 
-
 async function logoutAdmin() {
 
     await stopParticipantRealtime();
@@ -755,25 +591,11 @@ async function logoutAdmin() {
     isAdminAuthenticated =
         false;
 
-
     allParticipants =
         [];
 
-
     currentParticipants =
         [];
-
-
-    allDrawHistory =
-        [];
-
-
-    selectedHistoryDate =
-        null;
-
-
-    selectedHistoryDrawNumber =
-        null;
 
 
     try {
@@ -826,12 +648,9 @@ async function logoutAdmin() {
 // PARTICIPANTS
 // ============================================================
 
-
 async function getParticipants() {
 
-    if (
-        !isAdminAuthenticated
-    ) {
+    if (!isAdminAuthenticated) {
 
         return [];
 
@@ -847,23 +666,12 @@ async function getParticipants() {
             await supabaseClient
                 .from("Participants")
                 .select(
-                    `
-                    id,
-                    created_at,
-                    registration_id,
-                    name,
-                    phone,
-                    area,
-                    city,
-                    source,
-                    photo_url
-                    `
+                    "id, created_at, registration_id, name, phone, area, city, source, photo_url"
                 )
                 .order(
                     "id",
                     {
-                        ascending:
-                            true
+                        ascending: true
                     }
                 );
 
@@ -882,6 +690,7 @@ async function getParticipants() {
 
         return data || [];
 
+
     } catch (error) {
 
         console.error(
@@ -897,18 +706,27 @@ async function getParticipants() {
 
 
 // ============================================================
-// FILTER PARTICIPANTS BY DRAW SCOPE
+// DATE-WISE PARTICIPANT FILTER
 // ============================================================
-
 
 function getParticipantsForScope(
     participants,
-    drawScope
+    scope
 ) {
 
     if (
-        drawScope ===
-        "all"
+        !participants ||
+        !participants.length
+    ) {
+
+        return [];
+
+    }
+
+
+    if (
+        !scope ||
+        scope === "all"
     ) {
 
         return [
@@ -922,10 +740,76 @@ function getParticipantsForScope(
         function(participant) {
 
             return (
-                getIndiaDateKey(
+                getIndiaDateFromTimestamp(
                     participant.created_at
-                ) ===
-                drawScope
+                ) === scope
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// CURRENT SCOPE PARTICIPANTS
+// ============================================================
+
+function getParticipantsForCurrentScope() {
+
+    return getParticipantsForScope(
+        allParticipants,
+        currentDrawScope
+    );
+
+}
+
+
+// ============================================================
+// GET AVAILABLE DATE SCOPES
+// ============================================================
+
+function getAvailableDateScopes(
+    participants
+) {
+
+    const dates =
+        new Set();
+
+
+    if (
+        participants &&
+        participants.length
+    ) {
+
+        participants.forEach(
+            function(participant) {
+
+                const date =
+                    getIndiaDateFromTimestamp(
+                        participant.created_at
+                    );
+
+
+                if (date) {
+
+                    dates.add(date);
+
+                }
+
+            }
+        );
+
+    }
+
+
+    return Array.from(
+        dates
+    ).sort(
+        function(a, b) {
+
+            return (
+                b.localeCompare(a)
             );
 
         }
@@ -938,12 +822,9 @@ function getParticipantsForScope(
 // LOAD PARTICIPANTS
 // ============================================================
 
-
 async function loadParticipants() {
 
-    if (
-        !isAdminAuthenticated
-    ) {
+    if (!isAdminAuthenticated) {
 
         return;
 
@@ -965,14 +846,13 @@ async function loadParticipants() {
 
 
     if (
-        selectedDrawScope !==
-        "all" &&
+        currentDrawScope !== "all" &&
         !availableDates.includes(
-            selectedDrawScope
+            currentDrawScope
         )
     ) {
 
-        selectedDrawScope =
+        currentDrawScope =
             "all";
 
     }
@@ -990,9 +870,134 @@ async function loadParticipants() {
 
 
 // ============================================================
-// RENDER DRAW SCOPE TABS
+// RENDER CURRENT SCOPE
 // ============================================================
 
+function renderCurrentScope() {
+
+    currentParticipants =
+        getParticipantsForCurrentScope();
+
+
+    displayParticipants(
+        currentParticipants
+    );
+
+
+    updateParticipantCount(
+        currentParticipants
+    );
+
+
+    updateSelectedScopeUI(
+        currentParticipants
+    );
+
+}
+
+
+// ============================================================
+// PARTICIPANT COUNT
+// ============================================================
+
+function updateParticipantCount(
+    participants
+) {
+
+    const countElement =
+        getElement(
+            "participantCount"
+        );
+
+
+    if (countElement) {
+
+        countElement.textContent =
+            participants.length;
+
+    }
+
+
+    const selectedScopeCount =
+        getElement(
+            "selectedScopeCount"
+        );
+
+
+    if (selectedScopeCount) {
+
+        selectedScopeCount.innerHTML =
+            `
+                Participants in selected scope:
+                <strong>
+                    ${participants.length}
+                </strong>
+            `;
+
+    }
+
+}
+
+
+// ============================================================
+// UPDATE SELECTED SCOPE UI
+// ============================================================
+
+function updateSelectedScopeUI(
+    participants
+) {
+
+    const selectedDrawScope =
+        getElement(
+            "selectedDrawScope"
+        );
+
+
+    if (selectedDrawScope) {
+
+        const scopeText =
+            currentDrawScope === "all"
+                ? "Draw All Dates"
+                : formatDrawDate(
+                    currentDrawScope
+                );
+
+
+        selectedDrawScope.innerHTML =
+            `
+                Selected:
+                <strong>
+                    ${escapeHTML(scopeText)}
+                </strong>
+            `;
+
+    }
+
+
+    const selectedScopeCount =
+        getElement(
+            "selectedScopeCount"
+        );
+
+
+    if (selectedScopeCount) {
+
+        selectedScopeCount.innerHTML =
+            `
+                Participants in selected scope:
+                <strong>
+                    ${participants.length}
+                </strong>
+            `;
+
+    }
+
+}
+
+
+// ============================================================
+// DATE TAB UI
+// ============================================================
 
 function renderDrawScopeTabs() {
 
@@ -1026,8 +1031,7 @@ function renderDrawScopeTabs() {
     allButton.className =
         "draw-scope-tab" +
         (
-            selectedDrawScope ===
-            "all"
+            currentDrawScope === "all"
                 ? " active"
                 : ""
         );
@@ -1045,8 +1049,7 @@ function renderDrawScopeTabs() {
 
     allButton.setAttribute(
         "aria-selected",
-        selectedDrawScope ===
-            "all"
+        currentDrawScope === "all"
             ? "true"
             : "false"
     );
@@ -1091,7 +1094,7 @@ function renderDrawScopeTabs() {
             button.className =
                 "draw-scope-tab" +
                 (
-                    selectedDrawScope ===
+                    currentDrawScope ===
                     dateKey
                         ? " active"
                         : ""
@@ -1112,7 +1115,7 @@ function renderDrawScopeTabs() {
 
             button.setAttribute(
                 "aria-selected",
-                selectedDrawScope ===
+                currentDrawScope ===
                     dateKey
                     ? "true"
                     : "false"
@@ -1142,23 +1145,84 @@ function renderDrawScopeTabs() {
 
 
 // ============================================================
+// UPDATE DRAW SCOPE ACTIVE TAB
+// ============================================================
+
+function updateDrawScopeTabActiveState() {
+
+    const tabsContainer =
+        getElement(
+            "drawScopeTabs"
+        );
+
+
+    if (!tabsContainer) {
+
+        return;
+
+    }
+
+
+    const buttons =
+        tabsContainer.querySelectorAll(
+            ".draw-scope-tab"
+        );
+
+
+    buttons.forEach(
+        function(button) {
+
+            const isActive =
+                button.dataset.scope ===
+                currentDrawScope;
+
+
+            button.classList.toggle(
+                "active",
+                isActive
+            );
+
+
+            button.setAttribute(
+                "aria-selected",
+                isActive
+                    ? "true"
+                    : "false"
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
 // SELECT DRAW SCOPE
 // ============================================================
 
-
 async function selectDrawScope(
-    drawScope
+    scope
 ) {
 
-    selectedDrawScope =
-        drawScope ||
-        "all";
+    currentDrawScope =
+        scope || "all";
 
 
-    clearSearchInput();
+    const searchInput =
+        getElement(
+            "searchInput"
+        );
 
 
-    renderDrawScopeTabs();
+    if (searchInput) {
+
+        searchInput.value =
+            "";
+
+    }
+
+
+    updateDrawScopeTabActiveState();
 
 
     renderCurrentScope();
@@ -1170,150 +1234,8 @@ async function selectDrawScope(
 
 
 // ============================================================
-// RENDER CURRENT SCOPE
-// ============================================================
-
-
-function renderCurrentScope() {
-
-    currentParticipants =
-        getParticipantsForScope(
-            allParticipants,
-            selectedDrawScope
-        );
-
-
-    displayParticipants(
-        currentParticipants
-    );
-
-
-    updateParticipantCount(
-        currentParticipants
-    );
-
-
-    updateSelectedScopeUI(
-        currentParticipants
-    );
-
-}
-
-
-// ============================================================
-// UPDATE SELECTED SCOPE UI
-// ============================================================
-
-
-function updateSelectedScopeUI(
-    participants
-) {
-
-    const selectedDrawScopeElement =
-        getElement(
-            "selectedDrawScope"
-        );
-
-
-    if (
-        selectedDrawScopeElement
-    ) {
-
-        const scopeText =
-            selectedDrawScope ===
-            "all"
-                ? "Draw All Dates"
-                : formatDateForDisplay(
-                    selectedDrawScope
-                );
-
-
-        selectedDrawScopeElement.innerHTML =
-            `
-                Selected:
-                <strong>
-                    ${escapeHTML(
-                        scopeText
-                    )}
-                </strong>
-            `;
-
-    }
-
-
-    const selectedScopeCount =
-        getElement(
-            "selectedScopeCount"
-        );
-
-
-    if (
-        selectedScopeCount
-    ) {
-
-        selectedScopeCount.innerHTML =
-            `
-                Participants in selected scope:
-                <strong>
-                    ${participants.length}
-                </strong>
-            `;
-
-    }
-
-}
-
-
-// ============================================================
-// PARTICIPANT COUNT
-// ============================================================
-
-
-function updateParticipantCount(
-    participants
-) {
-
-    const countElement =
-        getElement(
-            "participantCount"
-        );
-
-
-    if (countElement) {
-
-        countElement.textContent =
-            participants.length;
-
-    }
-
-
-    const selectedScopeCount =
-        getElement(
-            "selectedScopeCount"
-        );
-
-
-    if (
-        selectedScopeCount
-    ) {
-
-        selectedScopeCount.innerHTML =
-            `
-                Participants in selected scope:
-                <strong>
-                    ${participants.length}
-                </strong>
-            `;
-
-    }
-
-}
-
-
-// ============================================================
 // DISPLAY PARTICIPANTS
 // ============================================================
-
 
 function displayParticipants(
     participants
@@ -1344,14 +1266,12 @@ function displayParticipants(
         participantList.innerHTML =
             `
                 <tr>
-
                     <td
                         colspan="7"
                         class="no-data"
                     >
                         No participants found.
                     </td>
-
                 </tr>
             `;
 
@@ -1438,9 +1358,175 @@ function displayParticipants(
 
 
 // ============================================================
-// SOURCE LABEL
+// VIEW PARTICIPANTS
 // ============================================================
 
+async function viewParticipants() {
+
+    renderCurrentScope();
+
+}
+
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+async function performSearch() {
+
+    const searchInput =
+        getElement(
+            "searchInput"
+        );
+
+
+    if (!searchInput) {
+
+        return;
+
+    }
+
+
+    const searchValue =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!searchValue) {
+
+        displayParticipants(
+            currentParticipants
+        );
+
+
+        updateParticipantCount(
+            currentParticipants
+        );
+
+
+        return;
+
+    }
+
+
+    const filtered =
+        currentParticipants.filter(
+            function(participant) {
+
+                const source =
+                    getProfessionalSource(
+                        participant
+                    ).toLowerCase();
+
+
+                return (
+
+                    String(
+                        participant.name ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    String(
+                        participant.phone ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    String(
+                        participant.registration_id ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    String(
+                        participant.area ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    String(
+                        participant.city ||
+                        ""
+                    )
+                        .toLowerCase()
+                        .includes(
+                            searchValue
+                        ) ||
+
+                    source.includes(
+                        searchValue
+                    )
+
+                );
+
+            }
+        );
+
+
+    displayParticipants(
+        filtered
+    );
+
+
+    updateParticipantCount(
+        filtered
+    );
+
+}
+
+
+async function searchParticipants() {
+
+    await performSearch();
+
+}
+
+
+function clearSearchInput() {
+
+    const searchInput =
+        getElement(
+            "searchInput"
+        );
+
+
+    if (searchInput) {
+
+        searchInput.value =
+            "";
+
+    }
+
+}
+
+
+async function clearSearch() {
+
+    clearSearchInput();
+
+
+    renderCurrentScope();
+
+}
+
+
+// ============================================================
+// SOURCE LABEL
+// ============================================================
 
 function getProfessionalSource(
     participant
@@ -1490,375 +1576,19 @@ function getProfessionalSource(
 
 
 // ============================================================
-// SEARCH
-// ============================================================
-
-
-async function performSearch() {
-
-    const searchInput =
-        getElement(
-            "searchInput"
-        );
-
-
-    if (!searchInput) {
-
-        return;
-
-    }
-
-
-    const searchValue =
-        searchInput.value
-            .trim()
-            .toLowerCase();
-
-
-    const scopedParticipants =
-        getParticipantsForScope(
-            allParticipants,
-            selectedDrawScope
-        );
-
-
-    if (!searchValue) {
-
-        displayParticipants(
-            scopedParticipants
-        );
-
-
-        updateParticipantCount(
-            scopedParticipants
-        );
-
-
-        return;
-
-    }
-
-
-    const filtered =
-        scopedParticipants.filter(
-            function(participant) {
-
-                const source =
-                    getProfessionalSource(
-                        participant
-                    )
-                        .toLowerCase();
-
-
-                return (
-
-                    String(
-                        participant.name ||
-                        ""
-                    )
-                        .toLowerCase()
-                        .includes(
-                            searchValue
-                        )
-
-                    ||
-
-                    String(
-                        participant.phone ||
-                        ""
-                    )
-                        .toLowerCase()
-                        .includes(
-                            searchValue
-                        )
-
-                    ||
-
-                    String(
-                        participant.registration_id ||
-                        ""
-                    )
-                        .toLowerCase()
-                        .includes(
-                            searchValue
-                        )
-
-                    ||
-
-                    String(
-                        participant.area ||
-                        ""
-                    )
-                        .toLowerCase()
-                        .includes(
-                            searchValue
-                        )
-
-                    ||
-
-                    String(
-                        participant.city ||
-                        ""
-                    )
-                        .toLowerCase()
-                        .includes(
-                            searchValue
-                        )
-
-                    ||
-
-                    source.includes(
-                        searchValue
-                    )
-
-                );
-
-            }
-        );
-
-
-    displayParticipants(
-        filtered
-    );
-
-
-    updateParticipantCount(
-        filtered
-    );
-
-}
-
-
-// ============================================================
-// SEARCH BUTTON
-// ============================================================
-
-
-async function searchParticipants() {
-
-    await performSearch();
-
-}
-
-
-// ============================================================
-// CLEAR SEARCH
-// ============================================================
-
-
-function clearSearchInput() {
-
-    const searchInput =
-        getElement(
-            "searchInput"
-        );
-
-
-    if (searchInput) {
-
-        searchInput.value =
-            "";
-
-    }
-
-}
-
-
-async function clearSearch() {
-
-    clearSearchInput();
-
-
-    renderCurrentScope();
-
-}
-
-
-// ============================================================
-// VIEW PARTICIPANTS
-// ============================================================
-
-
-async function viewParticipants() {
-
-    renderCurrentScope();
-
-}
-
-
-// ============================================================
-// REALTIME PARTICIPANTS
-// ============================================================
-
-
-function startParticipantRealtime() {
-
-    if (
-        !isAdminAuthenticated ||
-        participantRealtimeChannel
-    ) {
-
-        return;
-
-    }
-
-
-    participantRealtimeChannel =
-        supabaseClient
-            .channel(
-                "participants-live-updates"
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event:
-                        "*",
-
-                    schema:
-                        "public",
-
-                    table:
-                        "Participants"
-                },
-                async function(payload) {
-
-                    console.log(
-                        "Live participant update:",
-                        payload.eventType,
-                        payload
-                    );
-
-
-                    await loadParticipants();
-
-
-                    const searchInput =
-                        getElement(
-                            "searchInput"
-                        );
-
-
-                    if (
-                        searchInput &&
-                        searchInput.value.trim()
-                    ) {
-
-                        await performSearch();
-
-                    }
-
-
-                    const historySection =
-                        getElement(
-                            "drawHistorySection"
-                        );
-
-
-                    if (
-                        historySection &&
-                        historySection.classList.contains(
-                            "active-admin-section"
-                        )
-                    ) {
-
-                        await loadDrawHistory();
-
-                    }
-
-                }
-            )
-            .subscribe(
-                function(status) {
-
-                    console.log(
-                        "Realtime status:",
-                        status
-                    );
-
-
-                    if (
-                        status ===
-                        "CHANNEL_ERROR"
-                    ) {
-
-                        console.error(
-                            "Realtime channel error. Check Supabase Realtime publication and RLS policies."
-                        );
-
-                    }
-
-
-                    if (
-                        status ===
-                        "TIMED_OUT"
-                    ) {
-
-                        console.error(
-                            "Realtime connection timed out."
-                        );
-
-                    }
-
-                }
-            );
-
-}
-
-
-async function stopParticipantRealtime() {
-
-    if (
-        !participantRealtimeChannel
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        await supabaseClient.removeChannel(
-            participantRealtimeChannel
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Realtime cleanup error:",
-            error
-        );
-
-    }
-
-
-    participantRealtimeChannel =
-        null;
-
-}
-
-
-// ============================================================
 // DRAW EDGE FUNCTION
 // ============================================================
-
 
 async function callDrawFunction(
     action
 ) {
 
-    if (
-        !isAdminAuthenticated
-    ) {
+    if (!isAdminAuthenticated) {
 
         return {
-
-            success:
-                false,
-
+            success: false,
             error:
-                "Administrator access required."
-
+                "Administrator authentication is required."
         };
 
     }
@@ -1874,13 +1604,11 @@ async function callDrawFunction(
                 "draw-winner",
                 {
                     body: {
-
                         action:
                             action,
 
                         draw_scope:
-                            selectedDrawScope
-
+                            currentDrawScope
                     }
                 }
             );
@@ -1895,14 +1623,10 @@ async function callDrawFunction(
 
 
             return {
-
-                success:
-                    false,
-
+                success: false,
                 error:
                     error.message ||
                     "Unable to communicate with draw service."
-
             };
 
         }
@@ -1910,13 +1634,12 @@ async function callDrawFunction(
 
         return (
             data || {
-                success:
-                    false,
-
+                success: false,
                 error:
                     "Empty response from draw service."
             }
         );
+
 
     } catch (error) {
 
@@ -1927,13 +1650,9 @@ async function callDrawFunction(
 
 
         return {
-
-            success:
-                false,
-
+            success: false,
             error:
                 "Unable to communicate with draw service."
-
         };
 
     }
@@ -1945,7 +1664,6 @@ async function callDrawFunction(
 // CURRENT DRAW STATUS
 // ============================================================
 
-
 async function getCurrentDrawStatus() {
 
     return await callDrawFunction(
@@ -1956,9 +1674,57 @@ async function getCurrentDrawStatus() {
 
 
 // ============================================================
-// DRAW MODAL
+// RESTORE CURRENT SCOPE WINNER
 // ============================================================
 
+async function restoreCurrentScopeWinner() {
+
+    if (!isAdminAuthenticated) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await getCurrentDrawStatus();
+
+
+        if (
+            result &&
+            result.success &&
+            result.completed
+        ) {
+
+            displayWinners(
+                result.winners || []
+            );
+
+
+        } else {
+
+            displayWinners([]);
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Restore current scope winner error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// DRAW MODAL
+// ============================================================
 
 function openDrawModal() {
 
@@ -1985,11 +1751,13 @@ function openDrawModal() {
 
 
     const scopeText =
-        selectedDrawScope ===
-        "all"
+        currentDrawScope ===
+            "all"
+
             ? "All Dates"
+
             : formatDateForDisplay(
-                selectedDrawScope
+                currentDrawScope
             );
 
 
@@ -2043,12 +1811,9 @@ function closeDrawModal() {
 // DRAW WINNER
 // ============================================================
 
-
 async function drawWinner() {
 
-    if (
-        !isAdminAuthenticated
-    ) {
+    if (!isAdminAuthenticated) {
 
         return;
 
@@ -2056,10 +1821,7 @@ async function drawWinner() {
 
 
     const participants =
-        getParticipantsForScope(
-            allParticipants,
-            selectedDrawScope
-        );
+        getParticipantsForCurrentScope();
 
 
     currentParticipants =
@@ -2077,12 +1839,12 @@ async function drawWinner() {
     ) {
 
         alert(
-            selectedDrawScope ===
+            currentDrawScope ===
                 "all"
 
                 ? "At least 3 participants are required for a 3-winner lucky draw."
 
-                : `At least 3 participants registered on ${formatDateForDisplay(selectedDrawScope)} are required for a 3-winner lucky draw.`
+                : `At least 3 participants registered on ${formatDateForDisplay(currentDrawScope)} are required for a 3-winner lucky draw.`
         );
 
 
@@ -2115,15 +1877,19 @@ async function drawWinner() {
         status.completed
     ) {
 
+        const scopeText =
+            currentDrawScope ===
+                "all"
+
+                ? "All Dates"
+
+                : formatDateForDisplay(
+                    currentDrawScope
+                );
+
+
         alert(
-            `The draw for ${
-                selectedDrawScope ===
-                    "all"
-                    ? "All Dates"
-                    : formatDateForDisplay(
-                        selectedDrawScope
-                    )
-            } has already been completed. Reset this draw before selecting new winners.`
+            `The draw for ${scopeText} has already been completed. Reset this draw before selecting new winners.`
         );
 
 
@@ -2147,25 +1913,24 @@ async function drawWinner() {
 // CONFIRM DRAW
 // ============================================================
 
-
 async function confirmDraw() {
 
     closeDrawModal();
 
 
-    const confirmButton =
+    const drawButton =
         getElement(
-            "confirmDrawButton"
+            "drawWinnerButton"
         );
 
 
-    if (confirmButton) {
+    if (drawButton) {
 
-        confirmButton.disabled =
+        drawButton.disabled =
             true;
 
-        confirmButton.textContent =
-            "Drawing...";
+        drawButton.textContent =
+            "🎲 Drawing...";
 
     }
 
@@ -2200,33 +1965,31 @@ async function confirmDraw() {
         );
 
 
-        renderCurrentScope();
-
-
-        await restoreCurrentScopeWinner();
+        await loadDrawHistory();
 
 
     } catch (error) {
 
         console.error(
-            "Confirm draw exception:",
+            "Draw confirmation error:",
             error
         );
 
 
         alert(
-            "Unable to complete the lucky draw. Please try again."
+            "An error occurred while drawing the winners."
         );
+
 
     } finally {
 
-        if (confirmButton) {
+        if (drawButton) {
 
-            confirmButton.disabled =
+            drawButton.disabled =
                 false;
 
-            confirmButton.textContent =
-                "🎉 Draw Winner";
+            drawButton.textContent =
+                "🎲 Draw Winner";
 
         }
 
@@ -2236,9 +1999,8 @@ async function confirmDraw() {
 
 
 // ============================================================
-// DISPLAY THREE WINNERS
+// DISPLAY MULTIPLE WINNERS
 // ============================================================
-
 
 function displayWinners(
     winners
@@ -2258,128 +2020,9 @@ function displayWinners(
 
 
     if (
-        !Array.isArray(
-            winners
-        ) ||
+        !winners ||
         !winners.length
     ) {
-
-        clearWinnerDisplay();
-
-        return;
-
-    }
-
-
-    const medals =
-        [
-            "🥇",
-            "🥈",
-            "🥉"
-        ];
-
-
-    winnerResult.innerHTML =
-        winners
-            .slice(
-                0,
-                3
-            )
-            .map(
-                function(
-                    winner,
-                    index
-                ) {
-
-                    const registrationId =
-                        winner.registration_id ||
-                        winner.id ||
-                        "-";
-
-
-                    return `
-                        <div>
-
-                            <h3>
-                                ${medals[index] || "🏅"}
-                                WINNER ${index + 1}
-                            </h3>
-
-                            <p>
-                                <strong>
-                                    Registration ID:
-                                </strong>
-                                ${escapeHTML(
-                                    registrationId
-                                )}
-                            </p>
-
-                            <p>
-                                <strong>
-                                    Name:
-                                </strong>
-                                ${escapeHTML(
-                                    winner.name ||
-                                    "-"
-                                )}
-                            </p>
-
-                            <p>
-                                <strong>
-                                    Phone:
-                                </strong>
-                                ${escapeHTML(
-                                    winner.phone ||
-                                    "-"
-                                )}
-                            </p>
-
-                            <p>
-                                <strong>
-                                    Area:
-                                </strong>
-                                ${escapeHTML(
-                                    winner.area ||
-                                    "-"
-                                )}
-                            </p>
-
-                            <p>
-                                <strong>
-                                    City:
-                                </strong>
-                                ${escapeHTML(
-                                    winner.city ||
-                                    "-"
-                                )}
-                            </p>
-
-                        </div>
-                    `;
-
-                }
-            )
-            .join(
-                ""
-            );
-
-}
-
-
-// ============================================================
-// CLEAR WINNER DISPLAY
-// ============================================================
-
-
-function clearWinnerDisplay() {
-
-    const winnerResult =
-        getElement(
-            "winnerResult"
-        );
-
-
-    if (winnerResult) {
 
         winnerResult.innerHTML =
             `
@@ -2388,60 +2031,176 @@ function clearWinnerDisplay() {
                 </p>
             `;
 
-    }
-
-}
-
-
-// ============================================================
-// RESTORE CURRENT SCOPE WINNER
-// ============================================================
-
-
-async function restoreCurrentScopeWinner() {
-
-    if (
-        !isAdminAuthenticated
-    ) {
-
         return;
 
     }
 
 
-    try {
-
-        const result =
-            await getCurrentDrawStatus();
+    winnerResult.innerHTML =
+        "";
 
 
-        if (
-            result?.success &&
-            result.completed &&
-            Array.isArray(
-                result.winners
-            ) &&
-            result.winners.length
-        ) {
+    winners
+        .slice(0, 3)
+        .forEach(
+            function(
+                winner,
+                index
+            ) {
 
-            displayWinners(
-                result.winners
-            );
+                const registrationId =
+                    winner.registration_id ||
+                    winner.id ||
+                    "-";
 
-        } else {
 
-            clearWinnerDisplay();
+                const winnerNumber =
+                    index + 1;
 
-        }
 
-    } catch (error) {
+                const card =
+                    document.createElement(
+                        "div"
+                    );
 
-        console.error(
-            "Winner status restore error:",
-            error
+
+                card.style.cssText =
+                    `
+                        min-width:0;
+                        padding:18px;
+                        border:1px solid #e5e7eb;
+                        border-radius:18px;
+                        background:#ffffff;
+                        box-sizing:border-box;
+                        overflow:hidden;
+                    `;
+
+
+                card.innerHTML =
+                    `
+                        <h3
+                            style="
+                                margin:0 0 14px;
+                                color:#f43f5e;
+                                font-size:23px;
+                                line-height:1.2;
+                            "
+                        >
+                            🥇 WINNER ${winnerNumber}
+                        </h3>
+
+                        <p
+                            style="
+                                margin:7px 0;
+                                font-size:15px;
+                                line-height:1.4;
+                                overflow-wrap:anywhere;
+                            "
+                        >
+                            <strong
+                                style="
+                                    color:#172554;
+                                "
+                            >
+                                Registration ID:
+                            </strong>
+                            ${escapeHTML(
+                                registrationId
+                            )}
+                        </p>
+
+                        <p
+                            style="
+                                margin:7px 0;
+                                font-size:15px;
+                                line-height:1.4;
+                                overflow-wrap:anywhere;
+                            "
+                        >
+                            <strong
+                                style="
+                                    color:#172554;
+                                "
+                            >
+                                Name:
+                            </strong>
+                            ${escapeHTML(
+                                winner.name ||
+                                "-"
+                            )}
+                        </p>
+
+                        <p
+                            style="
+                                margin:7px 0;
+                                font-size:15px;
+                                line-height:1.4;
+                                overflow-wrap:anywhere;
+                            "
+                        >
+                            <strong
+                                style="
+                                    color:#172554;
+                                "
+                            >
+                                Phone:
+                            </strong>
+                            ${escapeHTML(
+                                winner.phone ||
+                                "-"
+                            )}
+                        </p>
+
+                        <p
+                            style="
+                                margin:7px 0;
+                                font-size:15px;
+                                line-height:1.4;
+                                overflow-wrap:anywhere;
+                            "
+                        >
+                            <strong
+                                style="
+                                    color:#172554;
+                                "
+                            >
+                                Area:
+                            </strong>
+                            ${escapeHTML(
+                                winner.area ||
+                                "-"
+                            )}
+                        </p>
+
+                        <p
+                            style="
+                                margin:7px 0;
+                                font-size:15px;
+                                line-height:1.4;
+                                overflow-wrap:anywhere;
+                            "
+                        >
+                            <strong
+                                style="
+                                    color:#172554;
+                                "
+                            >
+                                City:
+                            </strong>
+                            ${escapeHTML(
+                                winner.city ||
+                                "-"
+                            )}
+                        </p>
+                    `;
+
+
+                winnerResult.appendChild(
+                    card
+                );
+
+            }
         );
-
-    }
 
 }
 
@@ -2450,12 +2209,9 @@ async function restoreCurrentScopeWinner() {
 // RESET DRAW
 // ============================================================
 
-
 async function resetDraw() {
 
-    if (
-        !isAdminAuthenticated
-    ) {
+    if (!isAdminAuthenticated) {
 
         return;
 
@@ -2467,13 +2223,15 @@ async function resetDraw() {
 
 
     if (
+        !status ||
         !status.success
     ) {
 
         alert(
-            status.error ||
+            status?.error ||
             "Unable to check the current draw."
         );
+
 
         return;
 
@@ -2485,15 +2243,14 @@ async function resetDraw() {
     ) {
 
         alert(
-            `There is no completed draw to reset for ${
-                selectedDrawScope ===
-                    "all"
-                    ? "All Dates"
-                    : formatDateForDisplay(
-                        selectedDrawScope
-                    )
-            }.`
+            currentDrawScope ===
+                "all"
+
+                ? "There is no completed draw to reset."
+
+                : `There is no completed draw for ${formatDateForDisplay(currentDrawScope)} to reset.`
         );
+
 
         return;
 
@@ -2521,7 +2278,6 @@ async function resetDraw() {
 // CLOSE RESET MODAL
 // ============================================================
 
-
 function closeResetModal() {
 
     const modal =
@@ -2542,25 +2298,27 @@ function closeResetModal() {
 
 
 // ============================================================
-// CONFIRM RESET DRAW
+// CONFIRM RESET
 // ============================================================
-
 
 async function confirmResetDraw() {
 
-    const confirmButton =
+    closeResetModal();
+
+
+    const resetButton =
         getElement(
             "confirmResetButton"
         );
 
 
-    if (confirmButton) {
+    if (resetButton) {
 
-        confirmButton.disabled =
+        resetButton.disabled =
             true;
 
-        confirmButton.textContent =
-            "Resetting...";
+        resetButton.textContent =
+            "🔄 Resetting...";
 
     }
 
@@ -2574,12 +2332,13 @@ async function confirmResetDraw() {
 
 
         if (
+            !result ||
             !result.success
         ) {
 
             alert(
-                result.error ||
-                "Unable to reset the draw."
+                result?.error ||
+                "Unable to reset the lucky draw."
             );
 
 
@@ -2588,35 +2347,49 @@ async function confirmResetDraw() {
         }
 
 
-        closeResetModal();
+        displayWinners([]);
 
 
-        clearWinnerDisplay();
+        await loadDrawHistory();
 
 
-        await restoreCurrentScopeWinner();
+        const scopeText =
+            currentDrawScope ===
+                "all"
+
+                ? "Draw All Dates"
+
+                : formatDrawDate(
+                    currentDrawScope
+                );
+
+
+        alert(
+            `The draw for ${scopeText} has been reset successfully. Draw history was preserved.`
+        );
 
 
     } catch (error) {
 
         console.error(
-            "Reset draw error:",
+            "Reset draw exception:",
             error
         );
 
 
         alert(
-            "Unable to reset the draw. Please try again."
+            "An error occurred while resetting the draw."
         );
+
 
     } finally {
 
-        if (confirmButton) {
+        if (resetButton) {
 
-            confirmButton.disabled =
+            resetButton.disabled =
                 false;
 
-            confirmButton.textContent =
+            resetButton.textContent =
                 "🔄 Reset Draw";
 
         }
@@ -2629,7 +2402,6 @@ async function confirmResetDraw() {
 // ============================================================
 // EXCEL - PARTICIPANTS
 // ============================================================
-
 
 async function downloadParticipants() {
 
@@ -2716,38 +2488,25 @@ async function downloadParticipants() {
     worksheet["!cols"] =
         [
             {
-                wch:
-                    8
+                wch: 8
             },
-
             {
-                wch:
-                    20
+                wch: 20
             },
-
             {
-                wch:
-                    25
+                wch: 25
             },
-
             {
-                wch:
-                    18
+                wch: 18
             },
-
             {
-                wch:
-                    30
+                wch: 30
             },
-
             {
-                wch:
-                    25
+                wch: 25
             },
-
             {
-                wch:
-                    22
+                wch: 22
             }
         ];
 
@@ -2772,20 +2531,13 @@ async function downloadParticipants() {
 
 
 // ============================================================
-// ============================================================
 // DRAW HISTORY
 // ============================================================
-// IMPORTANT:
-// History grouping uses draw_scope for date-specific draws.
-// This keeps history synchronized with the Dashboard's
-// selected registration date.
-// ============================================================
 
 
-// ============================================================
-// CREATE HISTORY UI CONTAINERS
-// ============================================================
-
+// ------------------------------------------------------------
+// ENSURE HISTORY CONTAINERS
+// ------------------------------------------------------------
 
 function ensureHistoryContainers() {
 
@@ -2824,25 +2576,29 @@ function ensureHistoryContainers() {
             `
                 width:100%;
                 box-sizing:border-box;
-                margin-top:20px;
+                margin-bottom:25px;
             `;
 
 
-        const historyTable =
-            historySection.querySelector(
-                "table"
+        const historyList =
+            getElement(
+                "drawHistoryList"
             );
 
 
         if (
-            historyTable &&
-            historyTable.parentElement
+            historyList &&
+            historyList.closest("table")
         ) {
 
-            historyTable.parentElement.insertBefore(
-                historyNavigation,
-                historyTable
-            );
+            historyList
+                .closest("table")
+                .parentElement
+                .insertBefore(
+                    historyNavigation,
+                    historyList
+                        .closest("table")
+                );
 
         } else {
 
@@ -2858,7 +2614,6 @@ function ensureHistoryContainers() {
     // --------------------------------------------------------
     // DATE TABS
     // --------------------------------------------------------
-
 
     let dateTabs =
         getElement(
@@ -2895,9 +2650,8 @@ function ensureHistoryContainers() {
 
 
     // --------------------------------------------------------
-    // DRAW NUMBER TABS
+    // DRAW TABS
     // --------------------------------------------------------
-
 
     let drawTabs =
         getElement(
@@ -2936,7 +2690,6 @@ function ensureHistoryContainers() {
     // --------------------------------------------------------
     // SUMMARY
     // --------------------------------------------------------
-
 
     let summary =
         getElement(
@@ -2982,7 +2735,6 @@ function ensureHistoryContainers() {
     // WINNERS CONTAINER
     // --------------------------------------------------------
 
-
     let winnersContainer =
         getElement(
             "drawHistoryWinners"
@@ -3023,7 +2775,6 @@ function ensureHistoryContainers() {
     // MOBILE RESPONSIVENESS
     // --------------------------------------------------------
 
-
     if (
         !document.getElementById(
             "drawHistoryResponsiveStyle"
@@ -3042,7 +2793,7 @@ function ensureHistoryContainers() {
 
         style.textContent =
             `
-                @media (max-width: 700px) {
+                @media (max-width:700px) {
 
                     #drawHistoryWinners {
                         grid-template-columns:1fr !important;
@@ -3074,22 +2825,28 @@ function ensureHistoryContainers() {
                 #drawHistoryDrawTabs button:hover {
 
                     transform:translateY(-1px);
-                    box-shadow:0 5px 14px rgba(0,0,0,0.08);
+                    box-shadow:
+                        0 5px 14px
+                        rgba(0,0,0,0.08);
 
                 }
 
                 #drawHistoryDateTabs button.active,
                 #drawHistoryDrawTabs button.active {
 
-                    background:linear-gradient(
-                        135deg,
-                        #2563eb,
-                        #ec4899
-                    );
+                    background:
+                        linear-gradient(
+                            135deg,
+                            #2563eb,
+                            #ec4899
+                        );
 
                     color:#ffffff;
                     border-color:#2563eb;
-                    box-shadow:0 7px 18px rgba(37,99,235,0.20);
+
+                    box-shadow:
+                        0 7px 18px
+                        rgba(37,99,235,0.20);
 
                 }
 
@@ -3097,28 +2854,40 @@ function ensureHistoryContainers() {
 
                     min-width:0;
                     padding:22px;
-                    border:1px solid #e5e7eb;
+
+                    border:
+                        1px solid #e5e7eb;
+
                     border-radius:18px;
+
                     background:#ffffff;
+
                     box-sizing:border-box;
-                    box-shadow:0 7px 18px rgba(0,0,0,0.05);
+
+                    overflow:hidden;
 
                 }
 
                 #drawHistoryWinners h3 {
 
-                    margin:0 0 16px;
+                    margin:
+                        0 0 16px;
+
                     color:#f43f5e;
-                    font-size:23px;
-                    line-height:1.2;
+
+                    font-size:24px;
 
                 }
 
                 #drawHistoryWinners p {
 
-                    margin:7px 0;
-                    font-size:15px;
-                    line-height:1.4;
+                    margin:
+                        8px 0;
+
+                    font-size:16px;
+
+                    line-height:1.45;
+
                     overflow-wrap:anywhere;
 
                 }
@@ -3126,6 +2895,18 @@ function ensureHistoryContainers() {
                 #drawHistoryWinners strong {
 
                     color:#172554;
+
+                }
+
+                #drawHistorySummary {
+
+                    display:flex;
+
+                    flex-wrap:wrap;
+
+                    gap:8px;
+
+                    align-items:center;
 
                 }
 
@@ -3139,124 +2920,68 @@ function ensureHistoryContainers() {
     }
 
 
-    // --------------------------------------------------------
-    // HIDE OLD LONG TABLE
-    // --------------------------------------------------------
-
-
-    const oldTable =
-        historySection.querySelector(
-            "table"
-        );
-
-
-    if (oldTable) {
-
-        oldTable.style.display =
-            "none";
-
-    }
-
-
-    return {
-
-        navigation:
-            historyNavigation,
-
-        dateTabs:
-            dateTabs,
-
-        drawTabs:
-            drawTabs,
-
-        summary:
-            summary,
-
-        winners:
-            winnersContainer
-
-    };
+    return historyNavigation;
 
 }
 
 
 // ============================================================
-// GET HISTORY DATE KEY
-// ============================================================
-// For a date-specific draw:
-//     draw_scope = 2026-09-15
-//
-// For Draw All Dates:
-//     draw_scope = all
-//
-// For old history rows where draw_scope is NULL:
-//     fall back to draw_date.
-//
-// This is the part that fixes the synchronization problem.
+// GET HISTORY DATES
 // ============================================================
 
+function getHistoryDates() {
 
-function getHistoryDateKey(
-    draw
-) {
-
-    const scope =
-        String(
-            draw?.draw_scope ||
-            ""
-        ).trim();
+    const dates =
+        new Set();
 
 
-    if (
-        scope &&
-        scope !== "all" &&
-        /^\d{4}-\d{2}-\d{2}$/.test(
-            scope
-        )
-    ) {
+    allDrawHistory.forEach(
+        function(item) {
 
-        return scope;
-
-    }
+            const date =
+                String(
+                    item.draw_date ||
+                    ""
+                ).trim();
 
 
-    return String(
-        draw?.draw_date ||
-        ""
-    ).trim() || null;
+            if (date) {
+
+                dates.add(date);
+
+            }
+
+        }
+    );
+
+
+    return Array.from(
+        dates
+    ).sort(
+        function(a, b) {
+
+            return b.localeCompare(a);
+
+        }
+    );
 
 }
 
 
 // ============================================================
-// GET HISTORY DRAW GROUP KEY
+// GET HISTORY FOR DATE
 // ============================================================
-
-
-function getHistoryDrawGroup(
-    draw
-) {
-
-    return String(
-        draw?.draw_number ||
-        ""
-    ).trim();
-
-}
-
-
-// ============================================================
-// GET HISTORY RECORDS FOR SELECTED DATE
-// ============================================================
-
 
 function getHistoryForSelectedDate() {
 
     if (
-        !selectedHistoryDate
+        selectedHistoryDate ===
+        "all"
     ) {
 
-        return [];
+        return [
+            ...allDrawHistory
+        ];
 
     }
 
@@ -3265,10 +2990,13 @@ function getHistoryForSelectedDate() {
         function(draw) {
 
             return (
-                getHistoryDateKey(
-                    draw
+                String(
+                    draw.draw_date ||
+                    ""
                 ) ===
-                selectedHistoryDate
+                String(
+                    selectedHistoryDate
+                )
             );
 
         }
@@ -3278,21 +3006,234 @@ function getHistoryForSelectedDate() {
 
 
 // ============================================================
+// GET DRAW GROUPS FOR SELECTED DATE
+// ============================================================
+
+function getHistoryDrawGroups(
+    historyRows
+) {
+
+    const groups =
+        new Map();
+
+
+    historyRows.forEach(
+        function(row) {
+
+            const globalDrawNumber =
+                String(
+                    row.draw_number ??
+                    ""
+                );
+
+
+            if (!groups.has(
+                globalDrawNumber
+            )) {
+
+                groups.set(
+                    globalDrawNumber,
+                    []
+                );
+
+            }
+
+
+            groups.get(
+                globalDrawNumber
+            ).push(
+                row
+            );
+
+        }
+    );
+
+
+    /*
+     * IMPORTANT:
+     *
+     * The database keeps the real global draw_number.
+     *
+     * The History page creates a LOCAL number
+     * starting from 1 for every selected date.
+     *
+     * Example:
+     *
+     * 4 September:
+     * global draws = 39, 40, 41, 42
+     *
+     * History displays:
+     * Draw 1, Draw 2, Draw 3, Draw 4
+     *
+     * The actual global number is still preserved
+     * internally so the correct winners are shown.
+     */
+
+
+    const groupsArray =
+        Array.from(
+            groups.entries()
+        ).map(
+            function(
+                entry
+            ) {
+
+                return {
+
+                    globalDrawNumber:
+                        entry[0],
+
+                    records:
+                        entry[1]
+
+                };
+
+            }
+        );
+
+
+    groupsArray.sort(
+        function(a, b) {
+
+            const numberA =
+                Number(
+                    a.globalDrawNumber
+                );
+
+            const numberB =
+                Number(
+                    b.globalDrawNumber
+                );
+
+
+            if (
+                Number.isFinite(
+                    numberA
+                ) &&
+                Number.isFinite(
+                    numberB
+                )
+            ) {
+
+                return (
+                    numberA -
+                    numberB
+                );
+
+            }
+
+
+            return String(
+                a.globalDrawNumber
+            ).localeCompare(
+                String(
+                    b.globalDrawNumber
+                )
+            );
+
+        }
+    );
+
+
+    return groupsArray;
+
+}
+
+
+// ============================================================
 // RENDER HISTORY DATE TABS
 // ============================================================
 
+function renderHistoryDateTabs() {
 
-function renderHistoryDateTabs(
-    dateTabs,
-    uniqueDates
-) {
+    const tabsContainer =
+        getElement(
+            "drawHistoryDateTabs"
+        );
 
-    dateTabs.innerHTML =
+
+    if (!tabsContainer) {
+
+        return;
+
+    }
+
+
+    tabsContainer.innerHTML =
         "";
 
 
-    uniqueDates.forEach(
-        function(dateKey) {
+    const dates =
+        getHistoryDates();
+
+
+    // --------------------------------------------------------
+    // ALL DRAWS TAB
+    // --------------------------------------------------------
+
+    if (dates.length > 0) {
+
+        const allButton =
+            document.createElement(
+                "button"
+            );
+
+
+        allButton.type =
+            "button";
+
+
+        allButton.textContent =
+            "All Dates";
+
+
+        allButton.className =
+            selectedHistoryDate ===
+                "all"
+                ? "active"
+                : "";
+
+
+        allButton.setAttribute(
+            "role",
+            "tab"
+        );
+
+
+        allButton.setAttribute(
+            "aria-selected",
+            selectedHistoryDate ===
+                "all"
+                ? "true"
+                : "false"
+        );
+
+
+        allButton.addEventListener(
+            "click",
+            function() {
+
+                selectHistoryDate(
+                    "all"
+                );
+
+            }
+        );
+
+
+        tabsContainer.appendChild(
+            allButton
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // DATE TABS
+    // --------------------------------------------------------
+
+    dates.forEach(
+        function(dateString) {
 
             const button =
                 document.createElement(
@@ -3306,17 +3247,34 @@ function renderHistoryDateTabs(
 
             button.textContent =
                 formatDateForDisplay(
-                    dateKey
+                    dateString
                 );
 
 
             button.className =
-                (
-                    selectedHistoryDate ===
-                    dateKey
-                        ? "active"
-                        : ""
-                );
+                selectedHistoryDate ===
+                    dateString
+                    ? "active"
+                    : "";
+
+
+            button.dataset.date =
+                dateString;
+
+
+            button.setAttribute(
+                "role",
+                "tab"
+            );
+
+
+            button.setAttribute(
+                "aria-selected",
+                selectedHistoryDate ===
+                    dateString
+                    ? "true"
+                    : "false"
+            );
 
 
             button.addEventListener(
@@ -3324,14 +3282,14 @@ function renderHistoryDateTabs(
                 function() {
 
                     selectHistoryDate(
-                        dateKey
+                        dateString
                     );
 
                 }
             );
 
 
-            dateTabs.appendChild(
+            tabsContainer.appendChild(
                 button
             );
 
@@ -3342,148 +3300,94 @@ function renderHistoryDateTabs(
 
 
 // ============================================================
-// SELECT HISTORY DATE
+// RENDER HISTORY DRAW TABS
 // ============================================================
 
+function renderHistoryDrawTabs() {
 
-function selectHistoryDate(
-    dateKey
-) {
-
-    selectedHistoryDate =
-        dateKey;
-
-
-    selectedHistoryDrawNumber =
-        null;
+    const drawTabs =
+        getElement(
+            "drawHistoryDrawTabs"
+        );
 
 
-    const containers =
-        ensureHistoryContainers();
-
-
-    if (!containers) {
+    if (!drawTabs) {
 
         return;
 
     }
 
-
-    renderHistoryDateTabs(
-        containers.dateTabs,
-        getUniqueHistoryDates()
-    );
-
-
-    renderHistoryDrawTabs(
-        containers.drawTabs
-    );
-
-
-    renderSelectedHistoryDraw();
-
-}
-
-
-// ============================================================
-// GET UNIQUE HISTORY DATES
-// ============================================================
-
-
-function getUniqueHistoryDates() {
-
-    const dates =
-        Array.from(
-            new Set(
-                allDrawHistory
-                    .map(
-                        function(draw) {
-
-                            return getHistoryDateKey(
-                                draw
-                            );
-
-                        }
-                    )
-                    .filter(Boolean)
-            )
-        );
-
-
-    return dates.sort().reverse();
-
-}
-
-
-// ============================================================
-// GET DRAW NUMBERS FOR SELECTED HISTORY DATE
-// ============================================================
-
-
-function getDrawNumbersForSelectedHistoryDate() {
-
-    const selectedRecords =
-        getHistoryForSelectedDate();
-
-
-    const drawNumbers =
-        Array.from(
-            new Set(
-                selectedRecords
-                    .map(
-                        function(draw) {
-
-                            return getHistoryDrawGroup(
-                                draw
-                            );
-
-                        }
-                    )
-                    .filter(Boolean)
-            )
-        );
-
-
-    return drawNumbers.sort(
-        function(a, b) {
-
-            return Number(b) -
-                Number(a);
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// RENDER DRAW NUMBER BUTTONS
-// ============================================================
-
-
-function renderHistoryDrawTabs(
-    drawTabs
-) {
 
     drawTabs.innerHTML =
         "";
 
 
-    const drawNumbers =
-        getDrawNumbersForSelectedHistoryDate();
+    const selectedDateHistory =
+        getHistoryForSelectedDate();
 
 
-    if (
-        !drawNumbers.length
-    ) {
+    const drawGroups =
+        getHistoryDrawGroups(
+            selectedDateHistory
+        );
+
+
+    if (!drawGroups.length) {
+
+        selectedHistoryDrawNumber =
+            null;
+
 
         return;
 
     }
 
 
-    drawNumbers.forEach(
-        function(drawNumber) {
+    /*
+     * If no draw is selected, select the newest
+     * draw for the current date.
+     *
+     * Because groups are sorted oldest -> newest,
+     * the last group is the newest draw.
+     */
+
+
+    const selectedStillExists =
+        drawGroups.some(
+            function(group) {
+
+                return (
+                    String(
+                        group.globalDrawNumber
+                    ) ===
+                    String(
+                        selectedHistoryDrawNumber
+                    )
+                );
+
+            }
+        );
+
+
+    if (
+        selectedHistoryDrawNumber ===
+            null ||
+        !selectedStillExists
+    ) {
+
+        selectedHistoryDrawNumber =
+            drawGroups[
+                drawGroups.length - 1
+            ].globalDrawNumber;
+
+    }
+
+
+    drawGroups.forEach(
+        function(
+            group,
+            index
+        ) {
 
             const button =
                 document.createElement(
@@ -3495,21 +3399,41 @@ function renderHistoryDrawTabs(
                 "button";
 
 
+            /*
+             * THIS IS THE IMPORTANT FIX.
+             *
+             * index + 1 is the local draw number
+             * for the selected date.
+             */
+
+
+            const localDrawNumber =
+                index + 1;
+
+
             button.textContent =
-                `Draw ${drawNumber}`;
+                `Draw ${localDrawNumber}`;
+
+
+            button.dataset.globalDrawNumber =
+                group.globalDrawNumber;
+
+
+            button.dataset.localDrawNumber =
+                String(
+                    localDrawNumber
+                );
 
 
             button.className =
-                (
-                    String(
-                        selectedHistoryDrawNumber
-                    ) ===
-                    String(
-                        drawNumber
-                    )
-                        ? "active"
-                        : ""
-                );
+                String(
+                    group.globalDrawNumber
+                ) ===
+                String(
+                    selectedHistoryDrawNumber
+                )
+                    ? "active"
+                    : "";
 
 
             button.addEventListener(
@@ -3517,7 +3441,7 @@ function renderHistoryDrawTabs(
                 function() {
 
                     selectHistoryDraw(
-                        drawNumber
+                        group.globalDrawNumber
                     );
 
                 }
@@ -3535,273 +3459,433 @@ function renderHistoryDrawTabs(
 
 
 // ============================================================
-// SELECT HISTORY DRAW
+// SELECT HISTORY DATE
 // ============================================================
 
-
-function selectHistoryDraw(
-    drawNumber
+function selectHistoryDate(
+    dateString
 ) {
 
+    selectedHistoryDate =
+        dateString || "all";
+
+
+    /*
+     * Reset the selected draw so the newest draw
+     * for the newly selected date becomes active.
+     */
+
     selectedHistoryDrawNumber =
-        drawNumber;
+        null;
 
 
-    const containers =
-        ensureHistoryContainers();
+    renderHistoryDateTabs();
 
 
-    if (!containers) {
-
-        return;
-
-    }
+    renderHistoryDrawTabs();
 
 
-    renderHistoryDrawTabs(
-        containers.drawTabs
-    );
+    renderHistoryWinners();
 
 
-    renderSelectedHistoryDraw();
+    updateHistorySummary();
 
 }
 
 
 // ============================================================
-// RENDER SELECTED HISTORY DRAW
+// SELECT HISTORY DRAW
 // ============================================================
 
+function selectHistoryDraw(
+    globalDrawNumber
+) {
 
-function renderSelectedHistoryDraw() {
-
-    const containers =
-        ensureHistoryContainers();
+    selectedHistoryDrawNumber =
+        globalDrawNumber;
 
 
-    if (!containers) {
+    renderHistoryDrawTabs();
+
+
+    renderHistoryWinners();
+
+
+    updateHistorySummary();
+
+}
+
+
+// ============================================================
+// GET SELECTED HISTORY DRAW RECORDS
+// ============================================================
+
+function getSelectedHistoryDrawRecords() {
+
+    const selectedDateHistory =
+        getHistoryForSelectedDate();
+
+
+    if (
+        selectedHistoryDrawNumber ===
+        null
+    ) {
+
+        return [];
+
+    }
+
+
+    return selectedDateHistory.filter(
+        function(row) {
+
+            return (
+                String(
+                    row.draw_number ??
+                    ""
+                ) ===
+                String(
+                    selectedHistoryDrawNumber
+                )
+            );
+
+        }
+    ).sort(
+        function(a, b) {
+
+            return (
+                Number(a.id || 0) -
+                Number(b.id || 0)
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// GET LOCAL DRAW NUMBER
+// ============================================================
+
+function getLocalHistoryDrawNumber() {
+
+    const selectedDateHistory =
+        getHistoryForSelectedDate();
+
+
+    const drawGroups =
+        getHistoryDrawGroups(
+            selectedDateHistory
+        );
+
+
+    const index =
+        drawGroups.findIndex(
+            function(group) {
+
+                return (
+                    String(
+                        group.globalDrawNumber
+                    ) ===
+                    String(
+                        selectedHistoryDrawNumber
+                    )
+                );
+
+            }
+        );
+
+
+    if (index === -1) {
+
+        return null;
+
+    }
+
+
+    return index + 1;
+
+}
+
+
+// ============================================================
+// UPDATE HISTORY SUMMARY
+// ============================================================
+
+function updateHistorySummary() {
+
+    const summary =
+        getElement(
+            "drawHistorySummary"
+        );
+
+
+    if (!summary) {
 
         return;
 
     }
 
 
-    const {
-        summary,
-        winners
-    } =
-        containers;
-
-
-    const selectedRecords =
+    const selectedDateHistory =
         getHistoryForSelectedDate();
 
 
-    const drawNumbers =
-        getDrawNumbersForSelectedHistoryDate();
+    const drawGroups =
+        getHistoryDrawGroups(
+            selectedDateHistory
+        );
+
+
+    if (!drawGroups.length) {
+
+        if (
+            selectedHistoryDate ===
+            "all"
+        ) {
+
+            summary.innerHTML =
+                `
+                    No draw history available.
+                `;
+
+        } else {
+
+            summary.innerHTML =
+                `
+                    No draws were conducted on
+                    <strong>
+                        ${escapeHTML(
+                            formatDateForDisplay(
+                                selectedHistoryDate
+                            )
+                        )}
+                    </strong>.
+                `;
+
+        }
+
+
+        return;
+
+    }
+
+
+    const localDrawNumber =
+        getLocalHistoryDrawNumber();
+
+
+    const selectedDateText =
+        selectedHistoryDate ===
+            "all"
+
+            ? "All Dates"
+
+            : formatDateForDisplay(
+                selectedHistoryDate
+            );
 
 
     if (
-        !selectedRecords.length
+        selectedHistoryDate ===
+        "all"
     ) {
 
         summary.innerHTML =
             `
-                No draws have been conducted for this date.
+                <strong>
+                    All Dates
+                </strong>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    ${drawGroups.length}
+                    total draws
+                </span>
+
+                ${
+                    localDrawNumber
+                        ? `
+                            <span>
+                                •
+                            </span>
+
+                            <span>
+                                Showing Draw
+                                ${localDrawNumber}
+                            </span>
+                        `
+                        : ""
+                }
             `;
 
+    } else {
 
-        winners.innerHTML =
-            "";
+        summary.innerHTML =
+            `
+                <strong>
+                    ${escapeHTML(
+                        selectedDateText
+                    )}
+                </strong>
 
+                <span>
+                    •
+                </span>
 
-        return;
+                <span>
+                    ${drawGroups.length}
+                    draws
+                </span>
+
+                ${
+                    localDrawNumber
+                        ? `
+                            <span>
+                                •
+                            </span>
+
+                            <span>
+                                Showing Draw
+                                ${localDrawNumber}
+                            </span>
+                        `
+                        : ""
+                }
+            `;
 
     }
 
-
-    if (
-        !selectedHistoryDrawNumber ||
-        !drawNumbers.some(
-            function(number) {
-
-                return String(
-                    number
-                ) === String(
-                    selectedHistoryDrawNumber
-                );
-
-            }
-        )
-    ) {
-
-        selectedHistoryDrawNumber =
-            drawNumbers[0];
-
-    }
+}
 
 
-    renderHistoryDrawTabs(
-        containers.drawTabs
-    );
+// ============================================================
+// RENDER HISTORY WINNERS
+// ============================================================
 
+function renderHistoryWinners() {
 
-    const selectedDrawRecords =
-        selectedRecords
-            .filter(
-                function(draw) {
-
-                    return String(
-                        getHistoryDrawGroup(
-                            draw
-                        )
-                    ) === String(
-                        selectedHistoryDrawNumber
-                    );
-
-                }
-            )
-            .sort(
-                function(a, b) {
-
-                    return Number(
-                        a.id
-                    ) -
-                    Number(
-                        b.id
-                    );
-
-                }
-            );
-
-
-    const displayDate =
-        formatDateForDisplay(
-            selectedHistoryDate
+    const winnersContainer =
+        getElement(
+            "drawHistoryWinners"
         );
 
 
-    summary.innerHTML =
-        `
-            <strong>
-                ${escapeHTML(
-                    displayDate
-                )}
-            </strong>
-
-            &nbsp; • &nbsp;
-
-            ${drawNumbers.length}
-            draw${drawNumbers.length === 1 ? "" : "s"}
-
-            &nbsp; • &nbsp;
-
-            Showing
-            <strong>
-                Draw ${escapeHTML(
-                    selectedHistoryDrawNumber
-                )}
-            </strong>
-        `;
-
-
-    if (
-        !selectedDrawRecords.length
-    ) {
-
-        winners.innerHTML =
-            `
-                <div
-                    style="
-                        grid-column:1 / -1;
-                        text-align:center;
-                    "
-                >
-                    No winner records found for this draw.
-                </div>
-            `;
-
+    if (!winnersContainer) {
 
         return;
 
     }
 
 
-    const medals =
-        [
-            "🥇",
-            "🥈",
-            "🥉"
-        ];
+    winnersContainer.innerHTML =
+        "";
 
 
-    winners.innerHTML =
-        selectedDrawRecords
-            .slice(
-                0,
-                3
-            )
-            .map(
-                function(
-                    winner,
-                    index
-                ) {
+    const records =
+        getSelectedHistoryDrawRecords();
 
-                    return `
-                        <div>
 
-                            <h3>
-                                ${medals[index] || "🏅"}
-                                WINNER ${index + 1}
-                            </h3>
+    if (!records.length) {
 
-                            <p>
+        return;
 
-                                <strong>
-                                    Registration ID:
-                                </strong>
+    }
 
-                                ${escapeHTML(
-                                    winner.winner_registration_id ||
-                                    "-"
-                                )}
 
-                            </p>
+    records
+        .slice(0, 3)
+        .forEach(
+            function(
+                winner,
+                index
+            ) {
 
-                            <p>
+                const card =
+                    document.createElement(
+                        "div"
+                    );
 
-                                <strong>
-                                    Name:
-                                </strong>
 
-                                ${escapeHTML(
-                                    winner.winner_name ||
-                                    "-"
-                                )}
+                const registrationId =
+                    winner.winner_registration_id ||
+                    "-";
 
-                            </p>
 
-                            <p>
+                const winnerNumber =
+                    index + 1;
 
-                                <strong>
-                                    Phone:
-                                </strong>
 
-                                ${escapeHTML(
-                                    winner.winner_phone ||
-                                    "-"
-                                )}
+                card.innerHTML =
+                    `
+                        <h3>
+                            🥇 WINNER ${winnerNumber}
+                        </h3>
 
-                            </p>
+                        <p>
+                            <strong>
+                                Registration ID:
+                            </strong>
+                            ${escapeHTML(
+                                registrationId
+                            )}
+                        </p>
 
-                        </div>
+                        <p>
+                            <strong>
+                                Name:
+                            </strong>
+                            ${escapeHTML(
+                                winner.winner_name ||
+                                "-"
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>
+                                Phone:
+                            </strong>
+                            ${escapeHTML(
+                                winner.winner_phone ||
+                                "-"
+                            )}
+                        </p>
                     `;
 
-                }
-            )
-            .join(
-                ""
-            );
+
+                winnersContainer.appendChild(
+                    card
+                );
+
+            }
+        );
+
+}
+
+
+// ============================================================
+// RENDER COMPLETE HISTORY VIEW
+// ============================================================
+
+function renderHistoryView() {
+
+    ensureHistoryContainers();
+
+
+    renderHistoryDateTabs();
+
+
+    renderHistoryDrawTabs();
+
+
+    updateHistorySummary();
+
+
+    renderHistoryWinners();
 
 }
 
@@ -3810,48 +3894,48 @@ function renderSelectedHistoryDraw() {
 // LOAD DRAW HISTORY
 // ============================================================
 
-
 async function loadDrawHistory() {
 
-    if (
-        !isAdminAuthenticated
-    ) {
+    if (!isAdminAuthenticated) {
 
         return;
 
     }
 
 
-    const containers =
-        ensureHistoryContainers();
+    const historyList =
+        getElement(
+            "drawHistoryList"
+        );
 
 
-    if (!containers) {
+    if (!historyList) {
+
+        console.error(
+            "Draw history table body was not found."
+        );
 
         return;
 
     }
 
 
-    const {
-        dateTabs,
-        drawTabs,
-        summary,
-        winners
-    } =
-        containers;
+    ensureHistoryContainers();
 
 
-    summary.innerHTML =
-        "Loading draw history...";
+    historyList.innerHTML =
+        `
+            <tr>
 
+                <td
+                    colspan="6"
+                    class="no-data"
+                >
+                    Loading draw history...
+                </td>
 
-    drawTabs.innerHTML =
-        "";
-
-
-    winners.innerHTML =
-        "";
+            </tr>
+        `;
 
 
     try {
@@ -3864,21 +3948,21 @@ async function loadDrawHistory() {
                 .from("draw_history")
                 .select(
                     `
-                    id,
-                    draw_number,
-                    draw_date,
-                    draw_time,
-                    draw_scope,
-                    winner_name,
-                    winner_registration_id,
-                    winner_phone
+                        id,
+                        draw_number,
+                        draw_date,
+                        draw_time,
+                        draw_scope,
+                        winner_name,
+                        winner_registration_id,
+                        winner_phone
                     `
                 )
                 .order(
                     "draw_number",
                     {
                         ascending:
-                            false
+                            true
                     }
                 )
                 .order(
@@ -3893,25 +3977,31 @@ async function loadDrawHistory() {
         if (error) {
 
             console.error(
-                "DRAW HISTORY FETCH ERROR:",
+                "Draw history error:",
                 error
             );
 
 
-            dateTabs.innerHTML =
-                "";
+            allDrawHistory =
+                [];
 
 
-            drawTabs.innerHTML =
-                "";
+            historyList.innerHTML =
+                `
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="no-data"
+                        >
+                            Unable to load draw history.
+                        </td>
+
+                    </tr>
+                `;
 
 
-            summary.innerHTML =
-                "Unable to load draw history.";
-
-
-            winners.innerHTML =
-                "";
+            renderHistoryView();
 
 
             return;
@@ -3927,28 +4017,30 @@ async function loadDrawHistory() {
             !allDrawHistory.length
         ) {
 
-            dateTabs.innerHTML =
-                "";
-
-
-            drawTabs.innerHTML =
-                "";
-
-
-            summary.innerHTML =
-                "No draw history available.";
-
-
-            winners.innerHTML =
-                "";
-
-
             selectedHistoryDate =
-                null;
+                "all";
 
 
             selectedHistoryDrawNumber =
                 null;
+
+
+            historyList.innerHTML =
+                `
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="no-data"
+                        >
+                            No draws have been conducted yet.
+                        </td>
+
+                    </tr>
+                `;
+
+
+            renderHistoryView();
 
 
             return;
@@ -3956,49 +4048,81 @@ async function loadDrawHistory() {
         }
 
 
-        const uniqueDates =
-            getUniqueHistoryDates();
+        /*
+         * If the previously selected date no longer exists,
+         * return to the newest available date.
+         */
 
-
-        // ----------------------------------------------------
-        // IMPORTANT:
-        // Keep currently selected date if it still exists.
-        // Otherwise use latest available history date.
-        // ----------------------------------------------------
+        const availableDates =
+            getHistoryDates();
 
 
         if (
-            !selectedHistoryDate ||
-            !uniqueDates.includes(
+            selectedHistoryDate !==
+                "all" &&
+            !availableDates.includes(
                 selectedHistoryDate
             )
         ) {
 
             selectedHistoryDate =
-                uniqueDates[0];
+                availableDates[0];
+
+            selectedHistoryDrawNumber =
+                null;
 
         }
 
 
-        renderHistoryDateTabs(
-            dateTabs,
-            uniqueDates
-        );
+        /*
+         * If this is the first history load,
+         * automatically select the newest date.
+         */
+
+        if (
+            selectedHistoryDate ===
+                "all"
+        ) {
+
+            selectedHistoryDate =
+                availableDates[0];
+
+            selectedHistoryDrawNumber =
+                null;
+
+        }
 
 
-        renderHistoryDrawTabs(
-            drawTabs
-        );
+        renderHistoryView();
 
 
-        renderSelectedHistoryDraw();
+        /*
+         * The old table is no longer needed for the
+         * user-facing history display.
+         *
+         * Keep the table itself in the HTML so nothing
+         * else is structurally changed, but hide its rows.
+         */
+
+        historyList.innerHTML =
+            `
+                <tr>
+                    <td
+                        colspan="6"
+                        class="no-data"
+                    >
+                        Select a draw above to view its winners.
+                    </td>
+                </tr>
+            `;
 
 
         console.log(
-            "Draw history synchronized successfully:",
+            "Draw history loaded successfully:",
             allDrawHistory.length,
             "winner records"
         );
+
 
     } catch (error) {
 
@@ -4008,20 +4132,26 @@ async function loadDrawHistory() {
         );
 
 
-        dateTabs.innerHTML =
-            "";
+        allDrawHistory =
+            [];
 
 
-        drawTabs.innerHTML =
-            "";
+        historyList.innerHTML =
+            `
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="no-data"
+                    >
+                        Unable to load draw history.
+                    </td>
+
+                </tr>
+            `;
 
 
-        summary.innerHTML =
-            "Unable to load draw history.";
-
-
-        winners.innerHTML =
-            "";
+        renderHistoryView();
 
     }
 
@@ -4029,9 +4159,255 @@ async function loadDrawHistory() {
 
 
 // ============================================================
-// SHOW ADMIN SECTION
+// DOWNLOAD DRAW HISTORY TO EXCEL
 // ============================================================
 
+async function downloadDrawHistory() {
+
+    if (!isAdminAuthenticated) {
+
+        alert(
+            "Administrator authentication is required."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof XLSX ===
+        "undefined"
+    ) {
+
+        alert(
+            "Excel export library is unavailable. Please try again."
+        );
+
+        return;
+
+    }
+
+
+    const downloadButton =
+        getElement(
+            "downloadHistoryButton"
+        );
+
+
+    const originalHTML =
+        downloadButton
+            ? downloadButton.innerHTML
+            : "📥 Download Excel";
+
+
+    if (downloadButton) {
+
+        downloadButton.disabled =
+            true;
+
+        downloadButton.innerHTML =
+            "📄 Preparing Excel...";
+
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("draw_history")
+                .select(
+                    `
+                        draw_number,
+                        draw_date,
+                        draw_time,
+                        draw_scope,
+                        winner_name,
+                        winner_registration_id,
+                        winner_phone
+                    `
+                )
+                .order(
+                    "draw_number",
+                    {
+                        ascending:
+                            true
+                    }
+                )
+                .order(
+                    "draw_date",
+                    {
+                        ascending:
+                            true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Draw history download error:",
+                error
+            );
+
+
+            alert(
+                "Unable to download draw history."
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            !data ||
+            !data.length
+        ) {
+
+            alert(
+                "There is no draw history available to download."
+            );
+
+
+            return;
+
+        }
+
+
+        const excelData =
+            data.map(
+                function(item) {
+
+                    return {
+
+                        "Draw No.":
+                            item.draw_number ||
+                            "",
+
+                        "Draw Date":
+                            item.draw_date ||
+                            "",
+
+                        "Draw Time":
+                            item.draw_time ||
+                            "",
+
+                        "Draw Scope":
+                            item.draw_scope ||
+                            "all",
+
+                        "Winner":
+                            item.winner_name ||
+                            "",
+
+                        "Registration ID":
+                            item.winner_registration_id ||
+                            "",
+
+                        "Phone":
+                            item.winner_phone ||
+                            ""
+
+                    };
+
+                }
+            );
+
+
+        const worksheet =
+            XLSX.utils.json_to_sheet(
+                excelData
+            );
+
+
+        worksheet["!cols"] =
+            [
+                {
+                    wch: 12
+                },
+
+                {
+                    wch: 15
+                },
+
+                {
+                    wch: 15
+                },
+
+                {
+                    wch: 18
+                },
+
+                {
+                    wch: 28
+                },
+
+                {
+                    wch: 22
+                },
+
+                {
+                    wch: 18
+                }
+            ];
+
+
+        const workbook =
+            XLSX.utils.book_new();
+
+
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "Draw History"
+        );
+
+
+        XLSX.writeFile(
+            workbook,
+            "Lucky_Draw_History.xlsx"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Draw history download exception:",
+            error
+        );
+
+
+        alert(
+            "Unable to download draw history."
+        );
+
+
+    } finally {
+
+        if (downloadButton) {
+
+            downloadButton.disabled =
+                false;
+
+            downloadButton.innerHTML =
+                originalHTML;
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// ADMIN SECTION NAVIGATION
+// ============================================================
 
 function showAdminSection(
     sectionId,
@@ -4109,9 +4485,8 @@ function showAdminSection(
 
 
 // ============================================================
-// EXPOSE INLINE HTML FUNCTIONS
+// INLINE HTML FUNCTIONS
 // ============================================================
-
 
 window.showAdminSection =
     showAdminSection;
@@ -4121,21 +4496,157 @@ window.loadDrawHistory =
     loadDrawHistory;
 
 
-window.selectDrawScope =
-    selectDrawScope;
+window.downloadDrawHistory =
+    downloadDrawHistory;
+
+
+// ============================================================
+// REALTIME
+// ============================================================
+
+function startParticipantRealtime() {
+
+    if (
+        !isAdminAuthenticated
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        participantRealtimeChannel
+    ) {
+
+        return;
+
+    }
+
+
+    participantRealtimeChannel =
+        supabaseClient
+            .channel(
+                "participants-live-updates"
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "Participants"
+                },
+                async function(payload) {
+
+                    console.log(
+                        "Live participant update:",
+                        payload.eventType,
+                        payload
+                    );
+
+
+                    await loadParticipants();
+
+
+                    const searchInput =
+                        getElement(
+                            "searchInput"
+                        );
+
+
+                    if (
+                        searchInput &&
+                        searchInput.value.trim()
+                    ) {
+
+                        await performSearch();
+
+                    }
+
+
+                }
+            )
+            .subscribe(
+                function(status) {
+
+                    console.log(
+                        "Realtime status:",
+                        status
+                    );
+
+
+                    if (
+                        status ===
+                        "CHANNEL_ERROR"
+                    ) {
+
+                        console.error(
+                            "Realtime channel error. Check Supabase Realtime publication and RLS policies."
+                        );
+
+                    }
+
+
+                    if (
+                        status ===
+                        "TIMED_OUT"
+                    ) {
+
+                        console.error(
+                            "Realtime connection timed out."
+                        );
+
+                    }
+
+                }
+            );
+
+}
+
+
+// ============================================================
+// STOP REALTIME
+// ============================================================
+
+async function stopParticipantRealtime() {
+
+    if (
+        !participantRealtimeChannel
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await supabaseClient.removeChannel(
+            participantRealtimeChannel
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Realtime cleanup error:",
+            error
+        );
+
+    }
+
+
+    participantRealtimeChannel =
+        null;
+
+}
 
 
 // ============================================================
 // EVENT LISTENERS
 // ============================================================
 
-
 function setupEventListeners() {
-
-    // --------------------------------------------------------
-    // LOGIN
-    // --------------------------------------------------------
-
 
     const loginForm =
         getElement(
@@ -4151,11 +4662,6 @@ function setupEventListeners() {
         );
 
     }
-
-
-    // --------------------------------------------------------
-    // LOGOUT
-    // --------------------------------------------------------
 
 
     const logoutButton =
@@ -4174,11 +4680,6 @@ function setupEventListeners() {
     }
 
 
-    // --------------------------------------------------------
-    // VIEW PARTICIPANTS
-    // --------------------------------------------------------
-
-
     const viewButton =
         getElement(
             "viewParticipantsButton"
@@ -4193,11 +4694,6 @@ function setupEventListeners() {
         );
 
     }
-
-
-    // --------------------------------------------------------
-    // DRAW WINNER
-    // --------------------------------------------------------
 
 
     const drawButton =
@@ -4216,11 +4712,6 @@ function setupEventListeners() {
     }
 
 
-    // --------------------------------------------------------
-    // RESET DRAW
-    // --------------------------------------------------------
-
-
     const resetButton =
         getElement(
             "resetDrawButton"
@@ -4237,11 +4728,6 @@ function setupEventListeners() {
     }
 
 
-    // --------------------------------------------------------
-    // DOWNLOAD PARTICIPANTS
-    // --------------------------------------------------------
-
-
     const downloadButton =
         getElement(
             "downloadButton"
@@ -4256,11 +4742,6 @@ function setupEventListeners() {
         );
 
     }
-
-
-    // --------------------------------------------------------
-    // SEARCH
-    // --------------------------------------------------------
 
 
     const searchButton =
@@ -4311,11 +4792,6 @@ function setupEventListeners() {
     }
 
 
-    // --------------------------------------------------------
-    // DRAW MODAL
-    // --------------------------------------------------------
-
-
     const cancelDrawButton =
         getElement(
             "cancelDrawButton"
@@ -4346,11 +4822,6 @@ function setupEventListeners() {
         );
 
     }
-
-
-    // --------------------------------------------------------
-    // RESET MODAL
-    // --------------------------------------------------------
 
 
     const cancelResetButton =
@@ -4391,7 +4862,6 @@ function setupEventListeners() {
 // AUTH STATE CHANGES
 // ============================================================
 
-
 supabaseClient.auth.onAuthStateChange(
     async function(
         event,
@@ -4406,7 +4876,7 @@ supabaseClient.auth.onAuthStateChange(
 
         if (
             event ===
-            "INITIAL_SESSION" ||
+                "INITIAL_SESSION" ||
             isInitializing
         ) {
 
@@ -4426,7 +4896,7 @@ supabaseClient.auth.onAuthStateChange(
 
         if (
             event ===
-            "SIGNED_OUT" ||
+                "SIGNED_OUT" ||
             !session
         ) {
 
@@ -4438,8 +4908,8 @@ supabaseClient.auth.onAuthStateChange(
 
                 await stopParticipantRealtime();
 
-
                 showLoginPage();
+
 
             } finally {
 
@@ -4455,14 +4925,9 @@ supabaseClient.auth.onAuthStateChange(
 
 
         if (
-            event ===
-                "SIGNED_IN" ||
-
-            event ===
-                "TOKEN_REFRESHED" ||
-
-            event ===
-                "USER_UPDATED"
+            event === "SIGNED_IN" ||
+            event === "TOKEN_REFRESHED" ||
+            event === "USER_UPDATED"
         ) {
 
             authTransitionInProgress =
@@ -4492,6 +4957,7 @@ supabaseClient.auth.onAuthStateChange(
 
                 await showAdminDashboard();
 
+
             } finally {
 
                 authTransitionInProgress =
@@ -4509,7 +4975,6 @@ supabaseClient.auth.onAuthStateChange(
 // INITIALIZATION
 // ============================================================
 
-
 async function initializeAdmin() {
 
     setupEventListeners();
@@ -4518,9 +4983,7 @@ async function initializeAdmin() {
     try {
 
         const {
-            data: {
-                session
-            }
+            data: { session }
         } =
             await supabaseClient.auth.getSession();
 
@@ -4555,6 +5018,7 @@ async function initializeAdmin() {
 
         await showAdminDashboard();
 
+
     } catch (error) {
 
         console.error(
@@ -4570,6 +5034,7 @@ async function initializeAdmin() {
             "Unable to initialize admin access. Please try again."
         );
 
+
     } finally {
 
         isInitializing =
@@ -4579,5 +5044,9 @@ async function initializeAdmin() {
 
 }
 
+
+// ============================================================
+// START
+// ============================================================
 
 initializeAdmin();
