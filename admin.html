@@ -22,6 +22,97 @@
         href="style.css"
     >
 
+    <style>
+
+        /* ============================================================
+           PARTICIPANT SUMMARY INSIDE THE EXISTING STAT CARD
+           ============================================================ */
+
+        .participant-summary-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100%;
+        }
+
+        .participant-source-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 30px;
+            width: 100%;
+        }
+
+        .participant-source-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .participant-source-label {
+            display: block;
+            font-size: 20px;
+            font-weight: 700;
+            color: #263238;
+            margin-bottom: 8px;
+        }
+
+        .participant-source-count {
+            display: block;
+            font-size: 42px;
+            font-weight: 800;
+            color: #ff405b;
+            line-height: 1;
+        }
+
+        .participant-total-summary {
+            text-align: center;
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #eeeeee;
+        }
+
+        .participant-total-label {
+            display: block;
+            font-size: 22px;
+            font-weight: 700;
+            color: #263238;
+            margin-bottom: 8px;
+        }
+
+        .participant-total-count {
+            display: block;
+            font-size: 58px;
+            font-weight: 800;
+            color: #ff405b;
+            line-height: 1;
+        }
+
+        @media (max-width: 700px) {
+
+            .participant-source-summary {
+                gap: 15px;
+            }
+
+            .participant-source-label {
+                font-size: 16px;
+            }
+
+            .participant-source-count {
+                font-size: 34px;
+            }
+
+            .participant-total-label {
+                font-size: 19px;
+            }
+
+            .participant-total-count {
+                font-size: 48px;
+            }
+
+        }
+
+    </style>
+
 </head>
 
 <body>
@@ -216,18 +307,78 @@
                 <div class="dashboard-summary">
 
 
-                    <div class="stat-card">
+                    <!-- ========================= -->
+                    <!-- PARTICIPANT SUMMARY CARD -->
+                    <!-- ========================= -->
 
-                        <h3>
-                            Total Participants
-                        </h3>
+                    <div class="stat-card participant-summary-card">
 
-                        <p id="participantCount">
-                            0
-                        </p>
+                        <!-- TOP: MANUAL + PHOTO -->
+
+                        <div class="participant-source-summary">
+
+
+                            <!-- MANUAL REGISTRATION -->
+
+                            <div class="participant-source-item">
+
+                                <span class="participant-source-label">
+                                    Manual Registration
+                                </span>
+
+                                <span
+                                    id="manualParticipantCount"
+                                    class="participant-source-count"
+                                >
+                                    0
+                                </span>
+
+                            </div>
+
+
+                            <!-- PHOTO UPLOAD -->
+
+                            <div class="participant-source-item">
+
+                                <span class="participant-source-label">
+                                    Photo Upload
+                                </span>
+
+                                <span
+                                    id="photoParticipantCount"
+                                    class="participant-source-count"
+                                >
+                                    0
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- BOTTOM: TOTAL -->
+
+                        <div class="participant-total-summary">
+
+                            <span class="participant-total-label">
+                                Total Participants
+                            </span>
+
+                            <span
+                                id="participantCount"
+                                class="participant-total-count"
+                            >
+                                0
+                            </span>
+
+                        </div>
 
                     </div>
 
+
+                    <!-- ========================= -->
+                    <!-- WINNER CARD -->
+                    <!-- ========================= -->
 
                     <div class="winner-card top-winner-card">
 
@@ -340,7 +491,9 @@
 
                             <tr>
 
-                                <th>No.</th>
+                                <th>
+                                    No.
+                                </th>
 
                                 <th>
                                     Registration ID
@@ -544,11 +697,6 @@
     <!-- ========================= -->
     <!-- EXCEL LIBRARY -->
     <!-- ========================= -->
-    <!--
-        No integrity attribute is used here because
-        the previous integrity hash was invalid and
-        prevented the XLSX library from loading.
-    -->
 
     <script
         src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
@@ -667,6 +815,226 @@
     <!-- ========================= -->
 
     <script src="admin.js"></script>
+
+
+    <!-- ========================= -->
+    <!-- PARTICIPANT SOURCE COUNTS -->
+    <!-- ========================= -->
+
+    <script>
+
+        /*
+         * This updates the two source counters.
+         *
+         * Total Participants is already handled by admin.js.
+         * The source counters are calculated from the same
+         * Participants table.
+         */
+
+        (function () {
+
+            const SUPABASE_URL =
+                "https://mvwaanrbqjozxbncogzf.supabase.co";
+
+            const SUPABASE_KEY =
+                "sb_publishable_-jVZOnMljZt3VqDkwHCf_g_o8GDU_6c";
+
+
+            let countClient = null;
+
+
+            function getCountElement(id) {
+
+                return document.getElementById(id);
+
+            }
+
+
+            function getSourceType(participant) {
+
+                const rawSource =
+                    String(
+                        participant?.source || ""
+                    )
+                        .trim()
+                        .toLowerCase();
+
+
+                const photoSources = new Set([
+
+                    "photo upload",
+                    "photo_uploaded",
+                    "photo-upload",
+                    "uploaded",
+                    "upload",
+                    "photo",
+                    "uploaded photo",
+                    "uploaded_photo",
+                    "image upload",
+                    "image_uploaded"
+
+                ]);
+
+
+                if (
+                    photoSources.has(rawSource) ||
+                    Boolean(participant?.photo_url)
+                ) {
+
+                    return "Photo Upload";
+
+                }
+
+
+                return "Manual Registration";
+
+            }
+
+
+            async function updateSourceCounts() {
+
+                if (!window.supabase) {
+
+                    return;
+
+                }
+
+
+                if (!countClient) {
+
+                    countClient =
+                        window.supabase.createClient(
+                            SUPABASE_URL,
+                            SUPABASE_KEY
+                        );
+
+                }
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } = await countClient
+                        .from("Participants")
+                        .select(
+                            "source, photo_url"
+                        );
+
+
+                    if (error) {
+
+                        console.error(
+                            "Unable to load participant source counts:",
+                            error
+                        );
+
+                        return;
+
+                    }
+
+
+                    const participants =
+                        data || [];
+
+
+                    let manualCount = 0;
+                    let photoCount = 0;
+
+
+                    participants.forEach(
+                        function (participant) {
+
+                            if (
+                                getSourceType(
+                                    participant
+                                ) === "Photo Upload"
+                            ) {
+
+                                photoCount++;
+
+                            } else {
+
+                                manualCount++;
+
+                            }
+
+                        }
+                    );
+
+
+                    const manualElement =
+                        getCountElement(
+                            "manualParticipantCount"
+                        );
+
+
+                    const photoElement =
+                        getCountElement(
+                            "photoParticipantCount"
+                        );
+
+
+                    if (manualElement) {
+
+                        manualElement.textContent =
+                            manualCount;
+
+                    }
+
+
+                    if (photoElement) {
+
+                        photoElement.textContent =
+                            photoCount;
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Participant source count error:",
+                        error
+                    );
+
+                }
+
+            }
+
+
+            document.addEventListener(
+                "DOMContentLoaded",
+                function () {
+
+                    /*
+                     * Wait briefly for admin.js to initialize
+                     * Supabase and authenticate the admin.
+                     */
+
+                    setTimeout(
+                        updateSourceCounts,
+                        1000
+                    );
+
+
+                    /*
+                     * Keep the source counts current when
+                     * participants are added or changed.
+                     */
+
+                    setInterval(
+                        updateSourceCounts,
+                        5000
+                    );
+
+                }
+            );
+
+        })();
+
+    </script>
+
 
 </body>
 
