@@ -904,7 +904,6 @@ body {
 /* =========================================================
    DASHBOARD SUMMARY
    ========================================================= */
-
 /* =========================================================
    DASHBOARD SUMMARY
    ========================================================= */
@@ -921,7 +920,14 @@ body {
     margin-bottom: 35px;
 
     align-items: start;
+
+    grid-auto-rows: max-content;
 }
+
+
+/* =========================================================
+   STATISTICS CARD + WINNER CARD
+   ========================================================= */
 
 .stat-card,
 .top-winner-card {
@@ -933,7 +939,18 @@ body {
 
     box-shadow:
         0 12px 30px rgba(0, 0, 0, 0.07);
+
+    box-sizing: border-box;
+
+    align-self: start !important;
+
+    height: fit-content !important;
 }
+
+
+/* =========================================================
+   STATISTICS CARD
+   ========================================================= */
 
 .stat-card {
     min-height: 220px;
@@ -944,7 +961,9 @@ body {
 
     justify-content: center;
 
-    align-self: start;
+    align-self: start !important;
+
+    height: fit-content !important;
 }
 
 .stat-card h3 {
@@ -963,12 +982,17 @@ body {
     font-weight: 700;
 }
 
+
+/* =========================================================
+   WINNER CARD
+   ========================================================= */
+
 .top-winner-card {
     min-height: 220px;
 
-    height: auto;
+    height: fit-content !important;
 
-    align-self: start;
+    align-self: start !important;
 }
 
 .top-winner-card h2 {
@@ -1016,6 +1040,8 @@ body {
     background: #ffffff;
 
     box-sizing: border-box;
+
+    align-self: start;
 }
 
 #winnerResult > div h3 {
@@ -1049,6 +1075,17 @@ body {
         grid-template-columns: 1fr;
 
         align-items: start;
+
+        grid-auto-rows: max-content;
+    }
+
+    .dashboard-summary > .stat-card,
+    .dashboard-summary > .top-winner-card {
+        width: 100%;
+
+        height: fit-content !important;
+
+        align-self: start !important;
     }
 
     #winnerResult {
@@ -1077,7 +1114,6 @@ body {
         padding: 17px;
     }
 }
-
 /* =========================================================
    ADMIN BUTTONS
    ========================================================= */
