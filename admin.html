@@ -1,3 +1,205 @@
+Today 8:41 PM
+Pasted text(20260904-151041).txt
+Document
+Pasted code (2).ts
+TypeScript
+this is my admin.js and draw winner edge function replace them fully to solve this prblem and give them bck here it self so i can copy and paste them there
+it worked but after drawing winners both boxes are stretched i dont them to be streched it should look premium are you getting this looks shitty
+Pasted text(20260904-152104).txt
+Document
+this is my whole css find out your self where is the problem of this and only solve that dont change anything else and give me a new clean css version fully replaced
+still its streching it bro whats the issue ?
+like see i want all three winner in one line like see in tis winner 1 is correct place after that at right side of the winner 1 there should be winner 2 and at right side of winner 2 there should be winner 3 so all 3 winner are parallel to each other are you getting what i mean to say ?
+now first photo is before draw and second photo is afteer draw what you see ??
+ see this before draw look at the parcipants count box this size is perfect so iwant the winners box also of this same size means if i click draw winner so the text in the second screenshot (Lucky draw winner ) and congratulations text should not appear there becase it is taking lot of space see screenshot 3 after drawing the winnerz the winner box should look like this so it will match the participant count boxs size means no need to strech boxes after draw are you getting what i mean to say ?
+no i want like this before drawing and also after drawing it should not change size are you getting ?
+ great work bro now listen you see the outline color of the no of participant box i want a colourfull outline on the winner box so now tell me what to do 
+now its perfect now next thing we have to work on is  see the table in second screenshort so i want like if the lets say 1000 users registered on date 10 september 2026 then 1500 new users registered on 13 september 2026 so there should be daate wise table are you getting means in the admin dashboard it shows directly the table so it shoed show tabs like dates so if we want to see like on 15 seption users table so i need to open that tab so i can see the table of the users registered on that date are you getting what i mean to say i want everything to be seperate 
+Pasted text(20260904-160803).txt
+Document
+Pasted text (2)(7).txt
+Document
+so here is my admin.html , admin.js and the participants table structure in supabase
+yes so now the final point is we want date wise tabs in the dashbord so admin would click example 13 september he will select it and then click draw so the 3 winners will be there which are drawn from 13 september tab and if he clicks reset draw button so only the date which is selected should be reset means if the 13 september date is selected so when he clicks reset so the only 13 september draw should be reset so here i think the date is the primary key role playing and also one thing is if the admin selects 13 september date so there should be the table of the particiapnts like we have in the supabase like in the above screenshots  and if he clicks another date like 15 september so the usrs who registered on 15 septemer thier table shhould be there and also after clicking every date it should first show total participants then thier table down side no this is final thing you understood eveything what i mean to say ??
+ runned successfully
+Pasted code(10).ts
+TypeScript
+Pasted text (2)(8).txt
+Document
+Pasted text (3)(3).txt
+Document
+here is my draw-winner edge function , admin.html and admin.js 
+Pasted code(20260904-163322).ts
+TypeScript
+ this is my current draw winner edge function replace it entirely with the new versionn and give it back here it self 
+
+Yes. Since the draw-winner Edge Function is now deployed successfully, do not change the database again yet. That part is done.
+
+The next step is to change the admin dashboard UI + admin.js so the admin can actually use the new draw_scope system.
+
+Your current admin.js still fetches all participants directly and its draw logic does not yet have the date-selection concept.
+
+What we do next
+
+We should implement this in this order:
+
+1. Add the date tabs/selector to admin.html
+
+The dashboard will have something like:
+
+Registration Dates
+
+[ All Dates ] [ 13 September 2026 ] [ 15 September 2026 ] [ 16 September 2026 ]
+
+The dates will be generated automatically from Participants.created_at. You do not manually create a tab for every date.
+
+When the admin clicks:
+
+13 September 2026
+
+the dashboard changes to:
+
+13 September 2026
+
+Total Participants
+1000
+
+---------------------------------------------------------
+No. | Registration ID | Name | Phone | Area | City | Source
+---------------------------------------------------------
+1   | LD-xxxx         | ...
+2   | LD-xxxx         | ...
+...
+
+Then clicking:
+
+15 September 2026
+
+shows only the 15 September participants.
+
+2. Add Draw All Dates
+
+There will always be a special tab:
+
+[ Draw All Dates ]
+
+Meaning:
+
+Include participants from every registration date.
+
+So:
+
+Selected tab	Draw uses
+13 September	Only 13 September participants
+15 September	Only 15 September participants
+16 September	Only 16 September participants
+Draw All Dates	Everyone
+3. Make Draw Winner use the selected date
+
+This is the important part.
+
+If admin selects:
+
+13 September 2026
+
+and clicks:
+
+🎲 Draw Winner
+
+the Edge Function receives the scope:
+
+2026-09-13
+
+and selects the winners only from that day's participants.
+
+It must never accidentally pick somebody from 15 September.
+
+4. Make Reset Draw use the selected date
+
+Same principle.
+
+If:
+
+13 September 2026
+
+is selected:
+
+🔄 Reset Draw
+
+resets the draw state for 13 September only.
+
+It does not reset the 15 September draw.
+
+If:
+
+Draw All Dates
+
+is selected, Reset applies to the all-dates draw.
+
+This is exactly why we added draw_scope to lucky_draw_state.
+
+5. Winners remain associated with their scope
+
+For example:
+
+13 September 2026
+    Winner 1
+    Winner 2
+    Winner 3
+
+15 September 2026
+    Winner 1
+    Winner 2
+    Winner 3
+
+Draw All Dates
+    Winner 1
+    Winner 2
+    Winner 3
+
+So switching tabs doesn't destroy or overwrite another date's current winner.
+
+One important thing before we edit anything
+
+Your current admin.html and admin.js are the versions we need to modify. The existing HTML already has the dashboard structure and draw/reset controls.
+
+And the current JS still has the old winner handling using:
+
+localStorage.getItem("luckyDrawWinner")
+
+so that part needs to be changed to a scope-aware system.
+
+Therefore, the next actual task is:
+
+Replace admin.html first.
+
+We'll add the date tabs/selector and the selected-date area without disturbing your existing:
+
+participant table
+search
+Excel download
+winner box
+colorful winner outline
+Draw Winner button
+Reset Draw button
+Realtime updates
+login/authentication
+Draw History
+
+Then we'll modify admin.js to make those tabs functional.
+
+Do not run another SQL query right now. The database preparation you just ran is sufficient for this stage. The human species has already created enough database migrations for one afternoon.
+
+Pasted text(20260904-163933).txt
+Document
+here is my current admin.html replace it entire and give me new version back here itself
+
+Yes. I have the current admin.html structure. The existing file has the login page, dashboard, participant table, Excel library, and both draw/reset modals, so I’m keeping those intact and adding the date-scope selector the new Edge Function expects.
+
+One important point: this HTML alone will display the selector, but it will not make the dates functional yet. The next replacement of admin.js will populate the dates from Participants.created_at and send the selected draw_scope to the Edge Function.
+
+Replace your entire admin.html with this:
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -593,3 +795,1114 @@
 </body>
 
 </html>
+What I changed in this HTML
+
+Only the pieces needed for the new system:
+
+Added #drawScopeTabs for automatically generated date tabs.
+Added #selectedDrawScope to clearly show which draw pool is selected.
+Kept Draw All Dates as the default.
+Kept your existing participant count, winner cards, buttons, search, table, login, Excel, and modals.
+Changed the reset modal wording so it doesn't misleadingly say that every participant is being reset.
+Removed the old broken integrity hash from the XLSX CDN script. That hash had previously caused your Excel library problem.
+
+The actual date tabs will not appear/function correctly until we replace admin.js, because JavaScript has to query created_at, build the dates, filter the participant table, load the scoped winners, and send the selected scope to the Edge Function.
+
+So don't add CSS manually yet either. The next file to replace is your entire admin.js, and that is where we'll connect all of this to the Edge Function you just deployed.
+
+ after changing the admin.html with new version this happened is this correct ?? again the participant count box has problem what you think
+
+No, this is not quite correct yet. The screenshot shows the new date-selection section is present, but the layout is clearly broken.
+
+What I see
+“Draw All Dates” is just plain text
+It should be an actual selectable tab/button.
+The registration dates should appear alongside it.
+The participant count is still showing 9
+That is probably the count for all participants.
+Since no proper date tab is visibly selected, the frontend isn't yet behaving as intended.
+The count box is too tall
+The box itself isn't inherently wrong, but its height is being forced to match/occupy a large area.
+It should be a compact summary card, while the winner card can remain larger.
+The biggest issue: the date tabs aren't functioning/visible properly
+The Edge Function you deployed is ready for draw_scope.
+But the frontend still needs to pass the selected scope to it.
+This is exactly the part we were supposed to do next.
+The winner display itself looks good
+Three winners are correctly arranged horizontally.
+The colorful outer border looks consistent with the participant card.
+I would not change that part.
+So don't press Draw Winner yet.
+
+The backend is ready, but the frontend connection is incomplete. The correct next step is to replace admin.js, not keep modifying admin.html blindly. Humans have already invented enough ways to make one JavaScript variable ruin an entire dashboard.
+
+The admin.js replacement needs to handle:
+
+Draw All Dates
+       ↓
+13 September 2026
+15 September 2026
+16 September 2026
+       ↓
+Selected date
+       ↓
+Participant count changes
+Participant table changes
+Draw Winner uses that date
+Reset Draw resets only that date
+Winner display changes to that date's draw
+
+And importantly:
+
+All Dates → all participants
+13 Sep → only registrations from 13 Sep
+15 Sep → only registrations from 15 Sep
+Each date gets its own draw state
+Resetting 13 Sep must not reset 15 Sep
+Draw history remains untouched
+
+So the screenshot is useful because it confirms the HTML section is appearing, but we should fix the frontend logic/layout through admin.js now rather than changing more database or Edge Function code.
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="robots"
+    content="noindex, nofollow"
+>
+
+<title>Lucky Draw Admin Dashboard</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<style>
+
+    /* ============================================================
+       PARTICIPANT SUMMARY INSIDE THE EXISTING STAT CARD
+       ============================================================ */
+
+    .participant-summary-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 100%;
+    }
+
+    .participant-source-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 30px;
+        width: 100%;
+    }
+
+    .participant-source-item {
+        flex: 1;
+        text-align: center;
+    }
+
+    .participant-source-label {
+        display: block;
+        font-size: 20px;
+        font-weight: 700;
+        color: #263238;
+        margin-bottom: 8px;
+    }
+
+    .participant-source-count {
+        display: block;
+        font-size: 42px;
+        font-weight: 800;
+        color: #ff405b;
+        line-height: 1;
+    }
+
+    .participant-total-summary {
+        text-align: center;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid #eeeeee;
+    }
+
+    .participant-total-label {
+        display: block;
+        font-size: 22px;
+        font-weight: 700;
+        color: #263238;
+        margin-bottom: 8px;
+    }
+
+    .participant-total-count {
+        display: block;
+        font-size: 58px;
+        font-weight: 800;
+        color: #ff405b;
+        line-height: 1;
+    }
+
+    @media (max-width: 700px) {
+
+        .participant-source-summary {
+            gap: 15px;
+        }
+
+        .participant-source-label {
+            font-size: 16px;
+        }
+
+        .participant-source-count {
+            font-size: 34px;
+        }
+
+        .participant-total-label {
+            font-size: 19px;
+        }
+
+        .participant-total-count {
+            font-size: 48px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ========================= -->
+<!-- NAVBAR -->
+<!-- ========================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        🎉 <span>Lucky</span>Draw
+    </div>
+
+    <div class="participant-label">
+        Admin Dashboard
+    </div>
+
+</nav>
+
+
+<!-- ========================= -->
+<!-- LOGIN PAGE -->
+<!-- ========================= -->
+
+<section
+    id="loginPage"
+    class="page active-page"
+>
+
+    <div class="login-card">
+
+        <div class="login-icon">
+            🔐
+        </div>
+
+        <h1>
+            Admin Login
+        </h1>
+
+        <p class="login-subtitle">
+            Secure access to the Lucky Draw dashboard
+        </p>
+
+
+        <form
+            id="loginForm"
+            autocomplete="on"
+            novalidate
+        >
+
+            <label for="adminEmail">
+                📧 Admin Email
+            </label>
+
+            <input
+                type="email"
+                id="adminEmail"
+                name="email"
+                placeholder="Enter admin email"
+                autocomplete="username"
+                inputmode="email"
+                required
+            >
+
+
+            <label for="adminPassword">
+                🔑 Password
+            </label>
+
+            <input
+                type="password"
+                id="adminPassword"
+                name="password"
+                placeholder="Enter password"
+                autocomplete="current-password"
+                required
+            >
+
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginButton"
+            >
+                Login
+            </button>
+
+        </form>
+
+
+        <p
+            id="loginError"
+            class="login-error"
+            role="alert"
+            aria-live="polite"
+        ></p>
+
+    </div>
+
+</section>
+
+
+<!-- ========================= -->
+<!-- ADMIN DASHBOARD -->
+<!-- ========================= -->
+
+<section
+    id="adminPage"
+    class="page"
+>
+
+    <div class="admin-container">
+
+
+        <!-- ========================= -->
+        <!-- ADMIN HEADER -->
+        <!-- ========================= -->
+
+        <div class="admin-header">
+
+            <div>
+
+                <h1>
+                    Lucky Draw Admin Dashboard
+                </h1>
+
+                <p>
+                    Manage participants and conduct the lucky draw.
+                </p>
+
+                <p
+                    id="loggedInAdmin"
+                    class="logged-in-admin"
+                    aria-live="polite"
+                ></p>
+
+            </div>
+
+
+            <button
+                class="logout-btn"
+                id="logoutButton"
+                type="button"
+            >
+                🚪 Logout
+            </button>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- DASHBOARD NAVIGATION -->
+        <!-- ========================= -->
+
+        <div class="admin-menu">
+
+            <button
+                class="menu-btn active-menu"
+                type="button"
+                onclick="showAdminSection('dashboardSection', this)"
+            >
+                📊 Dashboard
+            </button>
+
+
+            <button
+                class="menu-btn"
+                type="button"
+                onclick="showAdminSection('drawHistorySection', this)"
+            >
+                📜 Draw History
+            </button>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- DASHBOARD SECTION -->
+        <!-- ========================= -->
+
+        <div
+            id="dashboardSection"
+            class="admin-section active-admin-section"
+        >
+
+
+            <!-- ========================= -->
+            <!-- DASHBOARD SUMMARY -->
+            <!-- ========================= -->
+
+            <div class="dashboard-summary">
+
+
+                <!-- ========================= -->
+                <!-- PARTICIPANT SUMMARY CARD -->
+                <!-- ========================= -->
+
+                <div class="stat-card participant-summary-card">
+
+                    <!-- TOP: MANUAL + PHOTO -->
+
+                    <div class="participant-source-summary">
+
+
+                        <!-- MANUAL REGISTRATION -->
+
+                        <div class="participant-source-item">
+
+                            <span class="participant-source-label">
+                                Manual Registration
+                            </span>
+
+                            <span
+                                id="manualParticipantCount"
+                                class="participant-source-count"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+
+                        <!-- PHOTO UPLOAD -->
+
+                        <div class="participant-source-item">
+
+                            <span class="participant-source-label">
+                                Photo Upload
+                            </span>
+
+                            <span
+                                id="photoParticipantCount"
+                                class="participant-source-count"
+                            >
+                                0
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BOTTOM: TOTAL -->
+
+                    <div class="participant-total-summary">
+
+                        <span class="participant-total-label">
+                            Total Participants
+                        </span>
+
+                        <span
+                            id="participantCount"
+                            class="participant-total-count"
+                        >
+                            0
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- WINNER CARD -->
+                <!-- ========================= -->
+
+                <div class="winner-card top-winner-card">
+
+                    <h2>
+                        🏆 Lucky Draw Winner
+                    </h2>
+
+                    <div id="winnerResult">
+
+                        <p>
+                            No winner selected yet.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- ADMIN BUTTONS -->
+            <!-- ========================= -->
+
+            <div class="admin-buttons">
+
+                <button
+                    class="view-btn"
+                    id="viewParticipantsButton"
+                    type="button"
+                >
+                    👥 View Participants
+                </button>
+
+
+                <button
+                    class="draw-btn"
+                    id="drawWinnerButton"
+                    type="button"
+                >
+                    🎲 Draw Winner
+                </button>
+
+
+                <button
+                    class="reset-draw-btn"
+                    id="resetDrawButton"
+                    type="button"
+                >
+                    🔄 Reset Draw
+                </button>
+
+
+                <button
+                    class="download-btn"
+                    id="downloadButton"
+                    type="button"
+                >
+                    ⬇ Download Excel
+                </button>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- SEARCH -->
+            <!-- ========================= -->
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    name="participant-search"
+                    placeholder="Search by Name, Phone or Registration ID"
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+
+
+                <button
+                    class="search-btn"
+                    id="searchButton"
+                    type="button"
+                >
+                    🔍 Search
+                </button>
+
+
+                <button
+                    class="clear-btn"
+                    id="clearSearchButton"
+                    type="button"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- PARTICIPANT TABLE -->
+            <!-- ========================= -->
+
+            <div class="table-container">
+
+                <table id="participantTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                No.
+                            </th>
+
+                            <th>
+                                Registration ID
+                            </th>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <th>
+                                Phone
+                            </th>
+
+                            <th>
+                                Area
+                            </th>
+
+                            <th>
+                                City
+                            </th>
+
+                            <th>
+                                Source
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="participantList">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- DRAW HISTORY SECTION -->
+        <!-- ========================= -->
+
+        <div
+            id="drawHistorySection"
+            class="admin-section"
+        >
+
+
+            <!-- ========================= -->
+            <!-- HISTORY HEADER -->
+            <!-- ========================= -->
+
+            <div class="history-header-card">
+
+                <div class="history-icon">
+                    📜
+                </div>
+
+                <div>
+
+                    <h1>
+                        Draw History
+                    </h1>
+
+                    <p>
+                        View all previous lucky draws and their winners.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ========================= -->
+            <!-- HISTORY TABLE CARD -->
+            <!-- ========================= -->
+
+            <div class="history-table-card">
+
+                <div class="history-table-header">
+
+                    <div>
+
+                        <h2>
+                            Previous Draws
+                        </h2>
+
+                        <p>
+                            Every completed draw is recorded here.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="download-btn history-download-btn"
+                        id="downloadHistoryButton"
+                        type="button"
+                        onclick="downloadDrawHistory()"
+                    >
+                        ⬇ Download Excel
+                    </button>
+
+                </div>
+
+
+                <!-- ========================= -->
+                <!-- HISTORY TABLE -->
+                <!-- ========================= -->
+
+                <div class="history-table-container">
+
+                    <table
+                        id="drawHistoryTable"
+                        class="draw-history-table"
+                    >
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    DRAW NO.
+                                </th>
+
+                                <th>
+                                    DATE
+                                </th>
+
+                                <th>
+                                    TIME
+                                </th>
+
+                                <th>
+                                    WINNER
+                                </th>
+
+                                <th>
+                                    REGISTRATION ID
+                                </th>
+
+                                <th>
+                                    PHONE
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="drawHistoryList">
+
+                            <tr>
+
+                                <td
+                                    colspan="6"
+                                    class="no-data"
+                                >
+                                    No draws have been conducted yet.
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================= -->
+<!-- FOOTER -->
+<!-- ========================= -->
+
+<footer>
+
+    Lucky Draw System • Admin Panel
+
+</footer>
+
+
+<!-- ========================= -->
+<!-- SUPABASE -->
+<!-- ========================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<!-- ========================= -->
+<!-- EXCEL LIBRARY -->
+<!-- ========================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
+></script>
+
+
+<!-- ========================= -->
+<!-- DRAW CONFIRMATION MODAL -->
+<!-- ========================= -->
+
+<div
+    id="drawModal"
+    class="draw-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="drawModalTitle"
+>
+
+    <div class="draw-modal-content">
+
+        <div class="draw-modal-icon">
+            🎲
+        </div>
+
+        <h2 id="drawModalTitle">
+            Ready to Draw?
+        </h2>
+
+        <p id="drawModalMessage">
+            Are you sure you want to draw a winner?
+        </p>
+
+        <div class="draw-modal-buttons">
+
+            <button
+                class="modal-cancel-btn"
+                id="cancelDrawButton"
+                type="button"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="modal-confirm-btn"
+                id="confirmDrawButton"
+                type="button"
+            >
+                🎉 Draw Winner
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- RESET DRAW MODAL -->
+<!-- ========================= -->
+
+<div
+    id="resetModal"
+    class="draw-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="resetModalTitle"
+>
+
+    <div class="draw-modal-content">
+
+        <div class="draw-modal-icon">
+            🔄
+        </div>
+
+        <h2 id="resetModalTitle">
+            Reset Lucky Draw?
+        </h2>
+
+        <p>
+            This will remove the current winner
+            and reset the draw.
+        </p>
+
+        <p>
+            All participants will become eligible again.
+        </p>
+
+        <div class="draw-modal-buttons">
+
+            <button
+                class="modal-cancel-btn"
+                id="cancelResetButton"
+                type="button"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="modal-confirm-btn reset-confirm-btn"
+                id="confirmResetButton"
+                type="button"
+            >
+                🔄 Reset Draw
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- ADMIN JAVASCRIPT -->
+<!-- ========================= -->
+
+<script src="admin.js"></script>
+
+
+<!-- ========================= -->
+<!-- PARTICIPANT SOURCE COUNTS -->
+<!-- ========================= -->
+
+<script>
+
+    /*
+     * This updates the two source counters.
+     *
+     * Total Participants is already handled by admin.js.
+     * The source counters are calculated from the same
+     * Participants table.
+     */
+
+    (function () {
+
+        const SUPABASE_URL =
+            "https://mvwaanrbqjozxbncogzf.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_-jVZOnMljZt3VqDkwHCf_g_o8GDU_6c";
+
+
+        let countClient = null;
+
+
+        function getCountElement(id) {
+
+            return document.getElementById(id);
+
+        }
+
+
+        function getSourceType(participant) {
+
+            const rawSource =
+                String(
+                    participant?.source || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+
+            const photoSources = new Set([
+
+                "photo upload",
+                "photo_uploaded",
+                "photo-upload",
+                "uploaded",
+                "upload",
+                "photo",
+                "uploaded photo",
+                "uploaded_photo",
+                "image upload",
+                "image_uploaded"
+
+            ]);
+
+
+            if (
+                photoSources.has(rawSource) ||
+                Boolean(participant?.photo_url)
+            ) {
+
+                return "Photo Upload";
+
+            }
+
+
+            return "Manual Registration";
+
+        }
+
+
+        async function updateSourceCounts() {
+
+            if (!window.supabase) {
+
+                return;
+
+            }
+
+
+            if (!countClient) {
+
+                countClient =
+                    window.supabase.createClient(
+                        SUPABASE_URL,
+                        SUPABASE_KEY
+                    );
+
+            }
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await countClient
+                    .from("Participants")
+                    .select(
+                        "source, photo_url"
+                    );
+
+
+                if (error) {
+
+                    console.error(
+                        "Unable to load participant source counts:",
+                        error
+                    );
+
+                    return;
+
+                }
+
+
+                const participants =
+                    data || [];
+
+
+                let manualCount = 0;
+                let photoCount = 0;
+
+
+                participants.forEach(
+                    function (participant) {
+
+                        if (
+                            getSourceType(
+                                participant
+                            ) === "Photo Upload"
+                        ) {
+
+                            photoCount++;
+
+                        } else {
+
+                            manualCount++;
+
+                        }
+
+                    }
+                );
+
+
+                const manualElement =
+                    getCountElement(
+                        "manualParticipantCount"
+                    );
+
+
+                const photoElement =
+                    getCountElement(
+                        "photoParticipantCount"
+                    );
+
+
+                if (manualElement) {
+
+                    manualElement.textContent =
+                        manualCount;
+
+                }
+
+
+                if (photoElement) {
+
+                    photoElement.textContent =
+                        photoCount;
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Participant source count error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                /*
+                 * Wait briefly for admin.js to initialize
+                 * Supabase and authenticate the admin.
+                 */
+
+                setTimeout(
+                    updateSourceCounts,
+                    1000
+                );
+
+
+                /*
+                 * Keep the source counts current when
+                 * participants are added or changed.
+                 */
+
+                setInterval(
+                    updateSourceCounts,
+                    5000
+                );
+
+            }
+        );
+
+    })();
+
+</script>
+
+</body>
+
+</html>
+
+Close
