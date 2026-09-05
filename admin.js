@@ -3529,6 +3529,10 @@ function ensureHistoryContainers() {
 // RENDER HISTORY DATE TABS
 // ------------------------------------------------------------
 
+// ------------------------------------------------------------
+// RENDER HISTORY DATE TABS
+// ------------------------------------------------------------
+
 function renderHistoryDateTabs() {
 
     const containers =
@@ -3642,7 +3646,7 @@ function renderHistoryDateTabs() {
 
 
     // --------------------------------------------------------
-    // REGISTRATION DATE CALENDAR
+    // REGISTRATION DATE LABEL
     // --------------------------------------------------------
 
     const dateLabel =
@@ -3667,31 +3671,69 @@ function renderHistoryDateTabs() {
         `;
 
 
-    const datePicker =
+    // --------------------------------------------------------
+    // DATE INPUT WRAPPER
+    // --------------------------------------------------------
+
+    const dateWrapper =
+        document.createElement(
+            "div"
+        );
+
+
+    dateWrapper.style.cssText =
+        `
+            display:flex;
+            align-items:center;
+            gap:6px;
+        `;
+
+
+    // --------------------------------------------------------
+    // MANUAL DATE TEXT INPUT
+    // --------------------------------------------------------
+
+    const textInput =
         document.createElement(
             "input"
         );
 
 
-    datePicker.type =
-        "date";
+    textInput.type =
+        "text";
 
 
-    datePicker.id =
-        "historyRegistrationDatePicker";
+    textInput.id =
+        "historyRegistrationDateInput";
 
 
-    datePicker.name =
-        "historyRegistrationDatePicker";
+    textInput.name =
+        "historyRegistrationDateInput";
 
 
-    datePicker.setAttribute(
+    textInput.placeholder =
+        "DD/MM/YYYY";
+
+
+    textInput.maxLength =
+        10;
+
+
+    textInput.inputMode =
+        "numeric";
+
+
+    textInput.autocomplete =
+        "off";
+
+
+    textInput.setAttribute(
         "aria-label",
-        "Select Registration Date"
+        "Enter Registration Date"
     );
 
 
-    datePicker.style.cssText =
+    textInput.style.cssText =
         `
             height:42px;
             width:170px;
@@ -3702,14 +3744,14 @@ function renderHistoryDateTabs() {
             color:#172554;
             font-size:15px;
             font-weight:600;
-            cursor:pointer;
             box-sizing:border-box;
             outline:none;
         `;
 
 
-    // Show currently selected date
-    // inside the calendar input.
+    // --------------------------------------------------------
+    // SHOW CURRENTLY SELECTED DATE
+    // --------------------------------------------------------
 
     if (
         selectedHistoryDate &&
@@ -3717,27 +3759,137 @@ function renderHistoryDateTabs() {
             "all"
     ) {
 
-        datePicker.value =
+        const parts =
+            selectedHistoryDate.split(
+                "-"
+            );
+
+
+        if (
+            parts.length ===
+            3
+        ) {
+
+            textInput.value =
+                parts[2] +
+                "/" +
+                parts[1] +
+                "/" +
+                parts[0];
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // CALENDAR PICKER
+    // --------------------------------------------------------
+
+    const calendarPicker =
+        document.createElement(
+            "input"
+        );
+
+
+    calendarPicker.type =
+        "date";
+
+
+    calendarPicker.id =
+        "historyRegistrationCalendar";
+
+
+    calendarPicker.setAttribute(
+        "aria-label",
+        "Choose Registration Date from Calendar"
+    );
+
+
+    calendarPicker.style.cssText =
+        `
+            position:absolute;
+            width:1px;
+            height:1px;
+            opacity:0;
+            pointer-events:none;
+        `;
+
+
+    if (
+        selectedHistoryDate &&
+        selectedHistoryDate !==
+            "all"
+    ) {
+
+        calendarPicker.value =
             selectedHistoryDate;
 
     }
 
 
     // --------------------------------------------------------
-    // WHEN A DATE IS SELECTED
+    // CALENDAR BUTTON
     // --------------------------------------------------------
 
-    datePicker.addEventListener(
-        "change",
+    const calendarButton =
+        document.createElement(
+            "button"
+        );
+
+
+    calendarButton.type =
+        "button";
+
+
+    calendarButton.textContent =
+        "📅";
+
+
+    calendarButton.title =
+        "Choose date from calendar";
+
+
+    calendarButton.setAttribute(
+        "aria-label",
+        "Choose date from calendar"
+    );
+
+
+    calendarButton.style.cssText =
+        `
+            height:42px;
+            width:44px;
+            border:1px solid #cbd5e1;
+            border-radius:8px;
+            background:#ffffff;
+            color:#172554;
+            font-size:18px;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            box-sizing:border-box;
+        `;
+
+
+    // --------------------------------------------------------
+    // OPEN CALENDAR
+    // --------------------------------------------------------
+
+    calendarButton.addEventListener(
+        "click",
         function() {
 
-            if (
-                datePicker.value
+            try {
+
+                calendarPicker.showPicker();
+
+            } catch (
+                error
             ) {
 
-                selectHistoryDate(
-                    datePicker.value
-                );
+                calendarPicker.click();
 
             }
 
@@ -3745,8 +3897,225 @@ function renderHistoryDateTabs() {
     );
 
 
+    // --------------------------------------------------------
+    // CALENDAR DATE SELECTED
+    // --------------------------------------------------------
+
+    calendarPicker.addEventListener(
+        "change",
+        function() {
+
+            if (
+                !calendarPicker.value
+            ) {
+
+                return;
+
+            }
+
+
+            const parts =
+                calendarPicker.value.split(
+                    "-"
+                );
+
+
+            textInput.value =
+                parts[2] +
+                "/" +
+                parts[1] +
+                "/" +
+                parts[0];
+
+
+            selectHistoryDate(
+                calendarPicker.value
+            );
+
+        }
+    );
+
+
+    // --------------------------------------------------------
+    // MANUAL DATE ENTRY
+    // --------------------------------------------------------
+
+    function processManualDate() {
+
+        const value =
+            textInput.value.trim();
+
+
+        if (!value) {
+
+            textInput.style.borderColor =
+                "#cbd5e1";
+
+            return;
+
+        }
+
+
+        const match =
+            value.match(
+                /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+            );
+
+
+        if (!match) {
+
+            textInput.style.borderColor =
+                "#ef4444";
+
+            return;
+
+        }
+
+
+        const day =
+            Number(
+                match[1]
+            );
+
+
+        const month =
+            Number(
+                match[2]
+            );
+
+
+        const year =
+            Number(
+                match[3]
+            );
+
+
+        const testDate =
+            new Date(
+                Date.UTC(
+                    year,
+                    month - 1,
+                    day
+                )
+            );
+
+
+        if (
+            testDate.getUTCFullYear() !==
+                year ||
+            testDate.getUTCMonth() !==
+                month - 1 ||
+            testDate.getUTCDate() !==
+                day
+        ) {
+
+            textInput.style.borderColor =
+                "#ef4444";
+
+            return;
+
+        }
+
+
+        const isoDate =
+            year +
+            "-" +
+            String(
+                month
+            ).padStart(
+                2,
+                "0"
+            ) +
+            "-" +
+            String(
+                day
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        textInput.value =
+            String(
+                day
+            ).padStart(
+                2,
+                "0"
+            ) +
+            "/" +
+            String(
+                month
+            ).padStart(
+                2,
+                "0"
+            ) +
+            "/" +
+            year;
+
+
+        calendarPicker.value =
+            isoDate;
+
+
+        textInput.style.borderColor =
+            "#22c55e";
+
+
+        selectHistoryDate(
+            isoDate
+        );
+
+    }
+
+
+    textInput.addEventListener(
+        "change",
+        processManualDate
+    );
+
+
+    textInput.addEventListener(
+        "keydown",
+        function(
+            event
+        ) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                processManualDate();
+
+            }
+
+        }
+    );
+
+
+    // --------------------------------------------------------
+    // ADD EVERYTHING TO PAGE
+    // --------------------------------------------------------
+
+    dateWrapper.appendChild(
+        textInput
+    );
+
+
+    dateWrapper.appendChild(
+        calendarButton
+    );
+
+
+    dateWrapper.appendChild(
+        calendarPicker
+    );
+
+
     dateLabel.appendChild(
-        datePicker
+        dateWrapper
     );
 
 
