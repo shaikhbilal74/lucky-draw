@@ -1646,14 +1646,16 @@ function renderDrawScopeTabs() {
     dateLabel.textContent =
         "Select Registration Date:";
 
-    dateLabel.style.cssText =
-        `
-            display:flex;
-            align-items:center;
-            gap:10px;
-            margin-left:12px;
-            font-weight:700;
-        `;
+   dateLabel.style.cssText =
+    `
+        display:flex;
+        align-items:center;
+        gap:10px;
+        margin-left:12px;
+        font-weight:700;
+        font-size:16px;
+        color:#0b2a63;
+    `;
 
     const datePicker =
         document.createElement(
@@ -1673,6 +1675,23 @@ function renderDrawScopeTabs() {
         "aria-label",
         "Select Registration Date"
     );
+
+
+    datePicker.style.cssText =
+    `
+        height:42px;
+        width:170px;
+        padding:0 12px;
+        border:1px solid #cbd5e1;
+        border-radius:8px;
+        background:#ffffff;
+        color:#0b2a63;
+        font-size:15px;
+        font-weight:600;
+        cursor:pointer;
+        box-sizing:border-box;
+        outline:none;
+    `;
 
     if (
         currentDrawScope !==
