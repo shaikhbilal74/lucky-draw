@@ -3550,111 +3550,208 @@ function renderHistoryDateTabs() {
         "";
 
 
-    const scopes =
-        getHistoryDateScopes();
+    // --------------------------------------------------------
+    // ALL DATES BUTTON
+    // --------------------------------------------------------
+
+    const allButton =
+        document.createElement(
+            "button"
+        );
+
+
+    allButton.type =
+        "button";
+
+
+    allButton.textContent =
+        "All Dates";
+
+
+    allButton.className =
+        selectedHistoryDate ===
+            "all"
+            ? "active"
+            : "";
+
+
+    allButton.setAttribute(
+        "role",
+        "tab"
+    );
+
+
+    allButton.setAttribute(
+        "aria-selected",
+        selectedHistoryDate ===
+            "all"
+            ? "true"
+            : "false"
+    );
+
+
+    allButton.style.cssText =
+        `
+            padding:13px 22px;
+            border:1px solid #d7deea;
+            border-radius:15px;
+            background:#ffffff;
+            color:#172554;
+            font-size:17px;
+            font-weight:700;
+            cursor:pointer;
+            transition:0.2s ease;
+        `;
 
 
     if (
-        !scopes.length
+        selectedHistoryDate ===
+        "all"
     ) {
 
-        dateTabs.innerHTML =
-            `
-                <div
-                    style="
-                        padding:14px 18px;
-                        border:1px solid #e5e7eb;
-                        border-radius:14px;
-                        background:#f8fafc;
-                        color:#172554;
-                        font-weight:600;
-                    "
-                >
-                    No draw dates available yet.
-                </div>
-            `;
+        allButton.style.background =
+            "linear-gradient(135deg,#2563eb,#ec4899)";
 
-        return;
+        allButton.style.color =
+            "#ffffff";
+
+        allButton.style.borderColor =
+            "#2563eb";
+
+        allButton.style.boxShadow =
+            "0 8px 18px rgba(37,99,235,0.22)";
 
     }
 
 
-    scopes.forEach(
-        function(
-            scope
-        ) {
+    allButton.addEventListener(
+        "click",
+        function() {
 
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.type =
-                "button";
-
-
-            button.textContent =
-                getHistoryDateLabel(
-                    scope
-                );
-
-
-            button.dataset.scope =
-                scope;
-
-
-            button.style.cssText =
-                `
-                    padding:13px 22px;
-                    border:1px solid #d7deea;
-                    border-radius:15px;
-                    background:#ffffff;
-                    color:#172554;
-                    font-size:17px;
-                    font-weight:700;
-                    cursor:pointer;
-                    transition:0.2s ease;
-                `;
-
-
-            if (
-                selectedHistoryDate ===
-                scope
-            ) {
-
-                button.style.background =
-                    "linear-gradient(135deg,#2563eb,#ec4899)";
-
-                button.style.color =
-                    "#ffffff";
-
-                button.style.borderColor =
-                    "#2563eb";
-
-                button.style.boxShadow =
-                    "0 8px 18px rgba(37,99,235,0.22)";
-
-            }
-
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    selectHistoryDate(
-                        scope
-                    );
-
-                }
-            );
-
-
-            dateTabs.appendChild(
-                button
+            selectHistoryDate(
+                "all"
             );
 
         }
+    );
+
+
+    dateTabs.appendChild(
+        allButton
+    );
+
+
+    // --------------------------------------------------------
+    // REGISTRATION DATE CALENDAR
+    // --------------------------------------------------------
+
+    const dateLabel =
+        document.createElement(
+            "label"
+        );
+
+
+    dateLabel.textContent =
+        "Select Registration Date:";
+
+
+    dateLabel.style.cssText =
+        `
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-left:12px;
+            font-weight:700;
+            font-size:16px;
+            color:#172554;
+        `;
+
+
+    const datePicker =
+        document.createElement(
+            "input"
+        );
+
+
+    datePicker.type =
+        "date";
+
+
+    datePicker.id =
+        "historyRegistrationDatePicker";
+
+
+    datePicker.name =
+        "historyRegistrationDatePicker";
+
+
+    datePicker.setAttribute(
+        "aria-label",
+        "Select Registration Date"
+    );
+
+
+    datePicker.style.cssText =
+        `
+            height:42px;
+            width:170px;
+            padding:0 12px;
+            border:1px solid #cbd5e1;
+            border-radius:8px;
+            background:#ffffff;
+            color:#172554;
+            font-size:15px;
+            font-weight:600;
+            cursor:pointer;
+            box-sizing:border-box;
+            outline:none;
+        `;
+
+
+    // Show currently selected date
+    // inside the calendar input.
+
+    if (
+        selectedHistoryDate &&
+        selectedHistoryDate !==
+            "all"
+    ) {
+
+        datePicker.value =
+            selectedHistoryDate;
+
+    }
+
+
+    // --------------------------------------------------------
+    // WHEN A DATE IS SELECTED
+    // --------------------------------------------------------
+
+    datePicker.addEventListener(
+        "change",
+        function() {
+
+            if (
+                datePicker.value
+            ) {
+
+                selectHistoryDate(
+                    datePicker.value
+                );
+
+            }
+
+        }
+    );
+
+
+    dateLabel.appendChild(
+        datePicker
+    );
+
+
+    dateTabs.appendChild(
+        dateLabel
     );
 
 }
