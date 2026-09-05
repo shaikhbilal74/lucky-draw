@@ -2702,6 +2702,35 @@ async function confirmDraw() {
         );
 
 
+        // Scroll to the winner section
+const winnerResult =
+    getElement(
+        "winnerResult"
+    );
+
+if (winnerResult) {
+
+    winnerResult.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
         await loadDrawHistory();
 
 
