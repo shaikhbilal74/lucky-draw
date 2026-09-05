@@ -1665,7 +1665,7 @@ function renderDrawScopeTabs() {
 
 
     dateLabel.textContent =
-        "Select Registration Date:";
+        "Select Draw Date:";
 
 
     dateLabel.style.cssText =
