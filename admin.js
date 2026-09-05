@@ -1567,7 +1567,6 @@ function getAvailableDateScopes(
 
 }
 
-
 function renderDrawScopeTabs() {
 
     const tabsContainer =
@@ -1575,23 +1574,21 @@ function renderDrawScopeTabs() {
             "drawScopeTabs"
         );
 
-
     if (!tabsContainer) {
-
         return;
-
     }
-
 
     tabsContainer.innerHTML =
         "";
 
+    // --------------------------------------------------------
+    // DRAW ALL DATES BUTTON
+    // --------------------------------------------------------
 
     const allButton =
         document.createElement(
             "button"
         );
-
 
     allButton.type =
         "button";
@@ -1608,16 +1605,13 @@ function renderDrawScopeTabs() {
     allButton.textContent =
         "Draw All Dates";
 
-
     allButton.dataset.scope =
         "all";
-
 
     allButton.setAttribute(
         "role",
         "tab"
     );
-
 
     allButton.setAttribute(
         "aria-selected",
@@ -1627,97 +1621,86 @@ function renderDrawScopeTabs() {
             : "false"
     );
 
-
     allButton.addEventListener(
         "click",
         async function() {
-
             await selectDrawScope(
                 "all"
             );
-
         }
     );
-
 
     tabsContainer.appendChild(
         allButton
     );
 
+    // --------------------------------------------------------
+    // REGISTRATION DATE CALENDAR
+    // --------------------------------------------------------
 
-    const dates =
-        getAvailableDateScopes(
-            allParticipants
+    const dateLabel =
+        document.createElement(
+            "label"
         );
 
+    dateLabel.textContent =
+        "Select Registration Date:";
 
-    dates.forEach(
-        function(
-            dateKey
-        ) {
+    dateLabel.style.cssText =
+        `
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-left:12px;
+            font-weight:700;
+        `;
 
-            const button =
-                document.createElement(
-                    "button"
+    const datePicker =
+        document.createElement(
+            "input"
+        );
+
+    datePicker.type =
+        "date";
+
+    datePicker.id =
+        "registrationDatePicker";
+
+    datePicker.name =
+        "registrationDatePicker";
+
+    datePicker.setAttribute(
+        "aria-label",
+        "Select Registration Date"
+    );
+
+    if (
+        currentDrawScope !==
+        "all"
+    ) {
+        datePicker.value =
+            currentDrawScope;
+    }
+
+    datePicker.addEventListener(
+        "change",
+        async function() {
+            if (
+                datePicker.value
+            ) {
+                await selectDrawScope(
+                    datePicker.value
                 );
-
-
-            button.type =
-                "button";
-
-
-            button.className =
-                "draw-scope-tab" +
-                (
-                    currentDrawScope ===
-                    dateKey
-                        ? " active"
-                        : ""
-                );
-
-
-            button.textContent =
-                formatDateForDisplay(
-                    dateKey
-                );
-
-
-            button.dataset.scope =
-                dateKey;
-
-
-            button.setAttribute(
-                "role",
-                "tab"
-            );
-
-
-            button.setAttribute(
-                "aria-selected",
-                currentDrawScope ===
-                    dateKey
-                    ? "true"
-                    : "false"
-            );
-
-
-            button.addEventListener(
-                "click",
-                async function() {
-
-                    await selectDrawScope(
-                        dateKey
-                    );
-
-                }
-            );
-
-
-            tabsContainer.appendChild(
-                button
-            );
-
+            }
         }
+    );
+
+    dateLabel.appendChild(
+        datePicker
+    );
+
+    tabsContainer.appendChild(
+        dateLabel
     );
 
 }
