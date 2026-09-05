@@ -1654,7 +1654,7 @@ function renderDrawScopeTabs() {
     );
 
 
-  // --------------------------------------------------------
+// --------------------------------------------------------
 // YESTERDAY BUTTON
 // --------------------------------------------------------
 
@@ -1672,10 +1672,6 @@ yesterdayButton.textContent =
     "Yesterday";
 
 
-yesterdayButton.className =
-    "draw-scope-tab";
-
-
 const yesterdayDate =
     getIndiaDateFromTimestamp(
         new Date(
@@ -1689,38 +1685,18 @@ yesterdayButton.dataset.scope =
     yesterdayDate;
 
 
-if (
-    currentDrawScope ===
-    yesterdayDate
-) {
+// --------------------------------------------------------
+// YESTERDAY ACTIVE STATE
+// --------------------------------------------------------
 
-    yesterdayButton.style.background =
-        "linear-gradient(135deg,#2563eb,#ec4899)";
-
-    yesterdayButton.style.color =
-        "#ffffff";
-
-    yesterdayButton.style.borderColor =
-        "#2563eb";
-
-    yesterdayButton.style.boxShadow =
-        "0 8px 18px rgba(37,99,235,0.22)";
-
-} else {
-
-    yesterdayButton.style.background =
-        "#ffffff";
-
-    yesterdayButton.style.color =
-        "#0b2a63";
-
-    yesterdayButton.style.borderColor =
-        "#d7deea";
-
-    yesterdayButton.style.boxShadow =
-        "none";
-
-}
+yesterdayButton.className =
+    "draw-scope-tab" +
+    (
+        currentDrawScope ===
+        yesterdayDate
+            ? " active"
+            : ""
+    );
 
 
 yesterdayButton.setAttribute(
@@ -1753,17 +1729,21 @@ yesterdayButton.addEventListener(
 tabsContainer.appendChild(
     yesterdayButton
 );
-    // --------------------------------------------------------
-    // TODAY BUTTON
-    // --------------------------------------------------------
 
-    const todayButton =
+
+// --------------------------------------------------------
+// TODAY BUTTON
+// --------------------------------------------------------
+
+const todayButton =
     document.createElement(
         "button"
     );
 
+
 todayButton.type =
     "button";
+
 
 todayButton.textContent =
     "Today";
@@ -1777,75 +1757,56 @@ const todayDate =
 
 todayButton.dataset.scope =
     todayDate;
-        if (
+
+
+// --------------------------------------------------------
+// TODAY ACTIVE STATE
+// --------------------------------------------------------
+
+todayButton.className =
+    "draw-scope-tab" +
+    (
         currentDrawScope ===
-        getIndiaDateFromTimestamp(
-            new Date().toISOString()
-        )
-    ) {
+        todayDate
+            ? " active"
+            : ""
+    );
 
-        todayButton.style.background =
-            "linear-gradient(135deg,#2563eb,#ec4899)";
 
-        todayButton.style.color =
-            "#ffffff";
+todayButton.setAttribute(
+    "role",
+    "tab"
+);
 
-        todayButton.style.borderColor =
-            "#2563eb";
 
-        todayButton.style.boxShadow =
-            "0 8px 18px rgba(37,99,235,0.22)";
+todayButton.setAttribute(
+    "aria-selected",
+    currentDrawScope ===
+        todayDate
+        ? "true"
+        : "false"
+);
+
+
+todayButton.addEventListener(
+    "click",
+    async function() {
+
+        await selectDrawScope(
+            todayDate
+        );
 
     }
+);
 
 
+tabsContainer.appendChild(
+    todayButton
+);
 
 
-
-
-
-
-
-    
-
-    todayButton.setAttribute(
-        "role",
-        "tab"
-    );
-
-    todayButton.setAttribute(
-        "aria-selected",
-        currentDrawScope ===
-            getIndiaDateFromTimestamp(
-                new Date().toISOString()
-            )
-            ? "true"
-            : "false"
-    );
-
-    todayButton.addEventListener(
-        "click",
-        async function() {
-
-            const today =
-                getIndiaDateFromTimestamp(
-                    new Date().toISOString()
-                );
-
-            await selectDrawScope(
-                today
-            );
-
-        }
-    );
-
-    tabsContainer.appendChild(
-        todayButton
-    );
-
-
-    // --------------------------------------------------------
-    // REGISTRATION DATE LABEL
+// --------------------------------------------------------
+// REGISTRATION DATE LABEL
     // --------------------------------------------------------
 
     // --------------------------------------------------------
