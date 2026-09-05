@@ -1654,109 +1654,101 @@ function renderDrawScopeTabs() {
     );
 
 
-    // --------------------------------------------------------
-    // YESTERDAY BUTTON
-    // --------------------------------------------------------
+  // --------------------------------------------------------
+// YESTERDAY BUTTON
+// --------------------------------------------------------
 
-    const yesterdayButton =
-        document.createElement(
-            "button"
+const yesterdayButton =
+    document.createElement(
+        "button"
+    );
+
+
+yesterdayButton.type =
+    "button";
+
+
+yesterdayButton.textContent =
+    "Yesterday";
+
+
+yesterdayButton.className =
+    "draw-scope-tab";
+
+
+const yesterdayDate =
+    getIndiaDateFromTimestamp(
+        new Date(
+            Date.now() -
+            24 * 60 * 60 * 1000
+        ).toISOString()
+    );
+
+
+if (
+    currentDrawScope ===
+    yesterdayDate
+) {
+
+    yesterdayButton.style.background =
+        "linear-gradient(135deg,#2563eb,#ec4899)";
+
+    yesterdayButton.style.color =
+        "#ffffff";
+
+    yesterdayButton.style.borderColor =
+        "#2563eb";
+
+    yesterdayButton.style.boxShadow =
+        "0 8px 18px rgba(37,99,235,0.22)";
+
+} else {
+
+    yesterdayButton.style.background =
+        "#ffffff";
+
+    yesterdayButton.style.color =
+        "#0b2a63";
+
+    yesterdayButton.style.borderColor =
+        "#d7deea";
+
+    yesterdayButton.style.boxShadow =
+        "none";
+
+}
+
+
+yesterdayButton.setAttribute(
+    "role",
+    "tab"
+);
+
+
+yesterdayButton.setAttribute(
+    "aria-selected",
+    currentDrawScope ===
+        yesterdayDate
+        ? "true"
+        : "false"
+);
+
+
+yesterdayButton.addEventListener(
+    "click",
+    async function() {
+
+        await selectDrawScope(
+            yesterdayDate
         );
-
-    yesterdayButton.type =
-        "button";
-
-    yesterdayButton.textContent =
-        "Yesterday";
-
-    yesterdayButton.className =
-        "draw-scope-tab" +
-        (
-            currentDrawScope ===
-            getIndiaDateFromTimestamp(
-                new Date(
-                    Date.now() -
-                    24 * 60 * 60 * 1000
-                ).toISOString()
-            )
-                ? " active"
-                : ""
-        );
-
-
-
-
-    if (
-        currentDrawScope ===
-        getIndiaDateFromTimestamp(
-            new Date(
-                Date.now() -
-                24 * 60 * 60 * 1000
-            ).toISOString()
-        )
-    ) {
-
-        yesterdayButton.style.background =
-            "linear-gradient(135deg,#2563eb,#ec4899)";
-
-        yesterdayButton.style.color =
-            "#ffffff";
-
-        yesterdayButton.style.borderColor =
-            "#2563eb";
-
-        yesterdayButton.style.boxShadow =
-            "0 8px 18px rgba(37,99,235,0.22)";
 
     }
+);
 
 
-
-
-    
-
-    yesterdayButton.setAttribute(
-        "role",
-        "tab"
-    );
-
-    yesterdayButton.setAttribute(
-        "aria-selected",
-        currentDrawScope ===
-            getIndiaDateFromTimestamp(
-                new Date(
-                    Date.now() -
-                    24 * 60 * 60 * 1000
-                ).toISOString()
-            )
-            ? "true"
-            : "false"
-    );
-
-    yesterdayButton.addEventListener(
-        "click",
-        async function() {
-
-            const yesterday =
-                getIndiaDateFromTimestamp(
-                    new Date(
-                        Date.now() -
-                        24 * 60 * 60 * 1000
-                    ).toISOString()
-                );
-
-            await selectDrawScope(
-                yesterday
-            );
-
-        }
-    );
-
-    tabsContainer.appendChild(
-        yesterdayButton
-    );
-
-
+tabsContainer.appendChild(
+    yesterdayButton
+);
     // --------------------------------------------------------
     // TODAY BUTTON
     // --------------------------------------------------------
