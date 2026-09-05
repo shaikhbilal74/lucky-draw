@@ -3746,20 +3746,3 @@ footer {
 
 
 
-
-/* ============================================================
-   DRAW SCOPE BUTTON ACTIVE STATE
-   ============================================================ */
-
-.draw-scope-tab {
-    background: #ffffff;
-    color: #0b2a63;
-    border: 1px solid #d7deea;
-}
-
-.draw-scope-tab.active {
-    background: linear-gradient(135deg, #2563eb, #ec4899);
-    color: #ffffff;
-    border-color: #2563eb;
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
-}
