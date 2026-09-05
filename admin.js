@@ -1649,10 +1649,147 @@ function renderDrawScopeTabs() {
     );
 
 
-    tabsContainer.appendChild(
+       tabsContainer.appendChild(
         allButton
     );
 
+
+    // --------------------------------------------------------
+    // YESTERDAY BUTTON
+    // --------------------------------------------------------
+
+    const yesterdayButton =
+        document.createElement(
+            "button"
+        );
+
+    yesterdayButton.type =
+        "button";
+
+    yesterdayButton.textContent =
+        "Yesterday";
+
+    yesterdayButton.className =
+        "draw-scope-tab" +
+        (
+            currentDrawScope ===
+            getIndiaDateFromTimestamp(
+                new Date(
+                    Date.now() -
+                    24 * 60 * 60 * 1000
+                ).toISOString()
+            )
+                ? " active"
+                : ""
+        );
+
+    yesterdayButton.setAttribute(
+        "role",
+        "tab"
+    );
+
+    yesterdayButton.setAttribute(
+        "aria-selected",
+        currentDrawScope ===
+            getIndiaDateFromTimestamp(
+                new Date(
+                    Date.now() -
+                    24 * 60 * 60 * 1000
+                ).toISOString()
+            )
+            ? "true"
+            : "false"
+    );
+
+    yesterdayButton.addEventListener(
+        "click",
+        async function() {
+
+            const yesterday =
+                getIndiaDateFromTimestamp(
+                    new Date(
+                        Date.now() -
+                        24 * 60 * 60 * 1000
+                    ).toISOString()
+                );
+
+            await selectDrawScope(
+                yesterday
+            );
+
+        }
+    );
+
+    tabsContainer.appendChild(
+        yesterdayButton
+    );
+
+
+    // --------------------------------------------------------
+    // TODAY BUTTON
+    // --------------------------------------------------------
+
+    const todayButton =
+        document.createElement(
+            "button"
+        );
+
+    todayButton.type =
+        "button";
+
+    todayButton.textContent =
+        "Today";
+
+    todayButton.className =
+        "draw-scope-tab" +
+        (
+            currentDrawScope ===
+            getIndiaDateFromTimestamp(
+                new Date().toISOString()
+            )
+                ? " active"
+                : ""
+        );
+
+    todayButton.setAttribute(
+        "role",
+        "tab"
+    );
+
+    todayButton.setAttribute(
+        "aria-selected",
+        currentDrawScope ===
+            getIndiaDateFromTimestamp(
+                new Date().toISOString()
+            )
+            ? "true"
+            : "false"
+    );
+
+    todayButton.addEventListener(
+        "click",
+        async function() {
+
+            const today =
+                getIndiaDateFromTimestamp(
+                    new Date().toISOString()
+                );
+
+            await selectDrawScope(
+                today
+            );
+
+        }
+    );
+
+    tabsContainer.appendChild(
+        todayButton
+    );
+
+
+    // --------------------------------------------------------
+    // REGISTRATION DATE LABEL
+    // --------------------------------------------------------
 
     // --------------------------------------------------------
     // REGISTRATION DATE LABEL
