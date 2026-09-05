@@ -1567,6 +1567,10 @@ function getAvailableDateScopes(
 
 }
 
+// ------------------------------------------------------------
+// RENDER DRAW SCOPE TABS
+// ------------------------------------------------------------
+
 function renderDrawScopeTabs() {
 
     const tabsContainer =
@@ -1574,12 +1578,17 @@ function renderDrawScopeTabs() {
             "drawScopeTabs"
         );
 
+
     if (!tabsContainer) {
+
         return;
+
     }
+
 
     tabsContainer.innerHTML =
         "";
+
 
     // --------------------------------------------------------
     // DRAW ALL DATES BUTTON
@@ -1590,8 +1599,10 @@ function renderDrawScopeTabs() {
             "button"
         );
 
+
     allButton.type =
         "button";
+
 
     allButton.className =
         "draw-scope-tab" +
@@ -1602,16 +1613,20 @@ function renderDrawScopeTabs() {
                 : ""
         );
 
+
     allButton.textContent =
         "Draw All Dates";
 
+
     allButton.dataset.scope =
         "all";
+
 
     allButton.setAttribute(
         "role",
         "tab"
     );
+
 
     allButton.setAttribute(
         "aria-selected",
@@ -1621,21 +1636,26 @@ function renderDrawScopeTabs() {
             : "false"
     );
 
+
     allButton.addEventListener(
         "click",
         async function() {
+
             await selectDrawScope(
                 "all"
             );
+
         }
     );
+
 
     tabsContainer.appendChild(
         allButton
     );
 
+
     // --------------------------------------------------------
-    // REGISTRATION DATE CALENDAR
+    // REGISTRATION DATE LABEL
     // --------------------------------------------------------
 
     const dateLabel =
@@ -1643,88 +1663,476 @@ function renderDrawScopeTabs() {
             "label"
         );
 
+
     dateLabel.textContent =
         "Select Registration Date:";
 
-   dateLabel.style.cssText =
-    `
-        display:flex;
-        align-items:center;
-        gap:10px;
-        margin-left:12px;
-        font-weight:700;
-        font-size:16px;
-        color:#0b2a63;
-    `;
 
-    const datePicker =
+    dateLabel.style.cssText =
+        `
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-left:12px;
+            font-weight:700;
+            font-size:16px;
+            color:#0b2a63;
+        `;
+
+
+    // --------------------------------------------------------
+    // DATE INPUT WRAPPER
+    // --------------------------------------------------------
+
+    const dateWrapper =
+        document.createElement(
+            "div"
+        );
+
+
+    dateWrapper.style.cssText =
+        `
+            display:flex;
+            align-items:center;
+            gap:6px;
+        `;
+
+
+    // --------------------------------------------------------
+    // MANUAL DATE TEXT INPUT
+    // --------------------------------------------------------
+
+    const textInput =
         document.createElement(
             "input"
         );
 
-    datePicker.type =
-        "date";
 
-    datePicker.id =
-        "registrationDatePicker";
+    textInput.type =
+        "text";
 
-    datePicker.name =
-        "registrationDatePicker";
 
-    datePicker.setAttribute(
+    textInput.id =
+        "registrationDateInput";
+
+
+    textInput.name =
+        "registrationDateInput";
+
+
+    textInput.placeholder =
+        "DD/MM/YYYY";
+
+
+    textInput.maxLength =
+        10;
+
+
+    textInput.inputMode =
+        "numeric";
+
+
+    textInput.autocomplete =
+        "off";
+
+
+    textInput.setAttribute(
         "aria-label",
-        "Select Registration Date"
+        "Enter Registration Date"
     );
 
 
-    datePicker.style.cssText =
-    `
-        height:42px;
-        width:170px;
-        padding:0 12px;
-        border:1px solid #cbd5e1;
-        border-radius:8px;
-        background:#ffffff;
-        color:#0b2a63;
-        font-size:15px;
-        font-weight:600;
-        cursor:pointer;
-        box-sizing:border-box;
-        outline:none;
-    `;
+    textInput.style.cssText =
+        `
+            height:42px;
+            width:170px;
+            padding:0 12px;
+            border:1px solid #cbd5e1;
+            border-radius:8px;
+            background:#ffffff;
+            color:#0b2a63;
+            font-size:15px;
+            font-weight:600;
+            box-sizing:border-box;
+            outline:none;
+        `;
+
+
+    // --------------------------------------------------------
+    // SHOW CURRENTLY SELECTED DATE
+    // --------------------------------------------------------
 
     if (
+        currentDrawScope &&
         currentDrawScope !==
-        "all"
+            "all"
     ) {
-        datePicker.value =
-            currentDrawScope;
+
+        const parts =
+            currentDrawScope.split(
+                "-"
+            );
+
+
+        if (
+            parts.length ===
+            3
+        ) {
+
+            textInput.value =
+                parts[2] +
+                "/" +
+                parts[1] +
+                "/" +
+                parts[0];
+
+        }
+
     }
 
-    datePicker.addEventListener(
-        "change",
-        async function() {
-            if (
-                datePicker.value
+
+    // --------------------------------------------------------
+    // HIDDEN CALENDAR PICKER
+    // --------------------------------------------------------
+
+    const calendarPicker =
+        document.createElement(
+            "input"
+        );
+
+
+    calendarPicker.type =
+        "date";
+
+
+    calendarPicker.id =
+        "registrationDateCalendar";
+
+
+    calendarPicker.setAttribute(
+        "aria-label",
+        "Choose Registration Date from Calendar"
+    );
+
+
+    calendarPicker.style.cssText =
+        `
+            position:absolute;
+            width:1px;
+            height:1px;
+            opacity:0;
+            pointer-events:none;
+        `;
+
+
+    if (
+        currentDrawScope &&
+        currentDrawScope !==
+            "all"
+    ) {
+
+        calendarPicker.value =
+            currentDrawScope;
+
+    }
+
+
+    // --------------------------------------------------------
+    // CALENDAR BUTTON
+    // --------------------------------------------------------
+
+    const calendarButton =
+        document.createElement(
+            "button"
+        );
+
+
+    calendarButton.type =
+        "button";
+
+
+    calendarButton.textContent =
+        "📅";
+
+
+    calendarButton.title =
+        "Choose date from calendar";
+
+
+    calendarButton.setAttribute(
+        "aria-label",
+        "Choose date from calendar"
+    );
+
+
+    calendarButton.style.cssText =
+        `
+            height:42px;
+            width:44px;
+            border:1px solid #cbd5e1;
+            border-radius:8px;
+            background:#ffffff;
+            color:#0b2a63;
+            font-size:18px;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            box-sizing:border-box;
+        `;
+
+
+    // --------------------------------------------------------
+    // OPEN CALENDAR
+    // --------------------------------------------------------
+
+    calendarButton.addEventListener(
+        "click",
+        function() {
+
+            try {
+
+                calendarPicker.showPicker();
+
+            } catch (
+                error
             ) {
-                await selectDrawScope(
-                    datePicker.value
-                );
+
+                calendarPicker.click();
+
             }
+
         }
     );
 
-    dateLabel.appendChild(
-        datePicker
+
+    // --------------------------------------------------------
+    // CALENDAR DATE SELECTED
+    // --------------------------------------------------------
+
+    calendarPicker.addEventListener(
+        "change",
+        async function() {
+
+            if (
+                !calendarPicker.value
+            ) {
+
+                return;
+
+            }
+
+
+            const parts =
+                calendarPicker.value.split(
+                    "-"
+                );
+
+
+            textInput.value =
+                parts[2] +
+                "/" +
+                parts[1] +
+                "/" +
+                parts[0];
+
+
+            await selectDrawScope(
+                calendarPicker.value
+            );
+
+        }
     );
+
+
+    // --------------------------------------------------------
+    // MANUAL DATE ENTRY
+    // --------------------------------------------------------
+
+    async function processManualDate() {
+
+        const value =
+            textInput.value.trim();
+
+
+        if (!value) {
+
+            textInput.style.borderColor =
+                "#cbd5e1";
+
+            return;
+
+        }
+
+
+        const match =
+            value.match(
+                /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+            );
+
+
+        if (!match) {
+
+            textInput.style.borderColor =
+                "#ef4444";
+
+            return;
+
+        }
+
+
+        const day =
+            Number(
+                match[1]
+            );
+
+
+        const month =
+            Number(
+                match[2]
+            );
+
+
+        const year =
+            Number(
+                match[3]
+            );
+
+
+        const testDate =
+            new Date(
+                Date.UTC(
+                    year,
+                    month - 1,
+                    day
+                )
+            );
+
+
+        if (
+            testDate.getUTCFullYear() !==
+                year ||
+            testDate.getUTCMonth() !==
+                month - 1 ||
+            testDate.getUTCDate() !==
+                day
+        ) {
+
+            textInput.style.borderColor =
+                "#ef4444";
+
+            return;
+
+        }
+
+
+        const isoDate =
+            year +
+            "-" +
+            String(
+                month
+            ).padStart(
+                2,
+                "0"
+            ) +
+            "-" +
+            String(
+                day
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        textInput.value =
+            String(
+                day
+            ).padStart(
+                2,
+                "0"
+            ) +
+            "/" +
+            String(
+                month
+            ).padStart(
+                2,
+                "0"
+            ) +
+            "/" +
+            year;
+
+
+        calendarPicker.value =
+            isoDate;
+
+
+        textInput.style.borderColor =
+            "#22c55e";
+
+
+        await selectDrawScope(
+            isoDate
+        );
+
+    }
+
+
+    textInput.addEventListener(
+        "change",
+        processManualDate
+    );
+
+
+    textInput.addEventListener(
+        "keydown",
+        function(
+            event
+        ) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                processManualDate();
+
+            }
+
+        }
+    );
+
+
+    // --------------------------------------------------------
+    // ADD EVERYTHING TO PAGE
+    // --------------------------------------------------------
+
+    dateWrapper.appendChild(
+        textInput
+    );
+
+
+    dateWrapper.appendChild(
+        calendarButton
+    );
+
+
+    dateWrapper.appendChild(
+        calendarPicker
+    );
+
+
+    dateLabel.appendChild(
+        dateWrapper
+    );
+
 
     tabsContainer.appendChild(
         dateLabel
     );
 
 }
-
-
 // ============================================================
 // SELECT DRAW SCOPE
 // ============================================================
