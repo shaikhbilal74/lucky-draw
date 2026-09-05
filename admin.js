@@ -3133,21 +3133,7 @@ async function confirmResetDraw() {
         await loadDrawHistory();
 
 
-        const scopeText =
-            currentDrawScope ===
-                "all"
-
-                ? "Draw All Dates"
-
-                : formatDateForDisplay(
-                    currentDrawScope
-                );
-
-
-        alert(
-            `The draw for ${scopeText} has been reset successfully. Draw history was preserved.`
-        );
-
+       
 
     } catch (error) {
 
