@@ -1685,6 +1685,10 @@ const yesterdayDate =
     );
 
 
+yesterdayButton.dataset.scope =
+    yesterdayDate;
+
+
 if (
     currentDrawScope ===
     yesterdayDate
@@ -1754,26 +1758,25 @@ tabsContainer.appendChild(
     // --------------------------------------------------------
 
     const todayButton =
-        document.createElement(
-            "button"
-        );
+    document.createElement(
+        "button"
+    );
 
-    todayButton.type =
-        "button";
+todayButton.type =
+    "button";
 
-    todayButton.textContent =
-        "Today";
+todayButton.textContent =
+    "Today";
 
-    todayButton.className =
-        "draw-scope-tab" +
-        (
-            currentDrawScope ===
-            getIndiaDateFromTimestamp(
-                new Date().toISOString()
-            )
-                ? " active"
-                : ""
-        );
+
+const todayDate =
+    getIndiaDateFromTimestamp(
+        new Date().toISOString()
+    );
+
+
+todayButton.dataset.scope =
+    todayDate;
         if (
         currentDrawScope ===
         getIndiaDateFromTimestamp(
