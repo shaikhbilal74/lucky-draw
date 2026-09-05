@@ -1683,6 +1683,38 @@ function renderDrawScopeTabs() {
                 : ""
         );
 
+
+
+
+    if (
+        currentDrawScope ===
+        getIndiaDateFromTimestamp(
+            new Date(
+                Date.now() -
+                24 * 60 * 60 * 1000
+            ).toISOString()
+        )
+    ) {
+
+        yesterdayButton.style.background =
+            "linear-gradient(135deg,#2563eb,#ec4899)";
+
+        yesterdayButton.style.color =
+            "#ffffff";
+
+        yesterdayButton.style.borderColor =
+            "#2563eb";
+
+        yesterdayButton.style.boxShadow =
+            "0 8px 18px rgba(37,99,235,0.22)";
+
+    }
+
+
+
+
+    
+
     yesterdayButton.setAttribute(
         "role",
         "tab"
@@ -1750,6 +1782,36 @@ function renderDrawScopeTabs() {
                 ? " active"
                 : ""
         );
+        if (
+        currentDrawScope ===
+        getIndiaDateFromTimestamp(
+            new Date().toISOString()
+        )
+    ) {
+
+        todayButton.style.background =
+            "linear-gradient(135deg,#2563eb,#ec4899)";
+
+        todayButton.style.color =
+            "#ffffff";
+
+        todayButton.style.borderColor =
+            "#2563eb";
+
+        todayButton.style.boxShadow =
+            "0 8px 18px rgba(37,99,235,0.22)";
+
+    }
+
+
+
+
+
+
+
+
+
+    
 
     todayButton.setAttribute(
         "role",
