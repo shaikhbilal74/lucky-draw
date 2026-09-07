@@ -4223,6 +4223,211 @@ function renderHistoryDateTabs() {
     );
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --------------------------------------------------------
+// YESTERDAY BUTTON
+// --------------------------------------------------------
+
+const yesterdayButton =
+    document.createElement(
+        "button"
+    );
+
+yesterdayButton.type =
+    "button";
+
+yesterdayButton.textContent =
+    "Yesterday";
+
+const yesterdayDate =
+    getIndiaDateFromTimestamp(
+        new Date(
+            Date.now() -
+            24 * 60 * 60 * 1000
+        ).toISOString()
+    );
+
+yesterdayButton.className =
+    "history-date-tab";
+
+yesterdayButton.setAttribute(
+    "role",
+    "tab"
+);
+
+yesterdayButton.setAttribute(
+    "aria-selected",
+    selectedHistoryDate ===
+        yesterdayDate
+        ? "true"
+        : "false"
+);
+
+yesterdayButton.style.cssText =
+    `
+        padding:13px 22px;
+        border:1px solid #d7deea;
+        border-radius:15px;
+        background:#ffffff;
+        color:#172554;
+        font-size:17px;
+        font-weight:700;
+        cursor:pointer;
+        transition:0.2s ease;
+    `;
+
+
+if (
+    selectedHistoryDate ===
+    yesterdayDate
+) {
+
+    yesterdayButton.style.background =
+        "linear-gradient(135deg,#2563eb,#ec4899)";
+
+    yesterdayButton.style.color =
+        "#ffffff";
+
+    yesterdayButton.style.borderColor =
+        "#2563eb";
+
+    yesterdayButton.style.boxShadow =
+        "0 8px 18px rgba(37,99,235,0.22)";
+
+}
+
+
+yesterdayButton.addEventListener(
+    "click",
+    function() {
+
+        selectHistoryDate(
+            yesterdayDate
+        );
+
+    }
+);
+
+
+dateTabs.appendChild(
+    yesterdayButton
+);
+
+
+// --------------------------------------------------------
+// TODAY BUTTON
+// --------------------------------------------------------
+
+const todayButton =
+    document.createElement(
+        "button"
+    );
+
+todayButton.type =
+    "button";
+
+todayButton.textContent =
+    "Today";
+
+const todayDate =
+    getIndiaDateFromTimestamp(
+        new Date().toISOString()
+    );
+
+todayButton.className =
+    "history-date-tab";
+
+todayButton.setAttribute(
+    "role",
+    "tab"
+);
+
+todayButton.setAttribute(
+    "aria-selected",
+    selectedHistoryDate ===
+        todayDate
+        ? "true"
+        : "false"
+);
+
+todayButton.style.cssText =
+    `
+        padding:13px 22px;
+        border:1px solid #d7deea;
+        border-radius:15px;
+        background:#ffffff;
+        color:#172554;
+        font-size:17px;
+        font-weight:700;
+        cursor:pointer;
+        transition:0.2s ease;
+    `;
+
+
+if (
+    selectedHistoryDate ===
+    todayDate
+) {
+
+    todayButton.style.background =
+        "linear-gradient(135deg,#2563eb,#ec4899)";
+
+    todayButton.style.color =
+        "#ffffff";
+
+    todayButton.style.borderColor =
+        "#2563eb";
+
+    todayButton.style.boxShadow =
+        "0 8px 18px rgba(37,99,235,0.22)";
+
+}
+
+
+todayButton.addEventListener(
+    "click",
+    function() {
+
+        selectHistoryDate(
+            todayDate
+        );
+
+    }
+);
+
+
+dateTabs.appendChild(
+    todayButton
+);
+
+
+
+
+
+    
+
+
     // --------------------------------------------------------
     // REGISTRATION DATE LABEL
     // --------------------------------------------------------
