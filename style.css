@@ -3746,3 +3746,205 @@ footer {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   LUCKY DRAW ANIMATIONS
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   WINNER SELECTION ANIMATION
+   --------------------------------------------------------- */
+
+.draw-selecting-animation {
+    grid-column: 1 / -1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 220px;
+
+    text-align: center;
+
+    animation: drawSelectingFade 0.4s ease;
+}
+
+
+.draw-selecting-dice {
+    font-size: 58px;
+
+    margin-bottom: 15px;
+
+    animation: diceRoll 0.65s linear infinite;
+}
+
+
+.draw-selecting-title {
+    margin: 0;
+
+    color: #172554;
+
+    font-size: 28px;
+
+    font-weight: 700;
+}
+
+
+.draw-selecting-dots {
+    margin-top: 10px;
+
+    color: #f43f5e;
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    letter-spacing: 4px;
+}
+
+
+@keyframes diceRoll {
+
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    25% {
+        transform: rotate(90deg) scale(1.08);
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1);
+    }
+
+    75% {
+        transform: rotate(270deg) scale(1.08);
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+
+}
+
+
+@keyframes drawSelectingFade {
+
+    from {
+        opacity: 0;
+
+        transform: scale(0.92);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: scale(1);
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   WINNER REVEAL
+   --------------------------------------------------------- */
+
+#winnerResult > div.winner-reveal {
+    animation:
+        winnerReveal 0.75s
+        cubic-bezier(0.22, 1, 0.36, 1)
+        both;
+}
+
+
+#winnerResult > div.winner-reveal:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+
+#winnerResult > div.winner-reveal:nth-child(2) {
+    animation-delay: 0.25s;
+}
+
+
+#winnerResult > div.winner-reveal:nth-child(3) {
+    animation-delay: 0.45s;
+}
+
+
+@keyframes winnerReveal {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(45px)
+            scale(0.85);
+
+    }
+
+    70% {
+        opacity: 1;
+
+        transform:
+            translateY(-6px)
+            scale(1.02);
+
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
